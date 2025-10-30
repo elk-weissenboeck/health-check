@@ -9,7 +9,24 @@
   },
   "groups": [
     {
-      "key": "hybridforms",
+      "key": "hfsrv",
+      "title": "HybridForms Server",
+      "description": "Öffentliche und interne Seiten",
+      "services": [
+        {
+          "key": "hf-server-elkkampa",
+          "label": "forms.elkkampa.com",
+          "url": "https://forms.elkkampa.com/",
+          "method": "HEAD",
+          "warning": null,
+          "headers": [
+             { "label": "Version", "name": "x-hf-serverversion" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hfppl",
       "title": "HybridForms Pipelines",
       "description": "Übersicht aller Pipelines",
       "services": [

@@ -84,6 +84,7 @@ function groupCardTemplate(group) {
                 </small>` : ""}
 
                 <div class="service-fields mt-1" id="fields-${group.key}-${s.key}"></div>
+                <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
               </div>
               <div class="d-flex align-items-center gap-3">
                 <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
@@ -110,34 +111,61 @@ async function checkService(url, method = "HEAD", expect = null) {
   try {
     const res = await fetch(url, { method, cache: "no-store" });
     const ms = Math.round(performance.now() - start);
-    if (!res.ok) return { ok: false, ms, count: null, value: null, data: null };
 
+    // Header einsammeln (immer klein schreiben)
+    const headers = {};
+    res.headers.forEach((v, k) => { headers[k.toLowerCase()] = v; });
+
+    // HTTP-Fehlerstatus (z. B. 500/404) → NOK, aber Header mitsenden
+    if (!res.ok) return { ok: false, ms, count: null, value: null, data: null, headers };
+
+    // --- GET-Requests: Body auswerten ---
     if (method === "GET") {
       const raw = await res.text();
-      if (!raw) return { ok: false, ms, count: null, value: null, data: null };
-      let data; try { data = JSON.parse(raw); } catch { return { ok: false, ms, count: null, value: null, data: null }; }
-      if (data === null) return { ok: false, ms, count: null, value: null, data: null };
+      if (!raw) return { ok: false, ms, count: null, value: null, data: null, headers };
+
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        return { ok: false, ms, count: null, value: null, data: null, headers };
+      }
+
+      if (data === null) return { ok: false, ms, count: null, value: null, data: null, headers };
 
       const count = Array.isArray(data?.results) ? data.results.length : null;
 
+      // --- einfache Expect-Prüfung ---
       if (expect) {
         const v = expect.jsonPath ? getByPath(data, expect.jsonPath) : data;
         let pass = v !== undefined && v !== null;
-        if ("equals" in expect) pass = v === expect.equals;
-        if ("truthy" in expect) pass = !!v === !!expect.truthy;
+
+        if ("equals" in expect)  pass = v === expect.equals;
+        if ("truthy" in expect)  pass = !!v === !!expect.truthy;
         if ("minLen" in expect)  pass = Array.isArray(v) ? v.length >= expect.minLen : false;
         if ("in" in expect && Array.isArray(expect.in)) pass = expect.in.includes(v);
-        return { ok: pass, ms, count, value: v, data };
+
+        return { ok: pass, ms, count, value: v, data, headers };
       }
-      return { ok: true, ms, count, value: null, data };
+
+      // kein Expect → OK
+      return { ok: true, ms, count, value: null, data, headers };
     }
-    return { ok: true, ms, count: null, value: null, data: null };
+
+    // --- HEAD oder andere Methoden ---
+    return { ok: true, ms, count: null, value: null, data: null, headers };
   } catch {
     const ms = Math.round(performance.now() - start);
-    return { ok: false, ms, count: null, value: null, data: null };
+    return { ok: false, ms, count: null, value: null, data: null, headers: null };
   }
 }
 
+
+function collectHeaders(res) {
+  const out = {};
+  res.headers.forEach((v, k) => { out[k.toLowerCase()] = v; });
+  return out;
+}
 
 function setBadge(group, svc, ok, ms, count = null, value = null) {
   const badge = document.getElementById(`badge-${group}-${svc}`);
@@ -233,6 +261,7 @@ async function refreshAll() {
       const r = await checkService(s.url, s.method, s.expect);
       setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value);
       renderServiceFields(g.key, s, r.data);
+      renderServiceHeaders(g.key, s, r.headers);  
       return r.ok;
     }));
 
@@ -334,6 +363,37 @@ function renderServiceFields(groupKey, serviceDef, data) {
   container.innerHTML = parts.join("");
 }
 
+function renderServiceHeaders(groupKey, serviceDef, headers) {
+  const containerId = `headers-${groupKey}-${serviceDef.key}`;
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const defs = serviceDef.headers || [];
+  if (!headers || defs.length === 0) { container.innerHTML = ""; return; }
+
+  const parts = defs.map(h => {
+    const name = String(h.name || '').toLowerCase();
+    const raw  = headers[name];
+    if (raw == null) return ''; // Header fehlt -> nichts anzeigen
+
+    // Formatter wiederverwenden
+    let val = raw;
+    if (h.format && FORMATTERS[h.format]) val = FORMATTERS[h.format](isFinite(+raw) ? +raw : raw);
+
+    // Badge-Farbe bestimmen
+    let badgeClass = null;
+    if (h.badge) badgeClass = `text-bg-${h.badge}`;
+    if (h.badgeByValue && raw in h.badgeByValue) badgeClass = `text-bg-${h.badgeByValue[raw]}`;
+
+    const labelHtml = h.label ? `<span class="sh-label">${escapeHtml(h.label)}:</span>` : "";
+    const valueHtml = badgeClass
+      ? `<span class="badge ${badgeClass}">${escapeHtml(String(val))}</span>`
+      : `<span class="sh-value">${escapeHtml(String(val))}</span>`;
+
+    return `<span class="sh-item">${labelHtml} ${valueHtml}</span>`;
+  }).filter(Boolean);
+
+  container.innerHTML = parts.join("");
+}
 
 // =======================
 // EVENT HANDLERS

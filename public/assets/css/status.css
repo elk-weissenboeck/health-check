@@ -97,6 +97,22 @@ body {
   font-size: 1rem;
 }
 
+.service-headers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem .75rem;
+}
+.service-headers .sh-item {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .9rem;
+}
+.service-headers .sh-label {
+  font-weight: 600;
+  color: var(--bs-secondary-color);
+}
+
 /* Optional: dezentes Badge-Feeling für noch mehr Lesbarkeit */
 .service-warning.chip {
   padding: .1rem .4rem;
