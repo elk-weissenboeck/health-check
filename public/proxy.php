@@ -137,6 +137,22 @@ $TARGETS = [
     'headers'  => ['NC-Token: ' . $secrets['VIS_TOKEN']],
     'insecure' => false,
     'timeout'  => 8,
+  ],
+  'nc-lis2' => [
+    'url'      => "https://lis2.elk.at/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
+    'method'   => 'GET',
+    'auth'     => null,
+    'headers'  => ['NC-Token: ' . $secrets['LIS2_TOKEN']],
+    'insecure' => false,
+    'timeout'  => 8,
+  ],
+  'nc-fileshare' => [
+    'url'      => "https://fileshare.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
+    'method'   => 'GET',
+    'auth'     => null,
+    'headers'  => ['NC-Token: ' . $secrets['FLS_TOKEN']],
+    'insecure' => false,
+    'timeout'  => 8,
   ]
 ];
 

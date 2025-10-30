@@ -400,8 +400,34 @@
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" }
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+          ]
+        },
+        {
+          "key": "nc-lis2",
+          "label": "LIS 2",
+          "url": "proxy.php?key=nc-lis2",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+          ]
+        },
+        {
+          "key": "nc-fileshare",
+          "label": "Fileshare",
+          "url": "proxy.php?key=nc-fileshare",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" }
           ]
         }
       ]
