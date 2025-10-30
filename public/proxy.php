@@ -129,6 +129,14 @@ $TARGETS = [
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
+  ],
+  'nc-vis' => [
+    'url'      => "https://vis2.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
+    'method'   => 'GET',
+    'auth'     => null,
+    'headers'  => ['NC-Token: ' . $secrets['VIS_TOKEN']],
+    'insecure' => false,
+    'timeout'  => 8,
   ]
 ];
 

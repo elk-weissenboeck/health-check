@@ -385,6 +385,26 @@
           ]
         }
       ]
+    },
+    {
+      "key": "nextcloud",
+      "title": "Nextcloud",
+      "description": "Dokumentenablage",
+      "services": [
+        {
+          "key": "nc-vis",
+          "label": "VIS",
+          "url": "proxy.php?key=nc-vis",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" }
+          ]
+        }
+      ]
     }
   ]
 }
