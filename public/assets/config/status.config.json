@@ -18,6 +18,7 @@
           "label": "Elk Prodserver",
           "url": "https://forms.elk.at",
           "method": "HEAD",
+          "warning": null,
           "warning": "enable CORS"
         },
         {
@@ -54,6 +55,7 @@
           "label": "Unternehmensdaten alle Stages",
           "url": "proxy.php?key=hf-enterprise-full",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -65,6 +67,7 @@
           "label": "Unternehmensdaten für S5+S6",
           "url": "proxy.php?key=hf-enterprise-quick",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -76,6 +79,7 @@
           "label": "Hauseubergabe Ninox",
           "url": "proxy.php?key=hf-hauseubergabe-ninox",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -87,6 +91,7 @@
           "label": "Hauseubergabe Dokumente",
           "url": "proxy.php?key=hf-hauseubergabe-documents",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -98,6 +103,7 @@
           "label": "Hauseubergabe Fotos",
           "url": "proxy.php?key=hf-hauseubergabe-pictures",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -109,6 +115,7 @@
           "label": " Maengel-Kosten-Anzeige",
           "url": "proxy.php?key=hf-maengelkostenanzeige",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -120,6 +127,7 @@
           "label": "Planbesprechung",
           "url": "proxy.php?key=hf-planbesprechung",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -131,6 +139,7 @@
           "label": "Alle Protokolle",
           "url": "proxy.php?key=hf-protokolle",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -142,6 +151,7 @@
           "label": "Qualitaetsmanagement",
           "url": "proxy.php?key=hf-qualitaetsmanagement",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -153,6 +163,7 @@
           "label": "Regieschein",
           "url": "proxy.php?key=hf-regieschein",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -164,6 +175,7 @@
           "label": "Wochenbericht",
           "url": "proxy.php?key=hf-wochenbericht",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -181,13 +193,15 @@
           "key": "bmu-frontend",
           "label": "Frontend",
           "url": "https://bemusterung.elk.at/login/",
-          "method": "HEAD"
+          "method": "HEAD",
+          "warning": null
         },
         {
           "key": "getArticles",
           "label": "API Artikeln",
           "url": "https://bemu-api.elk.at/getArticles.php",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -195,6 +209,7 @@
           "label": "API Artikeldetail",
           "url": "https://bemu-api.elk.at/getArticleById.php?id=AL-VISAAPP-00000",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -202,6 +217,7 @@
           "label": "API Gruppen",
           "url": "https://bemu-api.elk.at/getGroups.php",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -209,6 +225,7 @@
           "label": "API Designgruppen",
           "url": "https://bemu-api.elk.at/getStyleGroups.php",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -216,6 +233,7 @@
           "label": "API Preisgruppen",
           "url": "https://bemu-api.elk.at/getPriceGroups.php",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "results", "minLen": 1 }
         }
       ]
@@ -229,13 +247,15 @@
           "key": "odoo-frontend",
           "label": "Frontend",
           "url": "https://odoo-elk.elkschrems.co.at/web/login",
-          "method": "HEAD"
+          "method": "HEAD",
+          "warning": null
         },
         {
           "key": "odoo-status",
           "label": "API Status",
           "url": "https://odoo-api.elk.at/status.php",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "status", "equals": "up" },
           "fields": [
             { "label": "Version", "path": "odoo" }
@@ -246,6 +266,7 @@
           "label": "API Jobs",
           "url": "https://odoo-api.elk.at/getJobs.php?v2",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -253,6 +274,7 @@
           "label": "API Referenzen",
           "url": "https://odoo-api.elk.at/getReferences.php?v2",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "results", "minLen": 1 }
         }
       ]
@@ -267,6 +289,7 @@
           "label": "Pipeline",
           "url": "proxy.php?key=html5app-ppl-prod",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -278,6 +301,7 @@
           "label": "API Status",
           "url": "https://html5app-prod.elk.at/",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "status", "equals": "up" }
         },
         {
@@ -293,6 +317,7 @@
           "label": "API Detailseite",
           "url": "https://html5app-prod.elk.at/v1/houses/317",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "title", "equals": "Now 129" }
         }
       ]
@@ -320,13 +345,15 @@
           "key": "elkbau-frontend",
           "label": "Frontend",
           "url": "https://projekte.elkbau.at/login",
-          "method": "HEAD"
+          "method": "HEAD",
+          "warning": null
         },
         {
           "key": "elkbau-calc-prod",
           "label": "Pipeline",
           "url": "proxy.php?key=elkbau-calc-prod",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -338,6 +365,7 @@
           "label": "API Status Prod",
           "url": "https://api-projekte.elkbau.at/",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "status", "equals": "up" },
            "fields": [
             { "label": "debug", "path": "debug", "format": "bool" },
@@ -349,6 +377,7 @@
           "label": "API Status Test",
           "url": "https://api-test-projekte.elkbau.at/",
           "method": "GET",
+          "warning": null,
           "expect": { "jsonPath": "status", "equals": "up" },
            "fields": [
             { "label": "debug", "path": "debug", "format": "bool" },
