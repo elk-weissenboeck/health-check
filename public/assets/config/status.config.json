@@ -1,0 +1,288 @@
+{
+  "version": 1,
+  "maintenance": {
+    "active": false,
+    "title": "Geplante Wartung",
+    "message": "Heute 22:00–23:00 Uhr",
+    "start": "2025-11-01T22:00:00+01:00",
+    "end": "2025-11-03T23:00:00+01:00"
+  },
+  "groups": [
+    {
+      "key": "hybridforms",
+      "title": "HybridForms Pipelines",
+      "description": "Übersicht aller Pipelines",
+      "services": [
+        {
+          "key": "hf-enterprised-full",
+          "label": "Unternehmensdaten alle Stages",
+          "url": "proxy.php?key=hf-enterprise-full",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-enterprised-quick",
+          "label": "Unternehmensdaten für S5+S6",
+          "url": "proxy.php?key=hf-enterprise-quick",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-hauseubergabe-ninox",
+          "label": "Hauseubergabe Ninox",
+          "url": "proxy.php?key=hf-hauseubergabe-ninox",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-hauseubergabe-documents",
+          "label": "Hauseubergabe Dokumente",
+          "url": "proxy.php?key=hf-hauseubergabe-documents",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-hauseubergabe-pictures",
+          "label": "Hauseubergabe Fotos",
+          "url": "proxy.php?key=hf-hauseubergabe-pictures",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-maengelkostenanzeige",
+          "label": " Maengel-Kosten-Anzeige",
+          "url": "proxy.php?key=hf-maengelkostenanzeige",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-planbesprechung",
+          "label": "Planbesprechung",
+          "url": "proxy.php?key=hf-planbesprechung",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-protokolle",
+          "label": "Alle Protokolle",
+          "url": "proxy.php?key=hf-protokolle",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-qualitaetsmanagement",
+          "label": "Qualitaetsmanagement",
+          "url": "proxy.php?key=hf-qualitaetsmanagement",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-regieschein",
+          "label": "Regieschein",
+          "url": "proxy.php?key=hf-regieschein",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-wochenbericht",
+          "label": "Wochenbericht",
+          "url": "proxy.php?key=hf-wochenbericht",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bemusterung",
+      "title": "Online-Bemusterung (Web-Tool)",
+      "description": "Kernfunktionen der Online-Bemusterung",
+      "services": [
+        {
+          "key": "bmu-frontend",
+          "label": "Frontend",
+          "url": "https://bemusterung.elk.at/login/",
+          "method": "HEAD"
+        },
+        {
+          "key": "getArticles",
+          "label": "API Artikeln",
+          "url": "https://bemu-api.elk.at/getArticles.php",
+          "method": "GET",
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getArticlesById",
+          "label": "API Artikeldetail",
+          "url": "https://bemu-api.elk.at/getArticleById.php?id=AL-VISAAPP-00000",
+          "method": "GET",
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getGroups",
+          "label": "API Gruppen",
+          "url": "https://bemu-api.elk.at/getGroups.php",
+          "method": "GET",
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getStyleGroups",
+          "label": "API Designgruppen",
+          "url": "https://bemu-api.elk.at/getStyleGroups.php",
+          "method": "GET",
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getPriceGroups",
+          "label": "API Preisgruppen",
+          "url": "https://bemu-api.elk.at/getPriceGroups.php",
+          "method": "GET",
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        }
+      ]
+    },
+    {
+      "key": "odoo",
+      "title": "Odoo",
+      "description": "Kernfunktionen der Odoo-API",
+      "services": [
+        {
+          "key": "odoo-frontend",
+          "label": "Frontend",
+          "url": "https://odoo-elk.elkschrems.co.at/web/login",
+          "method": "HEAD"
+        },
+        {
+          "key": "odoo-status",
+          "label": "API Status",
+          "url": "https://odoo-api.elk.at/status.php",
+          "method": "GET",
+          "expect": { "jsonPath": "status", "equals": "up" },
+          "fields": [
+            { "label": "Version", "path": "odoo" }
+          ]
+        },
+        {
+          "key": "odoo-getJobs",
+          "label": "API Jobs",
+          "url": "https://odoo-api.elk.at/getJobs.php?v2",
+          "method": "GET",
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "odoo-getReferences",
+          "label": "API Referenzen",
+          "url": "https://odoo-api.elk.at/getReferences.php?v2",
+          "method": "GET",
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        }
+      ]
+    },
+    {
+      "key": "html5app",
+      "title": "Html5App",
+      "description": "Schnittstelle für Hausfinder im XP-Center",
+      "services": [
+        {
+          "key": "html5app-api-status",
+          "label": "API Status",
+          "url": "https://html5app-prod.elk.at/",
+          "method": "GET",
+          "expect": { "jsonPath": "status", "equals": "up" }
+        },
+        {
+          "key": "html5app-allHouses",
+          "label": "API Sortiment",
+          "url": "https://html5app-prod.elk.at/v1/all-houses?v2",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "html5app-houseById",
+          "label": "API Detailseite",
+          "url": "https://html5app-prod.elk.at/v1/houses/317",
+          "method": "GET",
+          "expect": { "jsonPath": "title", "equals": "Now 129" }
+        }
+      ]
+    },
+    {
+      "key": "webseiten",
+      "title": "Webseiten",
+      "description": "Öffentliche und interne Seiten",
+      "services": [
+        {
+          "key": "elk.at",
+          "label": "elk.at",
+          "url": "https://www.elk.at",
+          "method": "HEAD",
+          "warning": null
+        }
+      ]
+    },
+    {
+      "key": "elkbau-calc",
+      "title": "Elkbau Kalkulations Tool",
+      "description": "Tool von Robert Sachetti",
+      "services": [
+        {
+          "key": "elkbau-api",
+          "label": "API Status",
+          "url": "https://api-projekte.elkbau.at/",
+          "method": "GET",
+          "expect": { "jsonPath": "status", "equals": "up" }
+        },
+        {
+          "key": "elkbau-frontend",
+          "label": "Frontend",
+          "url": "https://projekte.elkbau.at/login",
+          "method": "HEAD"
+        }
+      ]
+    }
+  ]
+}
