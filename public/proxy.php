@@ -12,105 +12,116 @@ declare(strict_types=1);
 
 $secrets = require dirname(__DIR__) . '/config/secrets.php';
 
+$jenkinsTree  = 'result,duration,timestamp,building';
+$jenkinsTngBase  = rtrim($secrets['JENKINS_TNG_BASE_URL'] ?? '', '/');
+$jenkinsTngUser  = $secrets['JENKINS_TNG_USER'] ?? '';
+$jenkinsTngToken = $secrets['JENKINS_TNG_TOKEN'] ?? '';
+$jenkinsTngAuth  = ['type' => 'basic', 'user' => $jenkinsTngUser, 'pass' => $jenkinsTngToken];
+
 $jenkinsBase  = rtrim($secrets['JENKINS_BASE_URL'] ?? '', '/');
 $jenkinsUser  = $secrets['JENKINS_USER'] ?? '';
 $jenkinsToken = $secrets['JENKINS_TOKEN'] ?? '';
-$jenkinsTree  = 'result,duration,timestamp,building';
 $jenkinsAuth  = ['type' => 'basic', 'user' => $jenkinsUser, 'pass' => $jenkinsToken];
-
 
 // ---------- 1) ZIELE DEFINIEREN (WHITELIST) ----------
 $TARGETS = [
   // Beispiel: Basic-Auth + SSL-Verify AUS + GET
   'hf-enterprise-full' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20FULL/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20FULL/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,   // -> wie curl -k (nur wenn nötig!)
     'timeout'  => 8,
   ],
   'hf-enterprise-quick' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-hauseubergabe-ninox' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-hauseubergabe-documents' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-hauseubergabe-pictures' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-maengelkostenanzeige' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-planbesprechung' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Planbesprechung%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Planbesprechung%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-protokolle' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Protokolle%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Protokolle%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-qualitaetsmanagement' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-regieschein' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Regieschein%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Regieschein%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
+    'auth'     => $jenkinsTngAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
   ],
   'hf-wochenbericht' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsTngBase}/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'method'   => 'GET',
+    'auth'     => $jenkinsTngAuth,
+    'headers'  => ['Accept: application/json'],
+    'insecure' => true,
+    'timeout'  => 8,
+  ],
+  'elkbau-calc-prod' => [
+    'url'      => "{$jenkinsBase}/job/ELK%20BAU%20Calculation%20Tool%20PROD/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
-  ],
-
+  ]
 
 ];
 

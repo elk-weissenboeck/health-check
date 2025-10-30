@@ -18,7 +18,7 @@
           "label": "Elk Prodserver",
           "url": "https://forms.elk.at",
           "method": "HEAD",
-          "warning": null
+          "warning": "enable CORS"
         },
         {
           "key": "hfsrv-elkkampa-test",
@@ -306,17 +306,43 @@
       "description": "Tool von Robert Sachetti",
       "services": [
         {
-          "key": "elkbau-api",
-          "label": "API Status",
-          "url": "https://api-projekte.elkbau.at/",
-          "method": "GET",
-          "expect": { "jsonPath": "status", "equals": "up" }
-        },
-        {
           "key": "elkbau-frontend",
           "label": "Frontend",
           "url": "https://projekte.elkbau.at/login",
           "method": "HEAD"
+        },
+        {
+          "key": "elkbau-calc-prod",
+          "label": "Pipeline",
+          "url": "proxy.php?key=elkbau-calc-prod",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "elkbau-api-prod",
+          "label": "API Status Prod",
+          "url": "https://api-projekte.elkbau.at/",
+          "method": "GET",
+          "expect": { "jsonPath": "status", "equals": "up" },
+           "fields": [
+            { "label": "debug", "path": "debug", "format": "bool" },
+            { "label": "laravel", "path": "laravel" }
+          ]
+        },
+        {
+          "key": "elkbau-api-test",
+          "label": "API Status Test",
+          "url": "https://api-test-projekte.elkbau.at/",
+          "method": "GET",
+          "expect": { "jsonPath": "status", "equals": "up" },
+           "fields": [
+            { "label": "debug", "path": "debug", "format": "bool" },
+            { "label": "laravel", "path": "laravel" }
+          ]
         }
       ]
     }
