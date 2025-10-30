@@ -1,0 +1,151 @@
+body {
+  background: var(--bs-body-bg);
+}
+
+.container-narrow {
+  max-width: 980px;
+}
+
+.status-banner {
+  border-left: .5rem solid var(--status-color, var(--bs-success));
+}
+
+.list-status .badge {
+  min-width: 4.2rem;
+}
+
+.card-group-status .status-dot {
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Header als Toggle-Button styled */
+.card-group-status .card-header-toggle {
+  all: unset;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: .75rem 1rem;
+}
+
+/* Karte clippt Inhalt in die Rundung, damit nichts "raussteht" */
+.card-group-status {
+  overflow: hidden;
+}
+
+/* Header bleibt klickbarer Toggle, aber mit konsistentem Padding */
+.card-group-status .card-header-toggle {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: .75rem 1rem;
+}
+
+/* Chevron-Container: immer innerhalb, mit Klickfläche */
+.card-group-status .chevron-wrap {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  transition: background-color .15s ease, transform .2s ease;
+}
+.card-group-status .chevron-wrap:hover {
+  background-color: rgba(0,0,0,.05);
+}
+
+/* Drehen, wenn aufgeklappt */
+.card-group-status .card-header[aria-expanded="true"] .chevron {
+  transform: rotate(90deg);
+}
+
+/* Warn-Badge mit besserem Kontrast */
+.badge-warning-contrast {
+  background-color: #ffca2c;      /* kräftigeres Gelb */
+  color: #212529;                 /* dunkler Text */
+  border: 1px solid rgba(0,0,0,.15);
+  font-weight: 600;
+}
+
+/* (optional) kleines Warn-Icon im Textblock */
+.service-warning-icon {
+  color: var(--bs-warning);
+  margin-right: .25rem;
+}
+
+/* kontrastreicher gelber Hinweis */
+.service-warning {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--bs-warning-text-emphasis); /* dunkleres Gelb */
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: .15rem;
+  line-height: 1.3;
+}
+
+/* Icon leicht größer */
+.service-warning .bi {
+  font-size: 1rem;
+}
+
+/* Optional: dezentes Badge-Feeling für noch mehr Lesbarkeit */
+.service-warning.chip {
+  padding: .1rem .4rem;
+  border-radius: .375rem;
+  background: var(--bs-warning-bg-subtle);
+  border: 1px solid var(--bs-warning-border-subtle);
+}
+
+.card-group-status .chevron {
+  transition: transform .2s ease;
+}
+
+/* gedreht, wenn aufgeklappt */
+.card-group-status .card-header[aria-expanded="true"] .chevron {
+  transform: rotate(90deg);
+}
+
+#maintenanceBanner {
+  display: flex;
+  justify-content: center;
+  border-left: .5rem solid var(--bs-warning-border-subtle, #ffc107);
+}
+
+.text-warning small, .list-group-item small.text-warning {
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.service-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem .75rem;
+}
+
+.service-fields .sf-item {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .925rem;
+  color: var(--bs-body-color);
+}
+
+.service-fields .sf-label {
+  font-weight: 600;
+  color: var(--bs-secondary-color);
+}
+
+.service-fields .badge {
+  font-weight: 600;
+  letter-spacing: .2px;
+  padding: .25rem .5rem;
+}
