@@ -263,6 +263,17 @@
       "description": "Schnittstelle für Hausfinder im XP-Center",
       "services": [
         {
+          "key": "html5app-ppl-prod",
+          "label": "Pipeline",
+          "url": "proxy.php?key=html5app-ppl-prod",
+          "method": "GET",
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
           "key": "html5app-api-status",
           "label": "API Status",
           "url": "https://html5app-prod.elk.at/",

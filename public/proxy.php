@@ -121,8 +121,15 @@ $TARGETS = [
     'headers'  => ['Accept: application/json'],
     'insecure' => true,
     'timeout'  => 8,
+  ],
+  'html5app-ppl-prod' => [
+    'url'      => "{$jenkinsBase}/job/HTML5App%20RESTful%20-%20PROD/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'method'   => 'GET',
+    'auth'     => $jenkinsAuth,
+    'headers'  => ['Accept: application/json'],
+    'insecure' => true,
+    'timeout'  => 8,
   ]
-
 ];
 
 // ---------- 2) KEY LESEN ----------
