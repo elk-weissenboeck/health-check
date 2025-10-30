@@ -23,7 +23,7 @@ $jenkinsAuth  = ['type' => 'basic', 'user' => $jenkinsUser, 'pass' => $jenkinsTo
 $TARGETS = [
   // Beispiel: Basic-Auth + SSL-Verify AUS + GET
   'hf-enterprise-full' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20FULL/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20FULL/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -31,7 +31,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-enterprise-quick' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -39,7 +39,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-hauseubergabe-ninox' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -47,7 +47,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-hauseubergabe-documents' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -55,7 +55,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-hauseubergabe-pictures' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -63,7 +63,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-maengelkostenanzeige' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -71,7 +71,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-planbesprechung' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Planbesprechung%20PROD%20Daily/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Planbesprechung%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -79,7 +79,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-protokolle' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Protokolle%20PROD%20Daily/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Protokolle%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -87,7 +87,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-qualitaetsmanagement' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -95,7 +95,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-regieschein' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Regieschein%20PROD%20Daily/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Regieschein%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],
@@ -103,7 +103,7 @@ $TARGETS = [
     'timeout'  => 8,
   ],
   'hf-wochenbericht' => [
-    'url'      => "{$jenkinsBase}/job/HF-API%20Wochenbericht%20PROD%20Daily/lastBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "{$jenkinsBase}/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
     'method'   => 'GET',
     'auth'     => $jenkinsAuth,
     'headers'  => ['Accept: application/json'],

@@ -14,8 +14,7 @@ const GROUPS = [
         expect: { jsonPath: "result", equals: "SUCCESS" },
         fields: [
           { label: "Letzter Lauf", path: "timestamp", format: "datetime" },
-          { label: "Dauer", path: "duration", format: "minutes" },
-          { label: "Aktiv", path: "building", format: "bool" },
+          { label: "Dauer", path: "duration", format: "minutes" }
         ]
     },{
         key: "hf-enterprised-quick",
@@ -26,7 +25,6 @@ const GROUPS = [
         fields: [
           { label: "Letzter Lauf", path: "timestamp", format: "datetime" },
           { label: "Dauer", path: "duration", format: "minutes" },
-          { label: "Aktiv", path: "building", format: "bool" },
         ]
     },{
         key: "hf-hauseubergabe-ninox",
