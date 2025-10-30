@@ -254,6 +254,11 @@ function collapseAllSections() {
   });
 }
 
+// Globale Debug-Ablage
+window.__healthResults = {};
+window.inspectService = (groupKey, serviceKey) =>
+  window.__healthResults?.[groupKey]?.[serviceKey] ?? null;
+  
 async function refreshAll() {
   const groupStates = await Promise.all(GROUPS.map(async (g) => {
     // Checks ausführen
@@ -262,6 +267,10 @@ async function refreshAll() {
       setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value);
       renderServiceFields(g.key, s, r.data);
       renderServiceHeaders(g.key, s, r.headers);  
+      
+      window.__healthResults[g.key] ??= {};
+      window.__healthResults[g.key][s.key] = r;
+
       return r.ok;
     }));
 

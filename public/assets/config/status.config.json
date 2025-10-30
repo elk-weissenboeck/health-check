@@ -14,13 +14,32 @@
       "description": "Öffentliche und interne Seiten",
       "services": [
         {
-          "key": "hf-server-elkkampa",
-          "label": "forms.elkkampa.com",
+          "key": "hfsrv-elk-prod",
+          "label": "Elk Prodserver",
+          "url": "https://forms.elk.at",
+          "method": "HEAD",
+          "warning": null
+        },
+        {
+          "key": "hfsrv-elkkampa-test",
+          "label": "Elk/Kampa Testserver",
+          "url": "https://forms-test.elkkampa.com/",
+          "method": "HEAD",
+          "warning": null,
+          "headers": [
+             { "label": "Server", "name": "x-hf-serverversion" },
+             { "label": ".NET", "name": "x-net-version" }
+          ]
+        },
+        {
+          "key": "hfsrv-elkkampa-prod",
+          "label": "Elk/Kampa Prodserver",
           "url": "https://forms.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
           "headers": [
-             { "label": "Version", "name": "x-hf-serverversion" }
+             { "label": "Server", "name": "x-hf-serverversion" },
+             { "label": ".NET", "name": "x-net-version" }
           ]
         }
       ]
