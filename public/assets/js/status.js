@@ -212,15 +212,14 @@ function setGroupStatus(groupKey, state /* 'ok' | 'warn' | 'nok' */) {
     summary.textContent = 'Alle Services OK';
   }
 
-  // Auto-Expand nur bei NOK
-  const collapseEl = document.getElementById(`collapse-${groupKey}`);
-  if (!collapseEl) return;
-  const isShown = collapseEl.classList.contains('show');
-  if (state === 'nok' && !isShown) {
-    const c = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
-    c.show();
-  }
+  // Auto-Expand nur bei NOK – sicher & mit Fallback
+  const collapseId = `collapse-${groupKey}`;
+  const el = document.getElementById(collapseId);
+  if (!el) return;
+  const isShown = el.classList.contains('show');
+  if (state === 'nok' && !isShown) showCollapseById(collapseId);
 }
+
 
 
 function setOverall(ok) {
@@ -237,13 +236,42 @@ function updateTimestamp() {
 }
 
 function expandAllSections() {
-  GROUPS.forEach(g => {
-    const el = document.getElementById(`collapse-${g.key}`);
-    if (!el) return;
-    const c = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
-    c.show();
-  });
+  GROUPS.forEach(g => showCollapseById(`collapse-${g.key}`));
 }
+function collapseAllSections() {
+  GROUPS.forEach(g => hideCollapseById(`collapse-${g.key}`));
+}
+
+function collapseApiAvailable() {
+  return !!(window.bootstrap && window.bootstrap.Collapse);
+}
+
+function showCollapseById(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (collapseApiAvailable()) {
+    window.bootstrap.Collapse.getOrCreateInstance(el, { toggle: false }).show();
+  } else {
+    el.classList.add('show');
+    el.style.height = 'auto';
+    const header = document.querySelector(`[data-bs-target="#${id}"]`);
+    if (header) header.setAttribute('aria-expanded', 'true');
+  }
+}
+
+function hideCollapseById(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (collapseApiAvailable()) {
+    window.bootstrap.Collapse.getOrCreateInstance(el, { toggle: false }).hide();
+  } else {
+    el.classList.remove('show');
+    el.style.height = '';
+    const header = document.querySelector(`[data-bs-target="#${id}"]`);
+    if (header) header.setAttribute('aria-expanded', 'false');
+  }
+}
+
 
 function collapseAllSections() {
   GROUPS.forEach(g => {
@@ -420,8 +448,3 @@ document.getElementById("autoRefresh").addEventListener("change", (e) => {
     clearInterval(autoTimer);
   }
 });
-
-// Initial Render
-renderAllGroups();
-refreshAll();
-showMaintenanceBanner();
