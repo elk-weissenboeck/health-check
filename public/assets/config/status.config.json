@@ -429,6 +429,32 @@
             { "label": "PHP", "path": "ocs.data.server.php.version" },
             { "label": "Websrv", "path": "ocs.data.server.webserver" }
           ]
+        },
+        {
+          "key": "nc-kpat-prod",
+          "label": "Kundenportal AT",
+          "url": "proxy.php?key=nc-kpat-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+          ]
+        },
+        {
+          "key": "nc-kpat-stage",
+          "label": "Kundenportal AT Stage",
+          "url": "proxy.php?key=nc-kpat-stage",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+          ]
         }
       ]
     }
