@@ -56,47 +56,52 @@ function groupCardTemplate(group) {
            data-bs-target="#${collapseId}"
            aria-expanded="false"
            aria-controls="${collapseId}">
-        <div class="d-flex align-items-center gap-2">
-          <span class="status-dot bg-success" id="${group.key}-dot" aria-hidden="true"></span>
-          <span class="fw-semibold fs-5">${escapeHtml(group.title)}</span>
-          <small class="text-secondary">— <span class="group-summary" id="${group.key}-summary">Prüfe…</span></small>
-        </div>
-
-        <div class="d-flex align-items-center gap-1 ms-3">
-          <small class="text-secondary d-none d-md-inline">${escapeHtml(group.description || '')}</small>
-          <span class="chevron-wrap" aria-hidden="true">
-            <i class="bi bi-chevron-right chevron"></i>
-          </span>
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <div class="d-flex align-items-center gap-2">
+            <span class="status-dot bg-success" id="${group.key}-dot" aria-hidden="true"></span>
+            <span class="fw-semibold">${escapeHtml(group.title)}</span>
+            <small class="text-secondary">— <span class="group-summary" id="${group.key}-summary">Prüfe…</span></small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <small class="text-secondary d-none d-md-inline">${escapeHtml(group.description || '')}</small>
+            <span class="chevron-wrap" aria-hidden="true"><i class="bi bi-chevron-right chevron"></i></span>
+          </div>
         </div>
       </div>
 
       <div id="${collapseId}" class="collapse" data-group-key="${group.key}" aria-labelledby="${headerId}">
         <div class="list-group list-group-flush list-status" id="${group.key}-list">
           ${group.services.map(s => `
-            <div class="list-group-item pb-3 pt-3 d-flex justify-content-between align-items-center">
-              <div class="d-flex flex-column">
-                <span class="fw-medium ">${escapeHtml(s.label)}</span>
-                <small class="text-secondary svc-url">${escapeHtml(s.url)}</small>
-                ${s.warning ? `<small class="service-warning mt-1">
-                  <i class="bi bi-exclamation-triangle-fill service-warning-icon"></i>${escapeHtml(s.warning)}
-                </small>` : ""}
+            <div class="list-group-item d-flex flex-column align-items-stretch">
+              <!-- Kopfzeile: links Titel/URL/Fields/Headers, rechts Latenz + Statusbadge -->
+              <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex flex-column">
+                  <span class="fw-medium">${escapeHtml(s.label)}</span>
+                  <small class="text-secondary svc-url">${escapeHtml(s.url)}</small>
 
-                <small class="svc-attr">
-                    <div class="service-fields mt-1" id="fields-${group.key}-${s.key}"></div>
-                    <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
-                </small>
-              </div>
-                <div class="d-flex align-items-center gap-3">
-                  <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
-
-                  <!-- Status + Overlay-Counter -->
-                  <span class="position-relative d-inline-block" id="statusWrap-${group.key}-${s.key}">
-                    <span class="badge text-bg-secondary px-3" id="badge-${group.key}-${s.key}">N/A</span>
-                    <span class="position-absolute top-0 start-100 translate-middle counter-badge d-none"
-                        id="counter-${group.key}-${s.key}">0</span>
-                  </span>
+                  <div class="service-fields mt-1" id="fields-${group.key}-${s.key}"></div>
+                  <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
                 </div>
 
+                <div class="d-flex align-items-center gap-3 me-3">
+                  <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
+
+                  <!-- Status + Counter-Bubble -->
+                  <span class="position-relative d-inline-block" id="statusWrap-${group.key}-${s.key}">
+                    <span class="badge rounded-pill text-bg-secondary px-3" id="badge-${group.key}-${s.key}">N/A</span>
+                    <span class="position-absolute top-0 start-100 translate-middle counter-badge d-none"
+                          id="counter-${group.key}-${s.key}">0</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Vollbreiter Alert unter der Kopfzeile, falls warning gesetzt -->
+              ${s.warning ? `
+                <div class="alert alert-warning alert-compact w-100 mt-2 mb-0 d-flex align-items-center gap-2">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  <div>${escapeHtml(s.warning)}</div>
+                </div>
+              ` : ""}
             </div>
           `).join('')}
         </div>
@@ -104,6 +109,7 @@ function groupCardTemplate(group) {
     </section>
   `;
 }
+
 
 function renderAllGroups() {
   if (!groupsContainer) return;

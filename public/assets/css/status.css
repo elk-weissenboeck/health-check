@@ -76,12 +76,17 @@ body {
 .card-group-status .card-header[aria-expanded="true"] .chevron {
   transform: rotate(90deg);
 }
+.alert-compact {
+  padding: .4rem .6rem;
+  font-size: .925rem;
+  border-left: 4px solid var(--bs-warning);
+}
 
 .counter-badge{
   background: #3f3f3f;
   color: #fff;
-  width: 26px;                /* Kreisgröße */
-  height: 26px;
+  width: 34px;                /* Kreisgröße */
+  height: 24px;
   border-radius: 30%;         /* kreisrund */
   display: inline-flex;
   align-items: center;
