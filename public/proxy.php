@@ -84,10 +84,11 @@ $headers = $normalizedHeaders;
 // -----------------------------------------------------------------------------
 // 2c) Auth behandeln
 // Unterstützt:
-//   - 'basic'   : user/pass ODER 'authorization' => 'Basic base64...'
-//   - 'bearer'  : token
-//   - 'headers' : zusätzliche Header
-//   - 'jenkins' : mappt auf Basic (user/pass) – abhängig von 'jenkins-tng' in URL
+//   - 'basic'     : user/pass ODER 'authorization' => 'Basic base64...'
+//   - 'bearer'    : token
+//   - 'headers'   : zusätzliche Header
+//   - 'jenkins'   : mappt auf Basic (user/pass) – abhängig von 'jenkins-tng' in URL
+//   - 'nextcloud' : token
 // -----------------------------------------------------------------------------
 if (!empty($t['auth']) && is_array($t['auth'])) {
   // Normalfall: $t['auth']['type'] enthält den Typ
@@ -134,7 +135,10 @@ if (!empty($t['auth']) && is_array($t['auth'])) {
         $pass  = $isTng ? ($secrets['JENKINS_TNG_TOKEN'] ?? '') : ($secrets['JENKINS_TOKEN'] ?? '');
         curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $pass);
         break;
-        
+
+      case 'nextcloud':
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['NC-Token: ' . $t['auth']['token']]);
+        break;        
     }
   }
 }
