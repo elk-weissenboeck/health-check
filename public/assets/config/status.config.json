@@ -337,6 +337,24 @@
       ]
     },
     {
+      "key": "moodle",
+      "title": "Moodle",
+      "description": "Online-Akademie",
+      "services": [
+        {
+          "key": "moodle",
+          "label": "Status",
+          "url": "proxy.php?key=moodle",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "userid", "equals": 1478, "format":  "number" },
+          "fields": [
+            { "label": "Release", "path": "release" }
+          ]
+        }
+      ]
+    },
+    {
       "key": "elkbau-calc",
       "title": "Elkbau Kalkulations Tool",
       "description": "Tool von Robert Sachetti",

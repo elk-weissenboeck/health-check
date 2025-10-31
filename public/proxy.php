@@ -185,6 +185,14 @@ $TARGETS = [
     'headers'  => ['NC-Token: ' . $secrets['NC_KPDE_STG_TOKEN']],
     'insecure' => false,
     'timeout'  => 8,
+  ],
+  'moodle' => [
+    'url'      => 'https://moodle.elk.at/webservice/rest/server.php?wstoken='.$secrets['MOODLE_API_TOKEN'].'&wsfunction=core_webservice_get_site_info&moodlewsrestformat=json',
+    'method'   => 'GET',
+    'auth'     => null,
+    'headers'  => null,
+    'insecure' => false,
+    'timeout'  => 8,
   ]
 ];
 
