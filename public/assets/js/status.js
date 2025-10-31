@@ -428,7 +428,8 @@ const OPTIONS_COOKIE = 'statusOptions';
 const OPTIONS_DEFAULT = {
   showUrls: true,
   autoRefresh: false,
-  refreshInterval: 30 // Sekunden
+  refreshInterval: 30, // Sekunden
+  openOptionsOnLoad: false
 };
 
 function readOptions() {
@@ -457,11 +458,13 @@ function applyOptions() {
   const show = document.getElementById('optShowUrls');
   const auto = document.getElementById('optAutoRefresh');
   const intv = document.getElementById('optRefreshInterval');
-
+  const open = document.getElementById('optOpenOptionsOnLoad');
+  
   if (show) show.checked = !!OPTIONS.showUrls;
   if (auto) auto.checked = !!OPTIONS.autoRefresh;
   if (intv) intv.value = String(OPTIONS.refreshInterval);
-
+  if (open) open.checked = !!OPTIONS.openOptionsOnLoad;
+  
   // URLs ein-/ausblenden
   document.body.classList.toggle('hide-urls', !OPTIONS.showUrls);
 
@@ -472,6 +475,14 @@ function applyOptions() {
     autoTimer = setInterval(refreshAll, ms);
   }
 
+    // 🟡 Optionsblock öffnen/schließen bei Seitenstart
+    if (OPTIONS.openOptionsOnLoad) {
+      showCollapseById('optionsCollapse');
+    } else {
+      hideCollapseById('optionsCollapse');
+    }
+
+  
   saveOptions(OPTIONS);
 }
 
@@ -499,6 +510,12 @@ function wireOptionsUI() {
   on("optAutoRefresh", "change", (e) => { OPTIONS.autoRefresh = !!e.target.checked; applyOptions(); });
   on("optRefreshInterval", "change", (e) => {
     OPTIONS.refreshInterval = parseInt(e.target.value, 10) || OPTIONS_DEFAULT.refreshInterval;
+    applyOptions();
+  });
+  
+  // Optionsblock beim Laden automatisch öffnen
+  on("optOpenOptionsOnLoad", "change", (e) => {
+    OPTIONS.openOptionsOnLoad = !!e.target.checked;
     applyOptions();
   });
 }

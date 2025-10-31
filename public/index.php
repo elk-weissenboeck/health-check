@@ -101,6 +101,15 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
               <option value="120">120s</option>
             </select>
           </div>
+          
+          <!-- Optionsblock beim Laden automatisch öffnen -->
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="optOpenOptionsOnLoad">
+          <label class="form-check-label" for="optOpenOptionsOnLoad">
+            Optionsblock beim Laden geöffnet
+          </label>
+        </div>
+
 
           <!-- Reserviert für künftige Optionen -->
           <div id="optionsExtra" class="d-none"></div>
