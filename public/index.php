@@ -70,17 +70,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
         </button>
       </div>
       <div id="optionsCollapse" class="collapse">
-        <div class="card-body d-flex flex-wrap gap-3 align-items-center">
-
-          <!-- Expand/Collapse -->
-          <div class="btn-group btn-group-sm" role="group" aria-label="Expand/Collapse all">
-            <button class="btn btn-outline-primary" id="expandAllBtn">
-              <i class="bi bi-arrows-expand me-1"></i> Alle aufklappen
-            </button>
-            <button class="btn btn-outline-secondary" id="collapseAllBtn">
-              <i class="bi bi-arrows-collapse me-1"></i> Alle zuklappen
-            </button>
-          </div>
+        <div class="card-body d-flex flex-column gap-2 align-items-start">
 
           <!-- URLs zeigen/verstecken -->
           <div class="form-check form-switch">
@@ -103,13 +93,22 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
           </div>
           
           <!-- Optionsblock beim Laden automatisch öffnen -->
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="optOpenOptionsOnLoad">
-          <label class="form-check-label" for="optOpenOptionsOnLoad">
-            Optionsblock beim Laden geöffnet
-          </label>
-        </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="optOpenOptionsOnLoad">
+            <label class="form-check-label" for="optOpenOptionsOnLoad">
+              Optionsblock beim Laden geöffnet
+            </label>
+          </div>
 
+          <!-- Expand/Collapse -->
+          <div class="btn-group btn-group-sm" role="group" aria-label="Expand/Collapse all">
+            <button class="btn btn-outline-primary" id="expandAllBtn">
+              <i class="bi bi-arrows-expand me-1"></i> Alle aufklappen
+            </button>
+            <button class="btn btn-outline-secondary" id="collapseAllBtn">
+              <i class="bi bi-arrows-collapse me-1"></i> Alle zuklappen
+            </button>
+          </div>
 
           <!-- Reserviert für künftige Optionen -->
           <div id="optionsExtra" class="d-none"></div>
