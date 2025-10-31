@@ -35,8 +35,51 @@ $t = $targets[$key];
 // -----------------------------------------------------------------------------
 $ch = curl_init();
 
+// ---------------- URL aus Target + optionaler 'query' aus targets.php zusammenbauen ----------------
+$baseUrl = (string)($t['url'] ?? '');
+$finalUrl = $baseUrl;
+
+if (isset($t['query']) && $t['query'] !== null) {
+  // Bestehende Query aus der Basis-URL parsen
+  $parts = parse_url($baseUrl);
+  $existing = [];
+  if (!empty($parts['query'])) {
+    parse_str($parts['query'], $existing);
+  }
+
+  // Neue Query-Parameter aus targets.php normalisieren
+  // - Wenn Array: sauber mit RFC3986 encoden
+  // - Wenn String: wie "a=1&b=2" behandeln
+  $newQuery = [];
+  if (is_array($t['query'])) {
+    $newQuery = $t['query'];
+  } elseif (is_string($t['query'])) {
+    parse_str(ltrim($t['query'], "?& "), $newQuery);
+  }
+
+  // Mergen (neue Werte überschreiben gleichnamige vorhandene)
+  $merged = array_replace_recursive($existing, $newQuery);
+  $queryString = http_build_query($merged, arg_separator: '&', encoding_type: PHP_QUERY_RFC3986);
+
+  // URL ohne alte Query wieder zusammensetzen
+  $scheme   = $parts['scheme'] ?? null;
+  $host     = $parts['host'] ?? null;
+  $port     = isset($parts['port']) ? ':' . $parts['port'] : '';
+  $user     = $parts['user'] ?? null;
+  $pass     = $parts['pass'] ?? null;
+  $userInfo = $user !== null ? $user . ($pass !== null ? ':' . $pass : '') . '@' : '';
+  $path     = $parts['path'] ?? '';
+  $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+  $finalUrl =
+    ($scheme ? $scheme . '://' : '') .
+    $userInfo . $host . $port . $path .
+    ($queryString !== '' ? '?' . $queryString : '') .
+    $fragment;
+}
+
 // URL & Methode
-curl_setopt($ch, CURLOPT_URL, (string)($t['url'] ?? ''));
+curl_setopt($ch, CURLOPT_URL, $finalUrl);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, (string)($t['method'] ?? 'GET'));
 
 // Follow redirects & Response inkl. Header holen

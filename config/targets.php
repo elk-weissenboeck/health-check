@@ -14,105 +14,118 @@ $jenkinsTree  = 'result,duration,timestamp,building';
 return [
   // Beispiel: Basic-Auth + SSL-Verify AUS + GET
   'hf-enterprise-full' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20FULL/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => 'https://jenkins-tng.elk.at/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20FULL/lastCompletedBuild/api/json',
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true  
     
   ],
   'hf-enterprise-quick' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-hauseubergabe-ninox' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-hauseubergabe-documents' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-hauseubergabe-pictures' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-maengelkostenanzeige' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-planbesprechung' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Planbesprechung%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Planbesprechung%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-protokolle' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Protokolle%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Protokolle%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-qualitaetsmanagement' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-regieschein' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Regieschein%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Regieschein%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'hf-wochenbericht' => [
-    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins-tng.elk.at/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'elkbau-calc-prod' => [
-    'url'      => "https://jenkins.elk.at/job/ELK%20BAU%20Calculation%20Tool%20PROD/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins.elk.at/job/ELK%20BAU%20Calculation%20Tool%20PROD/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
   ],
   'html5app-ppl-prod' => [
-    'url'      => "https://jenkins.elk.at/job/HTML5App%20RESTful%20-%20PROD/lastCompletedBuild/api/json?tree={$jenkinsTree}",
+    'url'      => "https://jenkins.elk.at/job/HTML5App%20RESTful%20-%20PROD/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json'],
     'verifySSL' => true
     
@@ -186,6 +199,7 @@ return [
   //  'url'      => "{$jenkinsTngBase}/some/api",
   //  'method'   => 'GET',
   //  'auth'     => ['type' => 'basic', 'user' => $secrets['JENKINS_USER'], 'pass' => $secrets['JENKINS_TOKEN']],
+  //  'query'    => 'foo=bar&x=1',
   //  'headers'  => ['Accept' => 'application/json'],
   //  'verifySSL' => false,
   //],
@@ -194,6 +208,7 @@ return [
   //  'url'      => 'https://api.other/health',
   //  'method'   => 'GET',
   //  'auth'     => ['type' => 'bearer', 'token' => $secrets['OTHER_API_TOKEN']],
+  //  'query'    => ['format' => 'json', 'foo' => 'bar'],
   //  'verifySSL' => true,
   //],
 ];
