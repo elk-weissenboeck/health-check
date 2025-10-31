@@ -11,20 +11,7 @@
 declare(strict_types=1);
 
 $secrets = require dirname(__DIR__) . '/config/secrets.php';
-
-$jenkinsTree  = 'result,duration,timestamp,building';
-$jenkinsTngBase  = rtrim($secrets['JENKINS_TNG_BASE_URL'] ?? '', '/');
-$jenkinsTngUser  = $secrets['JENKINS_TNG_USER'] ?? '';
-$jenkinsTngToken = $secrets['JENKINS_TNG_TOKEN'] ?? '';
-$jenkinsTngAuth  = ['type' => 'basic', 'user' => $jenkinsTngUser, 'pass' => $jenkinsTngToken];
-
-$jenkinsBase  = rtrim($secrets['JENKINS_BASE_URL'] ?? '', '/');
-$jenkinsUser  = $secrets['JENKINS_USER'] ?? '';
-$jenkinsToken = $secrets['JENKINS_TOKEN'] ?? '';
-$jenkinsAuth  = ['type' => 'basic', 'user' => $jenkinsUser, 'pass' => $jenkinsToken];
-
-// ---------- 1) ZIELE DEFINIEREN (WHITELIST) ----------
-$targets = require dirname(__DIR__). '/config/targets.php';
+$targets = require dirname(__DIR__) . '/config/targets.php';
 
 
 // ---------- 2) KEY LESEN ----------
@@ -57,8 +44,8 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $verifySSL ? 2 : 0);
 // Auth
 $headers = $t['headers'] ?? [];
-if (!empty($t['auth']['type'])) {
-  switch ($t['auth']['type']) {
+if (!empty($t['auth'])) {
+  switch ($t['auth']) {
     case 'basic':
       curl_setopt($ch, CURLOPT_USERPWD, ($t['auth']['user'] ?? '') . ':' . ($t['auth']['pass'] ?? ''));
       break;
@@ -69,6 +56,12 @@ if (!empty($t['auth']['type'])) {
       if (!empty($t['auth']['headers']) && is_array($t['auth']['headers'])) {
         $headers = array_merge($headers, $t['auth']['headers']);
       }
+      break;
+    case 'jenkins':
+      // Choose credentials based on URL: contains 'jenkins-tng' => secret1, else secret2
+      $isTng = (strpos($t['url'] ?? '', 'jenkins-tng') !== false);
+      $pass = $isTng ? ($secrets['JENKINS_TNG_TOKEN'] ?? '') : ($secrets['JENKINS_TOKEN'] ?? '');
+      curl_setopt($ch, CURLOPT_USERPWD, 'georgw:' . $pass);
       break;
   }
 }
