@@ -169,6 +169,22 @@ $TARGETS = [
     'headers'  => ['NC-Token: ' . $secrets['NC_KPAT_STG_TOKEN']],
     'insecure' => false,
     'timeout'  => 8,
+  ],
+  'nc-kpde-prod' => [
+    'url'      => "https://kundenportal.elkhaus.de/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
+    'method'   => 'GET',
+    'auth'     => null,
+    'headers'  => ['NC-Token: ' . $secrets['NC_KPDE_PRD_TOKEN']],
+    'insecure' => false,
+    'timeout'  => 8,
+  ],
+  'nc-kpde-stage' => [
+    'url'      => "https://kis-stage.elkhaus.de/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
+    'method'   => 'GET',
+    'auth'     => null,
+    'headers'  => ['NC-Token: ' . $secrets['NC_KPDE_STG_TOKEN']],
+    'insecure' => false,
+    'timeout'  => 8,
   ]
 ];
 

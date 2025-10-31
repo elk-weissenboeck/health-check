@@ -440,12 +440,13 @@
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
             { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
           ]
         },
         {
           "key": "nc-kpat-stage",
-          "label": "Kundenportal AT Test<",
+          "label": "Kundenportal AT Test",
           "url": "proxy.php?key=nc-kpat-stage",
           "method": "GET",
           "warning": null,
@@ -453,7 +454,36 @@
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
             { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-kpde-prod",
+          "label": "Kundenportal DE Prod",
+          "url": "proxy.php?key=nc-kpde-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-kpde-stage",
+          "label": "Kundenportal DE Test",
+          "url": "proxy.php?key=nc-kpde-stage",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
           ]
         }
       ]
