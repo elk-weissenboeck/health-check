@@ -419,7 +419,8 @@
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
             { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
           ]
         },
         {
@@ -432,7 +433,8 @@
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
             { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
           ]
         },
         {
@@ -445,7 +447,8 @@
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
             { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" }
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
           ]
         },
         {
