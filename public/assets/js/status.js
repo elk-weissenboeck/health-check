@@ -73,9 +73,9 @@ function groupCardTemplate(group) {
       <div id="${collapseId}" class="collapse" data-group-key="${group.key}" aria-labelledby="${headerId}">
         <div class="list-group list-group-flush list-status" id="${group.key}-list">
           ${group.services.map(s => `
-            <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="list-group-item pb-3 pt-3 d-flex justify-content-between align-items-center">
               <div class="d-flex flex-column">
-                <span class="fw-medium">${escapeHtml(s.label)}</span>
+                <span class="fw-medium ">${escapeHtml(s.label)}</span>
                 <small class="text-secondary svc-url">${escapeHtml(s.url)}</small>
                 ${s.warning ? `<small class="service-warning mt-1">
                   <i class="bi bi-exclamation-triangle-fill service-warning-icon"></i>${escapeHtml(s.warning)}
@@ -86,10 +86,17 @@ function groupCardTemplate(group) {
                     <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
                 </small>
               </div>
-              <div class="d-flex align-items-center gap-3">
-                <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
-                <span class="badge text-bg-secondary" id="badge-${group.key}-${s.key}">N/A</span>
-              </div>
+                <div class="d-flex align-items-center gap-3">
+                  <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
+
+                  <!-- Status + Overlay-Counter -->
+                  <span class="position-relative d-inline-block" id="statusWrap-${group.key}-${s.key}">
+                    <span class="badge text-bg-secondary px-3" id="badge-${group.key}-${s.key}">N/A</span>
+                    <span class="position-absolute top-0 start-100 translate-middle counter-badge d-none"
+                        id="counter-${group.key}-${s.key}">0</span>
+                  </span>
+                </div>
+
             </div>
           `).join('')}
         </div>
@@ -162,24 +169,39 @@ async function checkService(url, method = "HEAD", expect = null) {
 }
 
 function setBadge(group, svc, ok, ms, count = null, value = null) {
-  const badge = document.getElementById(`badge-${group}-${svc}`);
+  const badge   = document.getElementById(`badge-${group}-${svc}`);
+  const bubble  = document.getElementById(`counter-${group}-${svc}`);
   const latency = document.getElementById(`latency-${group}-${svc}`);
+
   const service = GROUPS.find(gr => gr.key === group)?.services.find(s => s.key === svc);
   const hasWarning = !!service?.warning;
 
+  // Status-Pill
   let cls = ok ? 'text-bg-success' : 'text-bg-danger';
   let text = ok ? 'OK' : 'NOK';
-
-  if (count !== null && ok) text = `OK (${count})`;
-  if (hasWarning && ok) { cls = 'text-bg-warning'; text = 'OK'; }
+  if (hasWarning && ok) { cls = 'text-bg-warning text-dark'; }
 
   if (badge) {
-    badge.className = `badge ${cls}`;
+    badge.className = `badge fs-6 px-3 ${cls}`;
     badge.textContent = text;
     if (hasWarning && service.warning) badge.title = service.warning;
   }
   if (latency) latency.textContent = `${ms} ms`;
+
+  // Counter-Bubble (immer grau & rund)
+  if (bubble) {
+    if (count != null && !Number.isNaN(count)) {
+      const n = Number(count);
+      bubble.textContent = (Number.isFinite(n) && n > 99) ? '99+' : String(n);
+      bubble.classList.remove('d-none');
+      // keinerlei Farbumschaltung mehr – CSS hält es immer grau
+    } else {
+      bubble.classList.add('d-none');
+    }
+  }
 }
+
+
 
 function getByPath(obj, path) {
   if (!path) return undefined;
@@ -380,12 +402,12 @@ function renderServiceFields(groupKey, serviceDef, data) {
       badgeClass = `text-bg-${f.badgeByValue[raw]}`;
     }
 
-    const labelHtml = f.label ? `<span class="sf-label">${escapeHtml(f.label)}:</span>` : "";
+    const labelHtml = f.label ? `<small class="sf-label">${escapeHtml(f.label)}:</small>` : "";
     const valueHtml = badgeClass
-      ? `<span class="badge ${badgeClass}">${escapeHtml(String(val))}</span>`
-      : `<span class="sf-value">${escapeHtml(String(val))}</span>`;
+      ? `<small class="badge ${badgeClass}">${escapeHtml(String(val))}</small>`
+      : `<small class="sf-value">${escapeHtml(String(val))}</small>`;
 
-    return `<span class="sf-item">${labelHtml} ${valueHtml}</span>`;
+    return `<small class="sf-item">${labelHtml} ${valueHtml}</small>`;
   });
 
   container.innerHTML = parts.join("");
