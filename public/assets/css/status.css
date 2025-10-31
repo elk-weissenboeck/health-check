@@ -38,6 +38,9 @@ body {
 /* URLs ausblendbar machen */
 .hide-urls .svc-url { display: none; }
 
+/* Attribute ausblendbar machen */
+.hide-attr .svc-attr { display: none; }
+
 /* kompaktere Options-Card auf kleineren Screens */
 @media (max-width: 576px) {
   #optionsCollapse .card-body { gap: .75rem; }

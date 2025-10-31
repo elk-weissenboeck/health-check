@@ -78,6 +78,12 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
             <label class="form-check-label" for="optShowUrls">URLs anzeigen</label>
           </div>
 
+          <!-- Attribute zeigen/verstecken -->
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="optShowAttr">
+            <label class="form-check-label" for="optShowAttr">Attribute anzeigen</label>
+          </div>
+          
           <!-- Auto-Refresh + Intervall -->
           <div class="d-flex align-items-center gap-2">
             <div class="form-check form-switch">

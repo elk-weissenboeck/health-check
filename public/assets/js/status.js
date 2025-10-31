@@ -81,8 +81,10 @@ function groupCardTemplate(group) {
                   <i class="bi bi-exclamation-triangle-fill service-warning-icon"></i>${escapeHtml(s.warning)}
                 </small>` : ""}
 
-                <div class="service-fields mt-1" id="fields-${group.key}-${s.key}"></div>
-                <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
+                <small class="svc-attr">
+                    <div class="service-fields mt-1" id="fields-${group.key}-${s.key}"></div>
+                    <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
+                </small>
               </div>
               <div class="d-flex align-items-center gap-3">
                 <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
@@ -459,15 +461,20 @@ function applyOptions() {
   const auto = document.getElementById('optAutoRefresh');
   const intv = document.getElementById('optRefreshInterval');
   const open = document.getElementById('optOpenOptionsOnLoad');
+  const attr = document.getElementById('optShowAttr');
   
   if (show) show.checked = !!OPTIONS.showUrls;
   if (auto) auto.checked = !!OPTIONS.autoRefresh;
   if (intv) intv.value = String(OPTIONS.refreshInterval);
   if (open) open.checked = !!OPTIONS.openOptionsOnLoad;
+  if (attr) attr.checked = !!OPTIONS.showAttr;
   
   // URLs ein-/ausblenden
   document.body.classList.toggle('hide-urls', !OPTIONS.showUrls);
 
+  // URLs ein-/ausblenden
+  document.body.classList.toggle('hide-attr', !OPTIONS.showAttr);
+  
   // Auto-Refresh
   if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
   if (OPTIONS.autoRefresh) {
@@ -507,6 +514,7 @@ function wireOptionsUI() {
 
   // Options-Block (neue IDs, optional vorhanden)
   on("optShowUrls", "change", (e) => { OPTIONS.showUrls = !!e.target.checked; applyOptions(); });
+  on("optShowAttr", "change", (e) => { OPTIONS.showAttr = !!e.target.checked; applyOptions(); });
   on("optAutoRefresh", "change", (e) => { OPTIONS.autoRefresh = !!e.target.checked; applyOptions(); });
   on("optRefreshInterval", "change", (e) => {
     OPTIONS.refreshInterval = parseInt(e.target.value, 10) || OPTIONS_DEFAULT.refreshInterval;
