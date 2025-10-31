@@ -18,7 +18,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false  
+    'verifySSL' => true  
     
   ],
   'hf-enterprise-quick' => [
@@ -26,7 +26,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-hauseubergabe-ninox' => [
@@ -34,7 +34,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-hauseubergabe-documents' => [
@@ -42,7 +42,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-hauseubergabe-pictures' => [
@@ -50,7 +50,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-maengelkostenanzeige' => [
@@ -58,7 +58,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-planbesprechung' => [
@@ -66,7 +66,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-protokolle' => [
@@ -74,7 +74,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-qualitaetsmanagement' => [
@@ -82,7 +82,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-regieschein' => [
@@ -90,7 +90,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'hf-wochenbericht' => [
@@ -98,7 +98,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'elkbau-calc-prod' => [
@@ -106,7 +106,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'html5app-ppl-prod' => [
@@ -114,7 +114,7 @@ return [
     'method'   => 'GET',
     'auth'     => 'jenkins',
     'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'verifySSL' => true
     
   ],
   'nc-vis' => [
@@ -122,7 +122,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => ['NC-Token: ' . $secrets['NC_VIS_TOKEN']],
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   'nc-lis2' => [
@@ -130,7 +130,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => ['NC-Token: ' . $secrets['NC_LIS2_TOKEN']],
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   'nc-fileshare' => [
@@ -138,7 +138,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => ['NC-Token: ' . $secrets['NC_FLS_TOKEN']],
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   'nc-kpat-prod' => [
@@ -146,7 +146,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => ['NC-Token: ' . $secrets['NC_KPAT_PRD_TOKEN']],
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   'nc-kpat-stage' => [
@@ -154,7 +154,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => ['NC-Token: ' . $secrets['NC_KPAT_STG_TOKEN']],
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   'nc-kpde-prod' => [
@@ -162,7 +162,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => ['NC-Token: ' . $secrets['NC_KPDE_PRD_TOKEN']],
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   'nc-kpde-stage' => [
@@ -170,7 +170,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => ['NC-Token: ' . $secrets['NC_KPDE_STG_TOKEN']],
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   'moodle' => [
@@ -178,7 +178,7 @@ return [
     'method'   => 'GET',
     'auth'     => null,
     'headers'  => null,
-    'sslVerify' => false
+    'sslVerify' => true
     
   ],
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)
