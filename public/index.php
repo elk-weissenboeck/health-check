@@ -27,14 +27,14 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
       <p class="text-secondary mb-0">Übersicht über den Status div. Systeme (Bemusterung, Webseiten, Schnittstellen …)</p>
     </header>
 
-<!-- Wartungshinweis -->
-<div id="maintenanceBanner" class="alert alert-warning d-none align-items-center gap-2" role="alert">
-  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-  <div>
-    <strong id="maintenanceTitle">Wartungshinweis:</strong>
-    <span id="maintenanceMessage">–</span>
-  </div>
-</div>
+    <!-- Wartungshinweis -->
+    <div id="maintenanceBanner" class="alert alert-warning d-none align-items-center gap-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+      <div>
+        <strong id="maintenanceTitle">Wartungshinweis:</strong>
+        <span id="maintenanceMessage">–</span>
+      </div>
+    </div>
 
     <section class="card status-banner mb-4" id="overallCard" style="--status-color: var(--bs-success);">
       <div class="card-body d-flex justify-content-between align-items-start flex-wrap gap-3">
@@ -47,29 +47,69 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
             Letztes Update: <time id="lastUpdated">–</time>
           </small>
         </div>
+        
         <div class="d-flex align-items-center gap-2">
           <button class="btn btn-outline-secondary btn-sm" id="refreshBtn">
             <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
           </button>
-  <!-- NEU: Expand/Collapse-All -->
-  <div class="btn-group btn-group-sm" role="group" aria-label="Expand/Collapse all">
-    <button class="btn btn-outline-primary" id="expandAllBtn">
-      <i class="bi bi-arrows-expand me-1"></i> Alle aufklappen
-    </button>
-    <button class="btn btn-outline-secondary" id="collapseAllBtn">
-      <i class="bi bi-arrows-collapse me-1"></i> Alle zuklappen
-    </button>
-  </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="autoRefresh">
-            <label class="form-check-label" for="autoRefresh">Auto-Refresh</label>
-          </div>
         </div>
       </div>
     </section>
 
-    <div id="groupsContainer" class="d-flex flex-column gap-4"></div>
+    <!-- Options -->
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-gear"></i>
+          <span class="fw-semibold">Optionen</span>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" type="button"
+                data-bs-toggle="collapse" data-bs-target="#optionsCollapse"
+                aria-expanded="false" aria-controls="optionsCollapse">
+          <i class="bi bi-chevron-down"></i>
+        </button>
+      </div>
+      <div id="optionsCollapse" class="collapse">
+        <div class="card-body d-flex flex-wrap gap-3 align-items-center">
 
+          <!-- Expand/Collapse -->
+          <div class="btn-group btn-group-sm" role="group" aria-label="Expand/Collapse all">
+            <button class="btn btn-outline-primary" id="expandAllBtn">
+              <i class="bi bi-arrows-expand me-1"></i> Alle aufklappen
+            </button>
+            <button class="btn btn-outline-secondary" id="collapseAllBtn">
+              <i class="bi bi-arrows-collapse me-1"></i> Alle zuklappen
+            </button>
+          </div>
+
+          <!-- URLs zeigen/verstecken -->
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="optShowUrls">
+            <label class="form-check-label" for="optShowUrls">URLs anzeigen</label>
+          </div>
+
+          <!-- Auto-Refresh + Intervall -->
+          <div class="d-flex align-items-center gap-2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="optAutoRefresh">
+              <label class="form-check-label" for="optAutoRefresh">Auto-Refresh</label>
+            </div>
+            <select id="optRefreshInterval" class="form-select form-select-sm" style="width:auto">
+              <option value="15">15s</option>
+              <option value="30" selected>30s</option>
+              <option value="60">60s</option>
+              <option value="120">120s</option>
+            </select>
+          </div>
+
+          <!-- Reserviert für künftige Optionen -->
+          <div id="optionsExtra" class="d-none"></div>
+        </div>
+      </div>
+    </section>
+    
+    <div id="groupsContainer" class="d-flex flex-column gap-4"></div>
+    
     <section class="mt-4">
       <div class="small text-secondary">
         <span class="me-3"><i class="bi bi-check-circle-fill text-success me-1"></i>OK</span>
@@ -81,6 +121,6 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   </main>
 
   <script src="<?= htmlspecialchars($BOOTSTRAP_JS) ?>"></script>
-  <script src="./assets/js/status.js?t=<?=time()?>"></script>
+  <script src="./assets/js/status.js?t=<?=time()?>" defer></script>
 </body>
 </html>

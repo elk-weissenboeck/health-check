@@ -19,17 +19,15 @@ async function bootstrap() {
     window.MAINTENANCE = cfg.maintenance || { active: false };
 
     renderAllGroups();
+    applyOptions();   // Optionen nach Render anwenden (URLs/Auto-Refresh)
     refreshAll();
     if (typeof showMaintenanceBanner === 'function') showMaintenanceBanner();
   } catch (e) {
     console.error(e);
-    document.getElementById('groupsContainer').innerHTML =
-      '<div class="alert alert-danger">Konfiguration konnte nicht geladen werden.</div>';
+    const gc = document.getElementById('groupsContainer');
+    if (gc) gc.innerHTML = '<div class="alert alert-danger">Konfiguration konnte nicht geladen werden.</div>';
   }
 }
-
-bootstrap();
-
 
 // =======================
 // RENDER LOGIC
@@ -78,7 +76,7 @@ function groupCardTemplate(group) {
             <div class="list-group-item d-flex justify-content-between align-items-center">
               <div class="d-flex flex-column">
                 <span class="fw-medium">${escapeHtml(s.label)}</span>
-                <small class="text-secondary">${escapeHtml(s.url)}</small>
+                <small class="text-secondary svc-url">${escapeHtml(s.url)}</small>
                 ${s.warning ? `<small class="service-warning mt-1">
                   <i class="bi bi-exclamation-triangle-fill service-warning-icon"></i>${escapeHtml(s.warning)}
                 </small>` : ""}
@@ -98,8 +96,8 @@ function groupCardTemplate(group) {
   `;
 }
 
-
 function renderAllGroups() {
+  if (!groupsContainer) return;
   groupsContainer.innerHTML = GROUPS.map(g => groupCardTemplate(g)).join('');
 }
 
@@ -144,6 +142,7 @@ async function checkService(url, method = "HEAD", expect = null) {
         if ("truthy" in expect)  pass = !!v === !!expect.truthy;
         if ("minLen" in expect)  pass = Array.isArray(v) ? v.length >= expect.minLen : false;
         if ("in" in expect && Array.isArray(expect.in)) pass = expect.in.includes(v);
+        if ("regex" in expect)   pass = typeof v === "string" && new RegExp(expect.regex).test(v);
 
         return { ok: pass, ms, count, value: v, data, headers };
       }
@@ -160,13 +159,6 @@ async function checkService(url, method = "HEAD", expect = null) {
   }
 }
 
-
-function collectHeaders(res) {
-  const out = {};
-  res.headers.forEach((v, k) => { out[k.toLowerCase()] = v; });
-  return out;
-}
-
 function setBadge(group, svc, ok, ms, count = null, value = null) {
   const badge = document.getElementById(`badge-${group}-${svc}`);
   const latency = document.getElementById(`latency-${group}-${svc}`);
@@ -179,12 +171,13 @@ function setBadge(group, svc, ok, ms, count = null, value = null) {
   if (count !== null && ok) text = `OK (${count})`;
   if (hasWarning && ok) { cls = 'text-bg-warning'; text = 'OK'; }
 
-  badge.className = `badge ${cls}`;
-  badge.textContent = text;
-  latency.textContent = `${ms} ms`;
-  if (hasWarning && service.warning) badge.title = service.warning;
+  if (badge) {
+    badge.className = `badge ${cls}`;
+    badge.textContent = text;
+    if (hasWarning && service.warning) badge.title = service.warning;
+  }
+  if (latency) latency.textContent = `${ms} ms`;
 }
-
 
 function getByPath(obj, path) {
   if (!path) return undefined;
@@ -196,52 +189,9 @@ function getByPath(obj, path) {
   return parts.reduce((acc, key) => (acc != null ? acc[key] : undefined), obj);
 }
 
-
-function setGroupStatus(groupKey, state /* 'ok' | 'warn' | 'nok' */) {
-  const dot = document.getElementById(`${groupKey}-dot`);
-  const summary = document.getElementById(`${groupKey}-summary`);
-
-  if (state === 'nok') {
-    dot.className = 'status-dot bg-danger';
-    summary.textContent = 'Eingeschränkter Betrieb';
-  } else if (state === 'warn') {
-    dot.className = 'status-dot bg-warning';
-    summary.textContent = 'Alle Services OK (Warnungen vorhanden)';
-  } else {
-    dot.className = 'status-dot bg-success';
-    summary.textContent = 'Alle Services OK';
-  }
-
-  // Auto-Expand nur bei NOK – sicher & mit Fallback
-  const collapseId = `collapse-${groupKey}`;
-  const el = document.getElementById(collapseId);
-  if (!el) return;
-  const isShown = el.classList.contains('show');
-  if (state === 'nok' && !isShown) showCollapseById(collapseId);
-}
-
-
-
-function setOverall(ok) {
-  const card = document.getElementById("overallCard");
-  const icon = document.getElementById("overallIcon");
-  const title = document.getElementById("overallTitle");
-  card.style.setProperty("--status-color", ok ? "var(--bs-success)" : "var(--bs-danger)");
-  icon.className = `bi ${ok ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'} fs-4`;
-  title.textContent = ok ? "Alle Services online" : "Eingeschränkter Betrieb";
-}
-
-function updateTimestamp() {
-  document.getElementById("lastUpdated").textContent = new Date().toLocaleString();
-}
-
-function expandAllSections() {
-  GROUPS.forEach(g => showCollapseById(`collapse-${g.key}`));
-}
-function collapseAllSections() {
-  GROUPS.forEach(g => hideCollapseById(`collapse-${g.key}`));
-}
-
+// =======================
+// SAFE COLLAPSE HELPERS (mit Fallback, kein Crash wenn bootstrap fehlt)
+// =======================
 function collapseApiAvailable() {
   return !!(window.bootstrap && window.bootstrap.Collapse);
 }
@@ -272,21 +222,56 @@ function hideCollapseById(id) {
   }
 }
 
+function setGroupStatus(groupKey, state /* 'ok' | 'warn' | 'nok' */) {
+  const dot = document.getElementById(`${groupKey}-dot`);
+  const summary = document.getElementById(`${groupKey}-summary`);
 
+  if (dot) {
+    if (state === 'nok') dot.className = 'status-dot bg-danger';
+    else if (state === 'warn') dot.className = 'status-dot bg-warning';
+    else dot.className = 'status-dot bg-success';
+  }
+  if (summary) {
+    summary.textContent =
+      state === 'nok' ? 'Eingeschränkter Betrieb'
+      : state === 'warn' ? 'Alle Services OK (Warnungen vorhanden)'
+      : 'Alle Services OK';
+  }
+
+  // Auto-Expand nur bei NOK – sicher & mit Fallback
+  const collapseId = `collapse-${groupKey}`;
+  const el = document.getElementById(collapseId);
+  if (el && state === 'nok' && !el.classList.contains('show')) {
+    showCollapseById(collapseId);
+  }
+}
+
+function setOverall(ok) {
+  const card = document.getElementById("overallCard");
+  const icon = document.getElementById("overallIcon");
+  const title = document.getElementById("overallTitle");
+  if (card) card.style.setProperty("--status-color", ok ? "var(--bs-success)" : "var(--bs-danger)");
+  if (icon) icon.className = `bi ${ok ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'} fs-4`;
+  if (title) title.textContent = ok ? "Alle Services online" : "Eingeschränkter Betrieb";
+}
+
+function updateTimestamp() {
+  const el = document.getElementById("lastUpdated");
+  if (el) el.textContent = new Date().toLocaleString();
+}
+
+function expandAllSections() {
+  GROUPS.forEach(g => showCollapseById(`collapse-${g.key}`));
+}
 function collapseAllSections() {
-  GROUPS.forEach(g => {
-    const el = document.getElementById(`collapse-${g.key}`);
-    if (!el) return;
-    const c = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
-    c.hide();
-  });
+  GROUPS.forEach(g => hideCollapseById(`collapse-${g.key}`));
 }
 
 // Globale Debug-Ablage
 window.__healthResults = {};
 window.inspectService = (groupKey, serviceKey) =>
   window.__healthResults?.[groupKey]?.[serviceKey] ?? null;
-  
+
 async function refreshAll() {
   const groupStates = await Promise.all(GROUPS.map(async (g) => {
     // Checks ausführen
@@ -294,8 +279,8 @@ async function refreshAll() {
       const r = await checkService(s.url, s.method, s.expect);
       setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value);
       renderServiceFields(g.key, s, r.data);
-      renderServiceHeaders(g.key, s, r.headers);  
-      
+      renderServiceHeaders(g.key, s, r.headers);
+
       window.__healthResults[g.key] ??= {};
       window.__healthResults[g.key][s.key] = r;
 
@@ -310,8 +295,6 @@ async function refreshAll() {
     return state;
   }));
 
-  // Gesamtstatus: weiterhin grün, außer es gibt ein NOK.
-  // (Optional: wenn du bei Warnungen auch gelb oben anzeigen willst, nimm die 3-Zustand-Logik auch hier.)
   const hasNok = groupStates.includes('nok');
   setOverall(!hasNok);
   updateTimestamp();
@@ -323,11 +306,10 @@ function showMaintenanceBanner() {
   const msg = document.getElementById("maintenanceMessage");
 
   if (!MAINTENANCE.active) {
-    banner.classList.add("d-none");
+    if (banner) banner.classList.add("d-none");
     return;
   }
 
-  // Zeitprüfung
   const now = new Date();
   const start = MAINTENANCE.start ? new Date(MAINTENANCE.start) : null;
   const end = MAINTENANCE.end ? new Date(MAINTENANCE.end) : null;
@@ -335,15 +317,20 @@ function showMaintenanceBanner() {
   const isWithinWindow =
     (!start || now >= start) && (!end || now <= end);
 
-  if (isWithinWindow) {
-    title.textContent = MAINTENANCE.title + ":";
-    msg.textContent = " " + MAINTENANCE.message;
-    banner.classList.remove("d-none");
-  } else {
-    banner.classList.add("d-none");
+  if (banner) {
+    if (isWithinWindow) {
+      if (title) title.textContent = (MAINTENANCE.title || 'Wartung') + ":";
+      if (msg) msg.textContent = " " + (MAINTENANCE.message || "");
+      banner.classList.remove("d-none");
+    } else {
+      banner.classList.add("d-none");
+    }
   }
 }
 
+// =======================
+// FORMATTERS
+// =======================
 const FORMATTERS = {
   number: v => typeof v === "number" ? v.toLocaleString() : v,
   bytes:  v => typeof v === "number" ? formatBytes(v) : v,
@@ -355,9 +342,11 @@ const FORMATTERS = {
   lower:  v => (typeof v === "string" ? v.toLowerCase() : v),
   minutes: v => {
     if (v == null || isNaN(v)) return v;
-    const mins = v /1000 / 60;
+    const mins = v /1000 / 60; // Jenkins: Dauer in ms -> Minuten
     return `${mins.toFixed(1)} min`;
-  }
+  },
+  seconds: v => (v == null || isNaN(v)) ? v : `${v} s`,
+  bytesHeader: v => formatBytes(Number(v))
 };
 
 function formatBytes(n){
@@ -433,18 +422,89 @@ function renderServiceHeaders(groupKey, serviceDef, headers) {
 }
 
 // =======================
-// EVENT HANDLERS
+// OPTIONS (URLs zeigen/verstecken, Auto-Refresh) + Cookies
 // =======================
-document.getElementById("refreshBtn").addEventListener("click", refreshAll);
-document.getElementById("expandAllBtn").addEventListener("click", expandAllSections);
-document.getElementById("collapseAllBtn").addEventListener("click", collapseAllSections);
+const OPTIONS_COOKIE = 'statusOptions';
+const OPTIONS_DEFAULT = {
+  showUrls: true,
+  autoRefresh: false,
+  refreshInterval: 30 // Sekunden
+};
 
-let autoTimer = null;
-document.getElementById("autoRefresh").addEventListener("change", (e) => {
-  if (e.target.checked) {
-    refreshAll();
-    autoTimer = setInterval(refreshAll, 30000);
-  } else {
-    clearInterval(autoTimer);
+function readOptions() {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + OPTIONS_COOKIE + '=([^;]*)'));
+  if (!m) return { ...OPTIONS_DEFAULT };
+  try {
+    const parsed = JSON.parse(decodeURIComponent(m[1]));
+    return { ...OPTIONS_DEFAULT, ...parsed };
+  } catch {
+    return { ...OPTIONS_DEFAULT };
   }
+}
+
+function saveOptions(opts) {
+  const value = encodeURIComponent(JSON.stringify(opts));
+  const days = 365;
+  const expires = new Date(Date.now() + days*24*60*60*1000).toUTCString();
+  document.cookie = `${OPTIONS_COOKIE}=${value}; Expires=${expires}; Path=/; SameSite=Lax`;
+}
+
+let OPTIONS = readOptions();
+let autoTimer = null;
+
+function applyOptions() {
+  // Controls spiegeln (falls vorhanden)
+  const show = document.getElementById('optShowUrls');
+  const auto = document.getElementById('optAutoRefresh');
+  const intv = document.getElementById('optRefreshInterval');
+
+  if (show) show.checked = !!OPTIONS.showUrls;
+  if (auto) auto.checked = !!OPTIONS.autoRefresh;
+  if (intv) intv.value = String(OPTIONS.refreshInterval);
+
+  // URLs ein-/ausblenden
+  document.body.classList.toggle('hide-urls', !OPTIONS.showUrls);
+
+  // Auto-Refresh
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  if (OPTIONS.autoRefresh) {
+    const ms = Math.max(5, Number(OPTIONS.refreshInterval) || 30) * 1000;
+    autoTimer = setInterval(refreshAll, ms);
+  }
+
+  saveOptions(OPTIONS);
+}
+
+// =======================
+// EVENT BINDING (robust)
+// =======================
+function $(id) { return document.getElementById(id); }
+function on(id, evt, handler) {
+  const el = $(id);
+  if (!el) {
+    console.warn(`[status] control #${id} nicht gefunden – übersprungen`);
+    return;
+  }
+  el.addEventListener(evt, handler);
+}
+
+function wireOptionsUI() {
+  // Kopf-Buttons (falls vorhanden)
+  on("refreshBtn", "click", refreshAll);
+  on("expandAllBtn", "click", () => expandAllSections());
+  on("collapseAllBtn", "click", () => collapseAllSections());
+
+  // Options-Block (neue IDs, optional vorhanden)
+  on("optShowUrls", "change", (e) => { OPTIONS.showUrls = !!e.target.checked; applyOptions(); });
+  on("optAutoRefresh", "change", (e) => { OPTIONS.autoRefresh = !!e.target.checked; applyOptions(); });
+  on("optRefreshInterval", "change", (e) => {
+    OPTIONS.refreshInterval = parseInt(e.target.value, 10) || OPTIONS_DEFAULT.refreshInterval;
+    applyOptions();
+  });
+}
+
+// Starte erst, wenn der DOM bereit ist (verhindert addEventListener auf null)
+document.addEventListener('DOMContentLoaded', () => {
+  wireOptionsUI();
+  bootstrap();
 });

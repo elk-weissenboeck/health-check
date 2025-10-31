@@ -35,6 +35,14 @@ body {
   overflow: hidden;
 }
 
+/* URLs ausblendbar machen */
+.hide-urls .svc-url { display: none; }
+
+/* kompaktere Options-Card auf kleineren Screens */
+@media (max-width: 576px) {
+  #optionsCollapse .card-body { gap: .75rem; }
+}
+
 /* Header bleibt klickbarer Toggle, aber mit konsistentem Padding */
 .card-group-status .card-header-toggle {
   all: unset;
