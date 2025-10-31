@@ -3,18 +3,25 @@
  * proxy.php
  * Sicherer Whitelist-Proxy für Health-Checks mit Auth & optional -k
  * - Wählt Ziel anhand ?key=... (keine freien URLs!)
- * - Unterstützt: Basic, Bearer, eigene Header
+ * - Unterstützt: Basic (User/Pass ODER Authorization-Header), Bearer, eigene Header
  * - Optional: SSL-Verify abschalten (entspricht curl -k)
  * - Passthrough: gibt Upstream-Status & Body 1:1 zurück
  */
 
 declare(strict_types=1);
 
+// -----------------------------------------------------------------------------
+// 0) SECRETS & TARGETS LADEN
+// -----------------------------------------------------------------------------
 $secrets = require dirname(__DIR__) . '/config/secrets.php';
 $targets = require dirname(__DIR__) . '/config/targets.php';
 
+// Standard-Timeout (Sekunden) – Targets sollen keinen 'timeout' mehr liefern
+const DEFAULT_TIMEOUT = 8;
 
-// ---------- 2) KEY LESEN ----------
+// -----------------------------------------------------------------------------
+// 1) KEY LESEN & VALIDIEREN
+// -----------------------------------------------------------------------------
 $key = $_GET['key'] ?? '';
 if (!isset($targets[$key])) {
   http_response_code(404);
@@ -23,73 +30,148 @@ if (!isset($targets[$key])) {
 }
 $t = $targets[$key];
 
-// ---------- 3) CURL AUFBAUEN ----------
+// -----------------------------------------------------------------------------
+// 2) CURL AUFBAUEN
+// -----------------------------------------------------------------------------
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $t['url']);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $t['method'] ?? 'GET');
+
+// URL & Methode
+curl_setopt($ch, CURLOPT_URL, (string)($t['url'] ?? ''));
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, (string)($t['method'] ?? 'GET'));
+
+// Follow redirects & Response inkl. Header holen
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, (int)($t['timeout'] ?? 8));
-// SSL-Verify wie bei curl -k aus/an
-// SSL verification: supports new 'verifySSL' (true = verify) and falls back to old 'insecure' for compatibility
+
+// Timeout festlegen (nicht mehr aus Targets beziehbar)
+curl_setopt($ch, CURLOPT_TIMEOUT, (int) DEFAULT_TIMEOUT);
+
+// -----------------------------------------------------------------------------
+// 2a) SSL-Verify: bevorzugt 'verifySSL' (true = prüfen), Fallback 'insecure'
+// -----------------------------------------------------------------------------
 $verifySSL = null;
 if (array_key_exists('verifySSL', $t)) {
-  $verifySSL = (bool)$t['verifySSL'];
+  $verifySSL = (bool)$t['verifySSL'];          // neue Semantik
 } elseif (array_key_exists('insecure', $t)) {
-  $verifySSL = !$t['insecure'];
+  $verifySSL = !$t['insecure'];                // alt: insecure=true => verify=false
 }
-if (is_null($verifySSL)) $verifySSL = true; // default: verify SSL
+if ($verifySSL === null) {
+  $verifySSL = true;                           // Default: SSL prüfen
+}
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $verifySSL ? 2 : 0);
-// Auth
+
+// -----------------------------------------------------------------------------
+// 2b) Header vorbereiten (Custom-Header wie 'NC-Token' erlaubt)
+// - akzeptiert sowohl indexierte Arrays ["Header: Wert"] als auch assoziative
+//   Arrays ['Header' => 'Wert'] und normalisiert sie zu ["Header: Wert"]
+// -----------------------------------------------------------------------------
 $headers = $t['headers'] ?? [];
-if (!empty($t['auth'])) {
-  switch ($t['auth']) {
-    case 'basic':
-      curl_setopt($ch, CURLOPT_USERPWD, ($t['auth']['user'] ?? '') . ':' . ($t['auth']['pass'] ?? ''));
-      break;
-    case 'bearer':
-      $headers[] = 'Authorization: Bearer ' . ($t['auth']['token'] ?? '');
-      break;
-    case 'headers':
-      if (!empty($t['auth']['headers']) && is_array($t['auth']['headers'])) {
-        $headers = array_merge($headers, $t['auth']['headers']);
-      }
-      break;
-    case 'jenkins':
-      // Choose credentials based on URL: contains 'jenkins-tng' => secret1, else secret2
-      $isTng = (strpos($t['url'] ?? '', 'jenkins-tng') !== false);
-      $pass = $isTng ? ($secrets['JENKINS_TNG_TOKEN'] ?? '') : ($secrets['JENKINS_TOKEN'] ?? '');
-      curl_setopt($ch, CURLOPT_USERPWD, 'georgw:' . $pass);
-      break;
+$normalizedHeaders = [];
+if (is_array($headers)) {
+  foreach ($headers as $k => $v) {
+    if (is_int($k)) {
+      // Bereits "Header: Wert"
+      $normalizedHeaders[] = (string)$v;
+    } else {
+      $normalizedHeaders[] = $k . ': ' . $v;
+    }
   }
 }
-if ($headers) curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+$headers = $normalizedHeaders;
+
+// -----------------------------------------------------------------------------
+// 2c) Auth behandeln
+// Unterstützt:
+//   - 'basic'   : user/pass ODER 'authorization' => 'Basic base64...'
+//   - 'bearer'  : token
+//   - 'headers' : zusätzliche Header
+//   - 'jenkins' : mappt auf Basic (user/pass) – abhängig von 'jenkins-tng' in URL
+// -----------------------------------------------------------------------------
+if (!empty($t['auth']) && is_array($t['auth'])) {
+  // Normalfall: $t['auth']['type'] enthält den Typ
+  $authType = $t['auth']['type'] ?? null;
+
+  if ($authType) {
+    switch ($authType) {
+
+      case 'basic':
+        // Variante A: fertiger Authorization-Header (z. B. wenn bereits Base64-kodiert)
+        if (!empty($t['auth']['authorization'])) {
+          $headers[] = 'Authorization: ' . $t['auth']['authorization'];
+        } else {
+          // Variante B: klassisch mit user/pass
+          $user = (string)($t['auth']['user'] ?? '');
+          $pass = (string)($t['auth']['pass'] ?? '');
+          curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $pass);
+        }
+        break;
+
+      case 'bearer':
+        $token = (string)($t['auth']['token'] ?? '');
+        $headers[] = 'Authorization: Bearer ' . $token;
+        break;
+
+      case 'headers':
+        // zusätzliche Header; akzeptiert indexiert oder assoziativ
+        if (!empty($t['auth']['headers']) && is_array($t['auth']['headers'])) {
+          foreach ($t['auth']['headers'] as $k => $v) {
+            if (is_int($k)) {
+              $headers[] = (string)$v;
+            } else {
+              $headers[] = $k . ': ' . $v;
+            }
+          }
+        }
+        break;
+
+      case 'jenkins':
+        // Versand exakt wie Basic mit user/password:
+        // Wenn URL 'jenkins-tng' enthält -> TNG-Creds, sonst klassische Jenkins-Creds
+        $isTng = (strpos((string)($t['url'] ?? ''), 'jenkins-tng') !== false);
+        $user  = 'georgw';
+        $pass  = $isTng ? ($secrets['JENKINS_TNG_TOKEN'] ?? '') : ($secrets['JENKINS_TOKEN'] ?? '');
+        curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $pass);
+        break;
+        
+    }
+  }
+}
+
+if ($headers) {
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+}
 
 // Bei HEAD keinen Body übertragen
-if (strtoupper($t['method'] ?? '') === 'HEAD') {
+if (strtoupper((string)($t['method'] ?? '')) === 'HEAD') {
   curl_setopt($ch, CURLOPT_NOBODY, true);
 }
 
-// ---------- 4) AUSFÜHREN ----------
+// -----------------------------------------------------------------------------
+// 3) AUSFÜHREN
+// -----------------------------------------------------------------------------
 $resp = curl_exec($ch);
 if ($resp === false) {
   $err = curl_error($ch);
   curl_close($ch);
+
   http_response_code(502);
   header('Content-Type: text/plain; charset=utf-8');
   exit('Upstream error: ' . $err);
 }
 
-$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-$httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$contentType= curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: '';
-$respHeaders= substr($resp, 0, $headerSize);
-$body       = substr($resp, $headerSize);
+// Antwort aufsplitten
+$headerSize  = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+$httpCode    = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$contentType = (string) (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: '');
+$respHeaders = substr($resp, 0, $headerSize);
+$body        = substr($resp, $headerSize);
 curl_close($ch);
 
-// ---------- 5) RESPONSE DURCHREICHEN (Passthrough) ----------
+// -----------------------------------------------------------------------------
+// 4) RESPONSE DURCHREICHEN (Passthrough)
+// -----------------------------------------------------------------------------
 http_response_code($httpCode);
 
 // Content-Type weitergeben (falls vorhanden), sonst sinnvoller Default
