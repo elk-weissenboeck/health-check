@@ -24,186 +24,17 @@ $jenkinsToken = $secrets['JENKINS_TOKEN'] ?? '';
 $jenkinsAuth  = ['type' => 'basic', 'user' => $jenkinsUser, 'pass' => $jenkinsToken];
 
 // ---------- 1) ZIELE DEFINIEREN (WHITELIST) ----------
-$TARGETS = [
-  // Beispiel: Basic-Auth + SSL-Verify AUS + GET
-  'hf-enterprise-full' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20FULL/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,   // -> wie curl -k (nur wenn nötig!)
-    'timeout'  => 8,
-  ],
-  'hf-enterprise-quick' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-hauseubergabe-ninox' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-hauseubergabe-documents' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-hauseubergabe-pictures' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-maengelkostenanzeige' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-planbesprechung' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Planbesprechung%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-protokolle' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Protokolle%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-qualitaetsmanagement' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-regieschein' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Regieschein%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'hf-wochenbericht' => [
-    'url'      => "{$jenkinsTngBase}/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsTngAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'elkbau-calc-prod' => [
-    'url'      => "{$jenkinsBase}/job/ELK%20BAU%20Calculation%20Tool%20PROD/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'html5app-ppl-prod' => [
-    'url'      => "{$jenkinsBase}/job/HTML5App%20RESTful%20-%20PROD/lastCompletedBuild/api/json?tree={$jenkinsTree}",
-    'method'   => 'GET',
-    'auth'     => $jenkinsAuth,
-    'headers'  => ['Accept: application/json'],
-    'insecure' => true,
-    'timeout'  => 8,
-  ],
-  'nc-vis' => [
-    'url'      => "https://vis2.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => ['NC-Token: ' . $secrets['NC_VIS_TOKEN']],
-    'insecure' => false,
-    'timeout'  => 8,
-  ],
-  'nc-lis2' => [
-    'url'      => "https://lis2.elk.at/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => ['NC-Token: ' . $secrets['NC_LIS2_TOKEN']],
-    'insecure' => false,
-    'timeout'  => 8,
-  ],
-  'nc-fileshare' => [
-    'url'      => "https://fileshare.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => ['NC-Token: ' . $secrets['NC_FLS_TOKEN']],
-    'insecure' => false,
-    'timeout'  => 8,
-  ],
-  'nc-kpat-prod' => [
-    'url'      => "https://kundenportal.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => ['NC-Token: ' . $secrets['NC_KPAT_PRD_TOKEN']],
-    'insecure' => false,
-    'timeout'  => 8,
-  ],
-  'nc-kpat-stage' => [
-    'url'      => "https://kis-stage.elk.at/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => ['NC-Token: ' . $secrets['NC_KPAT_STG_TOKEN']],
-    'insecure' => false,
-    'timeout'  => 8,
-  ],
-  'nc-kpde-prod' => [
-    'url'      => "https://kundenportal.elkhaus.de/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => ['NC-Token: ' . $secrets['NC_KPDE_PRD_TOKEN']],
-    'insecure' => false,
-    'timeout'  => 8,
-  ],
-  'nc-kpde-stage' => [
-    'url'      => "https://kis-stage.elkhaus.de/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info?format=json",
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => ['NC-Token: ' . $secrets['NC_KPDE_STG_TOKEN']],
-    'insecure' => false,
-    'timeout'  => 8,
-  ],
-  'moodle' => [
-    'url'      => 'https://moodle.elk.at/webservice/rest/server.php?wstoken='.$secrets['MOODLE_API_TOKEN'].'&wsfunction=core_webservice_get_site_info&moodlewsrestformat=json',
-    'method'   => 'GET',
-    'auth'     => null,
-    'headers'  => null,
-    'insecure' => false,
-    'timeout'  => 8,
-  ]
-];
+$targets = require dirname(__DIR__). '/config/targets.php';
+
 
 // ---------- 2) KEY LESEN ----------
 $key = $_GET['key'] ?? '';
-if (!isset($TARGETS[$key])) {
+if (!isset($targets[$key])) {
   http_response_code(404);
   header('Content-Type: text/plain; charset=utf-8');
   exit('Unknown key');
 }
-$t = $TARGETS[$key];
+$t = $targets[$key];
 
 // ---------- 3) CURL AUFBAUEN ----------
 $ch = curl_init();
@@ -214,10 +45,16 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, (int)($t['timeout'] ?? 8));
 // SSL-Verify wie bei curl -k aus/an
-$insecure = !empty($t['insecure']);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !$insecure);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $insecure ? 0 : 2);
-
+// SSL verification: supports new 'verifySSL' (true = verify) and falls back to old 'insecure' for compatibility
+$verifySSL = null;
+if (array_key_exists('verifySSL', $t)) {
+  $verifySSL = (bool)$t['verifySSL'];
+} elseif (array_key_exists('insecure', $t)) {
+  $verifySSL = !$t['insecure'];
+}
+if (is_null($verifySSL)) $verifySSL = true; // default: verify SSL
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $verifySSL ? 2 : 0);
 // Auth
 $headers = $t['headers'] ?? [];
 if (!empty($t['auth']['type'])) {
