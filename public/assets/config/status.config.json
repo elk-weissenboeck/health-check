@@ -11,11 +11,11 @@
     {
       "key": "hfsrv",
       "title": "HybridForms Server",
-      "description": "Öffentliche und interne Seiten",
+      "description": null,
       "services": [
         {
           "key": "hfsrv-elk-prod",
-          "label": "Elk Prodserver",
+          "label": "Elk Prodserver (win9)",
           "url": "https://forms.elk.at",
           "method": "HEAD",
           "warning": null,
@@ -23,7 +23,7 @@
         },
         {
           "key": "hfsrv-elkkampa-test",
-          "label": "Elk/Kampa Testserver",
+          "label": "Elk/Kampa Testserver (win82)",
           "url": "https://forms-test.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
@@ -34,7 +34,7 @@
         },
         {
           "key": "hfsrv-elkkampa-prod",
-          "label": "Elk/Kampa Prodserver",
+          "label": "Elk/Kampa Prodserver (win80)",
           "url": "https://forms.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
@@ -48,7 +48,7 @@
     {
       "key": "hfppl",
       "title": "HybridForms Pipelines",
-      "description": "Übersicht aller Pipelines",
+      "description": "Datenüberleitung ElkAb <> HybridForms",
       "services": [
         {
           "key": "hf-enterprised-full",
@@ -186,8 +186,8 @@
     },
     {
       "key": "bemusterung",
-      "title": "Online-Bemusterung (Web-Tool)",
-      "description": "Kernfunktionen der Online-Bemusterung",
+      "title": "Online-Bemusterung",
+      "description": "(Web-Tool)",
       "services": [
         {
           "key": "bmu-frontend",
@@ -241,7 +241,7 @@
     {
       "key": "odoo",
       "title": "Odoo",
-      "description": "Kernfunktionen der Odoo-API",
+      "description": null,
       "services": [
         {
           "key": "odoo-frontend",
@@ -282,7 +282,7 @@
     {
       "key": "html5app",
       "title": "Html5App",
-      "description": "Schnittstelle für Hausfinder im XP-Center",
+      "description": "Hausfinder im XP-Center",
       "services": [
         {
           "key": "html5app-ppl-prod",
@@ -432,7 +432,7 @@
         },
         {
           "key": "nc-kpat-prod",
-          "label": "Kundenportal AT",
+          "label": "Kundenportal AT Prod",
           "url": "proxy.php?key=nc-kpat-prod",
           "method": "GET",
           "warning": null,
@@ -445,7 +445,7 @@
         },
         {
           "key": "nc-kpat-stage",
-          "label": "Kundenportal AT Stage",
+          "label": "Kundenportal AT Test<",
           "url": "proxy.php?key=nc-kpat-stage",
           "method": "GET",
           "warning": null,

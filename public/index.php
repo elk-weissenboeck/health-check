@@ -24,7 +24,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   <main class="container container-narrow py-4">
     <header class="mb-4">
       <h1 class="h3 mb-1"><i class="bi bi-speedometer2 me-2"></i>Statusübersicht</h1>
-      <p class="text-secondary mb-0">Übersicht über den Status div. Systeme (Bemusterung, Webseiten, Schnittstellen …)</p>
+      <p class="text-secondary mb-0">Übersicht div. Systeme bei ELK/KAMPA</p>
     </header>
 
     <!-- Wartungshinweis -->

@@ -58,7 +58,7 @@ function groupCardTemplate(group) {
            aria-controls="${collapseId}">
         <div class="d-flex align-items-center gap-2">
           <span class="status-dot bg-success" id="${group.key}-dot" aria-hidden="true"></span>
-          <span class="fw-semibold">${escapeHtml(group.title)}</span>
+          <span class="fw-semibold fs-5">${escapeHtml(group.title)}</span>
           <small class="text-secondary">— <span class="group-summary" id="${group.key}-summary">Prüfe…</span></small>
         </div>
 
