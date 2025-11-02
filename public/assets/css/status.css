@@ -41,6 +41,8 @@ body {
 /* Attribute ausblendbar machen */
 .hide-attr .svc-attr { display: none; }
 
+.hide-headers .svc-header { display: none; }
+
 /* kompaktere Options-Card auf kleineren Screens */
 @media (max-width: 576px) {
   #optionsCollapse .card-body { gap: .75rem; }

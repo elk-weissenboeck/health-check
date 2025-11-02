@@ -79,8 +79,8 @@ function groupCardTemplate(group) {
                   <span class="fw-medium mb-1">${escapeHtml(s.label)}</span>
                   <small class="text-secondary svc-url mb-1">${escapeHtml(s.url)}</small>
 
-                  <div class="service-fields mt-1" id="fields-${group.key}-${s.key}"></div>
-                  <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
+                  <div class="service-fields svc-attr mt-1" id="fields-${group.key}-${s.key}"></div>
+                  <div class="service-headers svc-header mt-1" id="headers-${group.key}-${s.key}"></div>
                 </div>
 
                 <div class="d-flex align-items-center gap-3 me-3">
@@ -457,12 +457,12 @@ function renderServiceHeaders(groupKey, serviceDef, headers) {
     if (h.badge) badgeClass = `text-bg-${h.badge}`;
     if (h.badgeByValue && raw in h.badgeByValue) badgeClass = `text-bg-${h.badgeByValue[raw]}`;
 
-    const labelHtml = h.label ? `<span class="sh-label">${escapeHtml(h.label)}:</span>` : "";
+    const labelHtml = h.label ? `<small class="sh-label">${escapeHtml(h.label)}:</small>` : "";
     const valueHtml = badgeClass
-      ? `<span class="badge ${badgeClass}">${escapeHtml(String(val))}</span>`
-      : `<span class="sh-value">${escapeHtml(String(val))}</span>`;
+      ? `<small class="badge ${badgeClass}">${escapeHtml(String(val))}</small>`
+      : `<small class="sh-value">${escapeHtml(String(val))}</small>`;
 
-    return `<span class="sh-item">${labelHtml} ${valueHtml}</span>`;
+    return `<small class="sh-item">${labelHtml} ${valueHtml}</small>`;
   }).filter(Boolean);
 
   // 2) Automatischer Cache-Hinweis, wenn x-proxy-cache vorhanden ist
@@ -504,6 +504,7 @@ function renderServiceHeaders(groupKey, serviceDef, headers) {
 // =======================
 const OPTIONS_COOKIE = 'statusOptions';
 const OPTIONS_DEFAULT = {
+  showHeaders: true,
   showUrls: true,
   autoRefresh: false,
   refreshInterval: 30, // Sekunden
@@ -538,18 +539,23 @@ function applyOptions() {
   const intv = document.getElementById('optRefreshInterval');
   const open = document.getElementById('optOpenOptionsOnLoad');
   const attr = document.getElementById('optShowAttr');
+  const head = document.getElementById('optShowHeaders');
   
   if (show) show.checked = !!OPTIONS.showUrls;
   if (auto) auto.checked = !!OPTIONS.autoRefresh;
   if (intv) intv.value = String(OPTIONS.refreshInterval);
   if (open) open.checked = !!OPTIONS.openOptionsOnLoad;
   if (attr) attr.checked = !!OPTIONS.showAttr;
+  if (head) head.checked = !!OPTIONS.showHeaders;
   
   // URLs ein-/ausblenden
   document.body.classList.toggle('hide-urls', !OPTIONS.showUrls);
 
   // URLs ein-/ausblenden
   document.body.classList.toggle('hide-attr', !OPTIONS.showAttr);
+ 
+  // URLs ein-/ausblenden
+  document.body.classList.toggle('hide-headers', !OPTIONS.showHeaders);
   
   // Auto-Refresh
   if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
@@ -591,6 +597,7 @@ function wireOptionsUI() {
   // Options-Block (neue IDs, optional vorhanden)
   on("optShowUrls", "change", (e) => { OPTIONS.showUrls = !!e.target.checked; applyOptions(); });
   on("optShowAttr", "change", (e) => { OPTIONS.showAttr = !!e.target.checked; applyOptions(); });
+  on("optShowHeaders", "change", (e) => { OPTIONS.showHeaders = !!e.target.checked; applyOptions(); });
   on("optAutoRefresh", "change", (e) => { OPTIONS.autoRefresh = !!e.target.checked; applyOptions(); });
   on("optRefreshInterval", "change", (e) => {
     OPTIONS.refreshInterval = parseInt(e.target.value, 10) || OPTIONS_DEFAULT.refreshInterval;
