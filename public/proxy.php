@@ -1,11 +1,13 @@
 <?php
 /**
  * proxy.php
- * Sicherer Whitelist-Proxy für Health-Checks mit Auth & optional -k
- * - Wählt Ziel anhand ?key=... (keine freien URLs!)
- * - Unterstützt: Basic (User/Pass ODER Authorization-Header), Bearer, eigene Header
- * - Optional: SSL-Verify abschalten (entspricht curl -k)
- * - Passthrough: gibt Upstream-Status & Body 1:1 zurück
+ * Sicherer Whitelist-Proxy für Health-Checks mit Auth & optionalem SSL-Bypass.
+ * - Ziel anhand ?key=... (Whitelist), keine freien URLs
+ * - Auth: basic (User/Pass oder Authorization-Header), bearer, headers, jenkins
+ * - Custom-Header (z. B. NC-Token) unterstützt
+ * - SSL via 'verifySSL' (true = prüfen), rückwärtskompatibel zu 'insecure'
+ * - Query-Parameter kommen aus 'query' (in targets.php); Query in 'url' wird IGNORIERT
+ * - Optionaler File-Cache für x Minuten
  */
 
 declare(strict_types=1);
@@ -16,8 +18,39 @@ declare(strict_types=1);
 $secrets = require dirname(__DIR__) . '/config/secrets.php';
 $targets = require dirname(__DIR__) . '/config/targets.php';
 
-// Standard-Timeout (Sekunden) – Targets sollen keinen 'timeout' mehr liefern
-const DEFAULT_TIMEOUT = 8;
+// -----------------------------------------------------------------------------
+// BASIS-KONFIG
+// -----------------------------------------------------------------------------
+const DEFAULT_TIMEOUT   = 8;                        // Sekunden
+const CACHE_DEFAULT_TTL = 300;                      // Sekunden (5 Minuten)
+const CACHE_DIR         = __DIR__ . '/cache';       // Cache-Verzeichnis
+const CACHE_DEBUG       = false;                    // bei true: Debug-Header
+
+// -----------------------------------------------------------------------------
+// CACHE-HELPER
+// -----------------------------------------------------------------------------
+function _proxy_cache_path(string $method, string $url, string $targetKey): string {
+  $dir  = CACHE_DIR ?: sys_get_temp_dir();
+  $hash = hash('sha256', $method . "\n" . $url . "\n" . $targetKey);
+  return rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'proxycache_' . $hash . '.json';
+}
+
+function _proxy_cache_read(string $path): ?array {
+  if (!is_file($path)) return null;
+  $raw = @file_get_contents($path);
+  if ($raw === false) return null;
+  $data = json_decode($raw, true);
+  if (!is_array($data)) return null;
+  if (time() > (int)($data['expires_at'] ?? 0)) return null;
+  return $data;
+}
+
+function _proxy_cache_write(string $path, array $payload): void {
+  $dir = dirname($path);
+  if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
+  $payload['expires_at'] = time() + (int)($payload['ttl'] ?? CACHE_DEFAULT_TTL);
+  @file_put_contents($path, json_encode($payload, JSON_UNESCAPED_SLASHES), LOCK_EX);
+}
 
 // -----------------------------------------------------------------------------
 // 1) KEY LESEN & VALIDIEREN
@@ -31,63 +64,74 @@ if (!isset($targets[$key])) {
 $t = $targets[$key];
 
 // -----------------------------------------------------------------------------
+// 1a) URL FINAL AUFBAUEN (Query in URL IGNORIEREN, nur 'query' verwenden)
+// -----------------------------------------------------------------------------
+$baseUrl = (string)($t['url'] ?? '');
+$parts   = parse_url($baseUrl);
+
+$scheme   = $parts['scheme'] ?? null;
+$host     = $parts['host'] ?? null;
+$port     = isset($parts['port']) ? ':' . $parts['port'] : '';
+$user     = $parts['user'] ?? null;
+$pass     = $parts['pass'] ?? null;
+$userInfo = $user !== null ? $user . ($pass !== null ? ':' . $pass : '') . '@' : '';
+$path     = $parts['path'] ?? '';
+$fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+// 'query' aus targets.php (Array oder String) -> Querystring
+$queryArray = [];
+if (isset($t['query']) && $t['query'] !== null) {
+  if (is_array($t['query'])) {
+    $queryArray = $t['query'];
+  } elseif (is_string($t['query'])) {
+    parse_str(ltrim($t['query'], "?& \t\r\n"), $queryArray);
+  }
+}
+$queryString = http_build_query($queryArray, arg_separator: '&', encoding_type: PHP_QUERY_RFC3986);
+
+$finalUrl =
+  ($scheme ? $scheme . '://' : '') .
+  $userInfo . $host . $port . $path .
+  ($queryString !== '' ? '?' . $queryString : '') .
+  $fragment;
+
+// -----------------------------------------------------------------------------
+// 1b) METHOD & CACHE-READ (nur GET/HEAD, optional Target-Overrides)
+// -----------------------------------------------------------------------------
+$method     = strtoupper((string)($t['method'] ?? 'GET'));
+$ttl        = (int)($t['cache']['ttl'] ?? CACHE_DEFAULT_TTL);
+$allowCache = ($t['cache']['enabled'] ?? true) && $ttl > 0 && in_array($method, ['GET','HEAD'], true);
+$noCache    = isset($_GET['nocache']) && $_GET['nocache'] !== '0' && $_GET['nocache'] !== '';
+
+$cacheFile = '';
+if ($allowCache && !$noCache) {
+  $cacheFile = _proxy_cache_path($method, $finalUrl, (string)$key);
+  if (CACHE_DEBUG) header('X-Proxy-Cache-File: ' . $cacheFile);
+  if ($hit = _proxy_cache_read($cacheFile)) {
+    http_response_code((int)$hit['status']);
+    header('Content-Type: ' . ($hit['content_type'] ?: 'application/octet-stream'));
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('X-Proxy-Cache: HIT');
+    echo (string)$hit['body'];
+    return;
+  }
+}
+
+// -----------------------------------------------------------------------------
 // 2) CURL AUFBAUEN
 // -----------------------------------------------------------------------------
 $ch = curl_init();
 
-// ---------------- URL aus Target + optionaler 'query' aus targets.php zusammenbauen ----------------
-$baseUrl = (string)($t['url'] ?? '');
-$finalUrl = $baseUrl;
-
-if (isset($t['query']) && $t['query'] !== null) {
-  // Bestehende Query aus der Basis-URL parsen
-  $parts = parse_url($baseUrl);
-  $existing = [];
-  if (!empty($parts['query'])) {
-    parse_str($parts['query'], $existing);
-  }
-
-  // Neue Query-Parameter aus targets.php normalisieren
-  // - Wenn Array: sauber mit RFC3986 encoden
-  // - Wenn String: wie "a=1&b=2" behandeln
-  $newQuery = [];
-  if (is_array($t['query'])) {
-    $newQuery = $t['query'];
-  } elseif (is_string($t['query'])) {
-    parse_str(ltrim($t['query'], "?& "), $newQuery);
-  }
-
-  // Mergen (neue Werte überschreiben gleichnamige vorhandene)
-  $merged = array_replace_recursive($existing, $newQuery);
-  $queryString = http_build_query($merged, arg_separator: '&', encoding_type: PHP_QUERY_RFC3986);
-
-  // URL ohne alte Query wieder zusammensetzen
-  $scheme   = $parts['scheme'] ?? null;
-  $host     = $parts['host'] ?? null;
-  $port     = isset($parts['port']) ? ':' . $parts['port'] : '';
-  $user     = $parts['user'] ?? null;
-  $pass     = $parts['pass'] ?? null;
-  $userInfo = $user !== null ? $user . ($pass !== null ? ':' . $pass : '') . '@' : '';
-  $path     = $parts['path'] ?? '';
-  $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
-
-  $finalUrl =
-    ($scheme ? $scheme . '://' : '') .
-    $userInfo . $host . $port . $path .
-    ($queryString !== '' ? '?' . $queryString : '') .
-    $fragment;
-}
-
 // URL & Methode
 curl_setopt($ch, CURLOPT_URL, $finalUrl);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, (string)($t['method'] ?? 'GET'));
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
 // Follow redirects & Response inkl. Header holen
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, true);
 
-// Timeout festlegen (nicht mehr aus Targets beziehbar)
+// Timeout festlegen
 curl_setopt($ch, CURLOPT_TIMEOUT, (int) DEFAULT_TIMEOUT);
 
 // -----------------------------------------------------------------------------
@@ -95,57 +139,42 @@ curl_setopt($ch, CURLOPT_TIMEOUT, (int) DEFAULT_TIMEOUT);
 // -----------------------------------------------------------------------------
 $verifySSL = null;
 if (array_key_exists('verifySSL', $t)) {
-  $verifySSL = (bool)$t['verifySSL'];          // neue Semantik
+  $verifySSL = (bool)$t['verifySSL'];     // neue Semantik
 } elseif (array_key_exists('insecure', $t)) {
-  $verifySSL = !$t['insecure'];                // alt: insecure=true => verify=false
+  $verifySSL = !$t['insecure'];           // alt: insecure=true => verify=false
 }
-if ($verifySSL === null) {
-  $verifySSL = true;                           // Default: SSL prüfen
-}
+if ($verifySSL === null) $verifySSL = true;
+
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $verifySSL ? 2 : 0);
 
 // -----------------------------------------------------------------------------
-// 2b) Header vorbereiten (Custom-Header wie 'NC-Token' erlaubt)
-// - akzeptiert sowohl indexierte Arrays ["Header: Wert"] als auch assoziative
-//   Arrays ['Header' => 'Wert'] und normalisiert sie zu ["Header: Wert"]
+// 2b) Header vorbereiten (Custom-Header; indexiert oder assoziativ)
 // -----------------------------------------------------------------------------
 $headers = $t['headers'] ?? [];
 $normalizedHeaders = [];
 if (is_array($headers)) {
   foreach ($headers as $k => $v) {
     if (is_int($k)) {
-      // Bereits "Header: Wert"
-      $normalizedHeaders[] = (string)$v;
+      $normalizedHeaders[] = (string)$v;        // bereits "Header: Wert"
     } else {
-      $normalizedHeaders[] = $k . ': ' . $v;
+      $normalizedHeaders[] = $k . ': ' . $v;    // assoziativ
     }
   }
 }
 $headers = $normalizedHeaders;
 
 // -----------------------------------------------------------------------------
-// 2c) Auth behandeln
-// Unterstützt:
-//   - 'basic'     : user/pass ODER 'authorization' => 'Basic base64...'
-//   - 'bearer'    : token
-//   - 'headers'   : zusätzliche Header
-//   - 'jenkins'   : mappt auf Basic (user/pass) – abhängig von 'jenkins-tng' in URL
-//   - 'nextcloud' : token
+// 2c) Auth behandeln: basic / bearer / headers / jenkins
 // -----------------------------------------------------------------------------
 if (!empty($t['auth']) && is_array($t['auth'])) {
-  // Normalfall: $t['auth']['type'] enthält den Typ
   $authType = $t['auth']['type'] ?? null;
-
   if ($authType) {
     switch ($authType) {
-
       case 'basic':
-        // Variante A: fertiger Authorization-Header (z. B. wenn bereits Base64-kodiert)
         if (!empty($t['auth']['authorization'])) {
           $headers[] = 'Authorization: ' . $t['auth']['authorization'];
         } else {
-          // Variante B: klassisch mit user/pass
           $user = (string)($t['auth']['user'] ?? '');
           $pass = (string)($t['auth']['pass'] ?? '');
           curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $pass);
@@ -158,7 +187,6 @@ if (!empty($t['auth']) && is_array($t['auth'])) {
         break;
 
       case 'headers':
-        // zusätzliche Header; akzeptiert indexiert oder assoziativ
         if (!empty($t['auth']['headers']) && is_array($t['auth']['headers'])) {
           foreach ($t['auth']['headers'] as $k => $v) {
             if (is_int($k)) {
@@ -181,7 +209,7 @@ if (!empty($t['auth']) && is_array($t['auth'])) {
 
       case 'nextcloud':
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['NC-Token: ' . $t['auth']['token']]);
-        break;        
+        break; 
     }
   }
 }
@@ -190,8 +218,8 @@ if ($headers) {
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 }
 
-// Bei HEAD keinen Body übertragen
-if (strtoupper((string)($t['method'] ?? '')) === 'HEAD') {
+// HEAD-Requests ohne Body
+if ($method === 'HEAD') {
   curl_setopt($ch, CURLOPT_NOBODY, true);
 }
 
@@ -214,7 +242,23 @@ $httpCode    = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $contentType = (string) (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: '');
 $respHeaders = substr($resp, 0, $headerSize);
 $body        = substr($resp, $headerSize);
+
 curl_close($ch);
+
+// -----------------------------------------------------------------------------
+// 3a) CACHE WRITE (nur erfolgreiche Antworten)
+// -----------------------------------------------------------------------------
+if ($allowCache && !$noCache && $cacheFile !== '' && $httpCode >= 200 && $httpCode < 400) {
+  _proxy_cache_write($cacheFile, [
+    'ttl'          => $ttl,
+    'status'       => (int)$httpCode,
+    'content_type' => (string)$contentType,
+    'body'         => (string)$body,
+  ]);
+  header('X-Proxy-Cache: MISS, stored');
+} else {
+  header('X-Proxy-Cache: MISS');
+}
 
 // -----------------------------------------------------------------------------
 // 4) RESPONSE DURCHREICHEN (Passthrough)
@@ -228,10 +272,8 @@ if ($contentType) {
   header('Content-Type: application/octet-stream');
 }
 
-// Caching unterdrücken (Health-Checks)
+// Caching beim Client unterdrücken (Health-Checks)
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
-// (Optional) einzelne Header aus Upstream whitelisten (z. B. ETag / Cache-Control)
-// Hier weglassen, um keine sensiblen Informationen zu leaken.
-
+// (Optional) bestimmte Upstream-Header whitelisten (bewusst weggelassen)
 echo $body;
