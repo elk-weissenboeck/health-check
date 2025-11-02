@@ -53,7 +53,11 @@ if ($cacheOK && $cacheFile !== '') {
         header('Content-Type: ' . ($hit['content_type'] ?: 'application/octet-stream'));
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('X-Proxy-Cache: HIT');
-        echo (string)$hit['body'];
+    if (isset($hit['expires_at'])) {
+      $remaining = max(0, (int)$hit['expires_at'] - time());
+      header('X-Proxy-Cache-TTL: ' . $remaining);
+    }
+    echo (string)$hit['body'];
         return;
     }
 }
@@ -70,6 +74,7 @@ if ($cacheOK && $cacheFile !== '' && $httpCode >= 200 && $httpCode < 400) {
         'body'         => (string)$body,
     ]);
     header('X-Proxy-Cache: MISS, stored');
+    header('X-Proxy-Cache-TTL: ' . (string) myCache::ttl($t));
 } else {
     header('X-Proxy-Cache: MISS');
 }
