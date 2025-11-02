@@ -1,2 +1,3 @@
 config/secrets.php
 vendor/
+public/cache/*.json
