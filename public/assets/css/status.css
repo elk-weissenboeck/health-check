@@ -179,7 +179,8 @@ body {
   gap: .5rem .75rem;
 }
 
-.service-fields .sf-item {
+.service-fields .sf-item,
+.service-headers .sh-item {
   display: inline-flex;
   align-items: center;
   gap: .35rem;
@@ -187,7 +188,8 @@ body {
   color: var(--bs-body-color);
 }
 
-.service-fields .sf-label {
+.service-fields .sf-label, 
+.service-headers .sh-label {
   font-weight: 600;
   color: var(--bs-secondary-color);
 }

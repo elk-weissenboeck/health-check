@@ -76,8 +76,8 @@ function groupCardTemplate(group) {
               <!-- Kopfzeile: links Titel/URL/Fields/Headers, rechts Latenz + Statusbadge -->
               <div class="d-flex justify-content-between align-items-center w-100">
                 <div class="d-flex flex-column">
-                  <span class="fw-medium">${escapeHtml(s.label)}</span>
-                  <small class="text-secondary svc-url">${escapeHtml(s.url)}</small>
+                  <span class="fw-medium mb-1">${escapeHtml(s.label)}</span>
+                  <small class="text-secondary svc-url mb-1">${escapeHtml(s.url)}</small>
 
                   <div class="service-fields mt-1" id="fields-${group.key}-${s.key}"></div>
                   <div class="service-headers mt-1" id="headers-${group.key}-${s.key}"></div>
@@ -386,6 +386,19 @@ function formatBytes(n){
   return `${n.toFixed(n<10&&i>0?1:0)} ${units[i]}`;
 }
 
+function formatTtlSeconds(sec) {
+  const n = Number(sec);
+  if (!Number.isFinite(n) || n < 0) return sec;
+  const h = Math.floor(n / 3600);
+  const m = Math.floor((n % 3600) / 60);
+  const s = Math.floor(n % 60);
+  return [
+    h ? `${h}h` : null,
+    m ? `${m}m` : null,
+    (h === 0 && m === 0) ? `${s}s` : (s ? `${s}s` : null)
+  ].filter(Boolean).join(" ");
+}
+
 function renderServiceFields(groupKey, serviceDef, data) {
   const container = document.getElementById(`fields-${groupKey}-${serviceDef.key}`);
   if (!container) return;
@@ -423,17 +436,21 @@ function renderServiceHeaders(groupKey, serviceDef, headers) {
   const containerId = `headers-${groupKey}-${serviceDef.key}`;
   const container = document.getElementById(containerId);
   if (!container) return;
-  const defs = serviceDef.headers || [];
-  if (!headers || defs.length === 0) { container.innerHTML = ""; return; }
 
-  const parts = defs.map(h => {
+  const defs = serviceDef.headers || [];
+  if (!headers) { container.innerHTML = ""; return; }
+
+  // 1) Normale, konfigurierte Header rendern (wie gehabt)
+  const parts = (defs.length ? defs : []).map(h => {
     const name = String(h.name || '').toLowerCase();
     const raw  = headers[name];
     if (raw == null) return ''; // Header fehlt -> nichts anzeigen
 
     // Formatter wiederverwenden
     let val = raw;
-    if (h.format && FORMATTERS[h.format]) val = FORMATTERS[h.format](isFinite(+raw) ? +raw : raw);
+    if (h.format && FORMATTERS[h.format]) {
+      val = FORMATTERS[h.format](isFinite(+raw) ? +raw : raw);
+    }
 
     // Badge-Farbe bestimmen
     let badgeClass = null;
@@ -448,8 +465,39 @@ function renderServiceHeaders(groupKey, serviceDef, headers) {
     return `<span class="sh-item">${labelHtml} ${valueHtml}</span>`;
   }).filter(Boolean);
 
+  // 2) Automatischer Cache-Hinweis, wenn x-proxy-cache vorhanden ist
+  const cacheHeader   = headers['x-proxy-cache'];
+  const cacheTtlRaw   = headers['x-proxy-cache-ttl'];
+
+  if (cacheHeader != null) {
+    // Übliche Werte sind HIT / MISS / BYPASS etc.
+    const cacheState = String(cacheHeader).toUpperCase();
+    const isPositive = cacheState === 'HIT';
+    const badgeClass = isPositive ? 'text-bg-info' : 'text-bg-secondary';
+
+    let ttlSuffix = '';
+    if (cacheTtlRaw != null && cacheTtlRaw !== '') {
+      const ttlNice = formatTtlSeconds(cacheTtlRaw);
+      ttlSuffix = ` · TTL ${escapeHtml(ttlNice)}`;
+    }
+
+    const title = isPositive
+      ? 'Antwort wurde vom Proxy-Cache geliefert.'
+      : 'Proxy-Cache-Status';
+
+    parts.push(
+      `<small class="sh-item">
+         <small class="sh-label">Cache:</small>
+         <small class="sh-value" title="${escapeHtml(title)}">
+           ${escapeHtml(cacheState)}${ttlSuffix}
+         </small>
+       </small>`
+    );
+  }
+
   container.innerHTML = parts.join("");
 }
+
 
 // =======================
 // OPTIONS (URLs zeigen/verstecken, Auto-Refresh) + Cookies
