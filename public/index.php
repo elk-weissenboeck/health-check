@@ -141,6 +141,6 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   </main>
 
   <script src="<?= htmlspecialchars($BOOTSTRAP_JS) ?>"></script>
-  <script src="./assets/js/status.js?t=<?=time()?>" defer></script>
+  <script type="module" src="./src/app/main.js?t=<?=time()?>"></script>
 </body>
 </html>
