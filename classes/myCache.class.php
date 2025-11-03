@@ -3,7 +3,7 @@
 final class myCache
 {
     public const DEFAULT_TTL = 300; // Sekunden (5 Minuten)
-    public const DIR         = __DIR__ . '/cache';
+    public const DIR         = __DIR__ . '/../cache';
     public const DEBUG       = false;
 
     /**
