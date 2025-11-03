@@ -13,13 +13,16 @@
 
 declare(strict_types=1);
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // -----------------------------------------------------------------------------
 // Klassen LADEN
 // -----------------------------------------------------------------------------
-require __DIR__ . '/myHelpers.class.php';
-require __DIR__ . '/myCurl.class.php';
-require __DIR__ . '/myCache.class.php';
+require __DIR__ . '/../classes/myHelpers.class.php';
+require __DIR__ . '/../classes/myCurl.class.php';
+require __DIR__ . '/../classes/myCache.class.php';
 
 
 // -----------------------------------------------------------------------------

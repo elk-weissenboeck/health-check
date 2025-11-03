@@ -1,0 +1,513 @@
+{
+  "version": 1,
+  "maintenance": {
+    "active": false,
+    "title": "Geplante Wartung",
+    "message": "Heute 22:00–23:00 Uhr",
+    "start": "2025-11-01T22:00:00+01:00",
+    "end": "2025-11-03T23:00:00+01:00"
+  },
+  "groups": [
+    {
+      "key": "hfsrv",
+      "title": "HybridForms Server",
+      "description": null,
+      "services": [
+        {
+          "key": "hfsrv-elk-prod",
+          "label": "Elk Prodserver (win9)",
+          "url": "https://forms.elk.at",
+          "method": "HEAD",
+          "warning": null,
+          "warning": "enable CORS"
+        },
+        {
+          "key": "hfsrv-elkkampa-test",
+          "label": "Elk/Kampa Testserver (win82)",
+          "url": "https://forms-test.elkkampa.com/",
+          "method": "HEAD",
+          "warning": null,
+          "headers": [
+             { "label": "Server", "name": "x-hf-serverversion" },
+             { "label": ".NET", "name": "x-net-version" }
+          ]
+        },
+        {
+          "key": "hfsrv-elkkampa-prod",
+          "label": "Elk/Kampa Prodserver (win80)",
+          "url": "https://forms.elkkampa.com/",
+          "method": "HEAD",
+          "warning": null,
+          "headers": [
+             { "label": "Server", "name": "x-hf-serverversion" },
+             { "label": ".NET", "name": "x-net-version" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hfppl",
+      "title": "HybridForms Pipelines",
+      "description": "Datenüberleitung ElkAb <> HybridForms",
+      "services": [
+        {
+          "key": "hf-enterprised-full",
+          "label": "Unternehmensdaten alle Stages",
+          "url": "proxy.php?key=hf-enterprise-full",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-enterprised-quick",
+          "label": "Unternehmensdaten für S5+S6",
+          "url": "proxy.php?key=hf-enterprise-quick",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-hauseubergabe-ninox",
+          "label": "Hauseubergabe Ninox",
+          "url": "proxy.php?key=hf-hauseubergabe-ninox",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-hauseubergabe-documents",
+          "label": "Hauseubergabe Dokumente",
+          "url": "proxy.php?key=hf-hauseubergabe-documents",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-hauseubergabe-pictures",
+          "label": "Hauseubergabe Fotos",
+          "url": "proxy.php?key=hf-hauseubergabe-pictures",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-maengelkostenanzeige",
+          "label": " Maengel-Kosten-Anzeige",
+          "url": "proxy.php?key=hf-maengelkostenanzeige",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-planbesprechung",
+          "label": "Planbesprechung",
+          "url": "proxy.php?key=hf-planbesprechung",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-protokolle",
+          "label": "Alle Protokolle",
+          "url": "proxy.php?key=hf-protokolle",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-qualitaetsmanagement",
+          "label": "Qualitaetsmanagement",
+          "url": "proxy.php?key=hf-qualitaetsmanagement",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-regieschein",
+          "label": "Regieschein",
+          "url": "proxy.php?key=hf-regieschein",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "hf-wochenbericht",
+          "label": "Wochenbericht",
+          "url": "proxy.php?key=hf-wochenbericht",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bemusterung",
+      "title": "Online-Bemusterung",
+      "description": "(Web-Tool)",
+      "services": [
+        {
+          "key": "bmu-frontend",
+          "label": "Frontend",
+          "url": "https://bemusterung.elk.at/login/",
+          "method": "HEAD",
+          "warning": null
+        },
+        {
+          "key": "getArticles",
+          "label": "API Artikeln",
+          "url": "https://bemu-api.elk.at/getArticles.php",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getArticlesById",
+          "label": "API Artikeldetail",
+          "url": "https://bemu-api.elk.at/getArticleById.php?id=AL-VISAAPP-00000",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getGroups",
+          "label": "API Gruppen",
+          "url": "https://bemu-api.elk.at/getGroups.php",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getStyleGroups",
+          "label": "API Designgruppen",
+          "url": "https://bemu-api.elk.at/getStyleGroups.php",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "getPriceGroups",
+          "label": "API Preisgruppen",
+          "url": "https://bemu-api.elk.at/getPriceGroups.php",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        }
+      ]
+    },
+    {
+      "key": "odoo",
+      "title": "Odoo",
+      "description": null,
+      "services": [
+        {
+          "key": "odoo-frontend",
+          "label": "Frontend",
+          "url": "https://odoo-elk.elkschrems.co.at/web/login",
+          "method": "HEAD",
+          "warning": null
+        },
+        {
+          "key": "odoo-status",
+          "label": "API Status",
+          "url": "https://odoo-api.elk.at/status.php",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "status", "equals": "up" },
+          "fields": [
+            { "label": "Version", "path": "odoo" }
+          ]
+        },
+        {
+          "key": "odoo-getJobs",
+          "label": "API Jobs",
+          "url": "https://odoo-api.elk.at/getJobs.php?v2",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "odoo-getReferences",
+          "label": "API Referenzen",
+          "url": "https://odoo-api.elk.at/getReferences.php?v2",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        }
+      ]
+    },
+    {
+      "key": "html5app",
+      "title": "Html5App",
+      "description": "Hausfinder im XP-Center",
+      "services": [
+        {
+          "key": "html5app-ppl-prod",
+          "label": "Pipeline",
+          "url": "proxy.php?key=html5app-ppl-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "html5app-api-status",
+          "label": "API Status",
+          "url": "https://html5app-prod.elk.at/",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "status", "equals": "up" }
+        },
+        {
+          "key": "html5app-allHouses",
+          "label": "API Sortiment",
+          "url": "https://html5app-prod.elk.at/v1/all-houses?v2",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "results", "minLen": 1 }
+        },
+        {
+          "key": "html5app-houseById",
+          "label": "API Detailseite",
+          "url": "https://html5app-prod.elk.at/v1/houses/317",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "title", "equals": "Now 129" }
+        }
+      ]
+    },
+    {
+      "key": "webseiten",
+      "title": "Webseiten",
+      "description": "Öffentliche und interne Seiten",
+      "services": [
+        {
+          "key": "elk.at",
+          "label": "elk.at",
+          "url": "https://www.elk.at",
+          "method": "HEAD",
+          "warning": null
+        }
+      ]
+    },
+    {
+      "key": "moodle",
+      "title": "Moodle",
+      "description": "Online-Akademie",
+      "services": [
+        {
+          "key": "moodle",
+          "label": "Status",
+          "url": "proxy.php?key=moodle",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "userid", "equals": 1478, "format":  "number" },
+          "fields": [
+            { "label": "Release", "path": "release" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "elkbau-calc",
+      "title": "Elkbau Kalkulations Tool",
+      "description": "Tool von Robert Sachetti",
+      "services": [
+        {
+          "key": "elkbau-frontend",
+          "label": "Frontend",
+          "url": "https://projekte.elkbau.at/login",
+          "method": "HEAD",
+          "warning": null
+        },
+        {
+          "key": "elkbau-calc-prod",
+          "label": "Pipeline",
+          "url": "proxy.php?key=elkbau-calc-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "elkbau-api-prod",
+          "label": "API Status Prod",
+          "url": "https://api-projekte.elkbau.at/",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "status", "equals": "up" },
+           "fields": [
+            { "label": "debug", "path": "debug", "format": "bool" },
+            { "label": "laravel", "path": "laravel" }
+          ]
+        },
+        {
+          "key": "elkbau-api-test",
+          "label": "API Status Test",
+          "url": "https://api-test-projekte.elkbau.at/",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "status", "equals": "up" },
+           "fields": [
+            { "label": "debug", "path": "debug", "format": "bool" },
+            { "label": "laravel", "path": "laravel" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nextcloud",
+      "title": "Nextcloud",
+      "description": "Dokumentenablage",
+      "services": [
+        {
+          "key": "nc-vis",
+          "label": "VIS",
+          "url": "proxy.php?key=nc-vis",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-lis2",
+          "label": "LIS 2",
+          "url": "proxy.php?key=nc-lis2",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-fileshare",
+          "label": "Fileshare",
+          "url": "proxy.php?key=nc-fileshare",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-kpat-prod",
+          "label": "Kundenportal AT Prod",
+          "url": "proxy.php?key=nc-kpat-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-kpat-stage",
+          "label": "Kundenportal AT Test",
+          "url": "proxy.php?key=nc-kpat-stage",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-kpde-prod",
+          "label": "Kundenportal DE Prod",
+          "url": "proxy.php?key=nc-kpde-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        },
+        {
+          "key": "nc-kpde-stage",
+          "label": "Kundenportal DE Test",
+          "url": "proxy.php?key=nc-kpde-stage",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
+          "fields": [
+            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
+            { "label": "PHP", "path": "ocs.data.server.php.version" },
+            { "label": "Websrv", "path": "ocs.data.server.webserver" },
+            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
+          ]
+        }
+      ]
+    }
+  ]
+}

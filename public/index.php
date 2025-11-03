@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/../vendor/autoload.php';
+define('APP_ROOT', dirname(__DIR__)); // -> Projektwurzel neben vendor/, public/, config/
+require_once APP_ROOT . '/public/vendor/autoload.php';
 
 $BOOTSTRAP_CSS = '../vendor/twbs/bootstrap/dist/css/bootstrap.min.css';
 $BOOTSTRAP_JS  = '../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js';
