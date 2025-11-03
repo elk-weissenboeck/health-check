@@ -18,7 +18,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   <link rel="stylesheet" href="<?= htmlspecialchars($BI_CSS) ?>">
 
   <!-- Eigenes CSS -->
-  <link rel="stylesheet" href="./assets/css/status.css?t=<?=time()?>">
+  <link rel="stylesheet" href="./src/status.css?t=<?=time()?>">
 </head>
 
 <body>
