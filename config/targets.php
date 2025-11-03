@@ -214,8 +214,9 @@ return [
 
     
   ],
+  
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)
-  //['type' => 'jenkins'] => [
+  // 'jenkins' => [
   //  'url'      => "{$jenkinsTngBase}/some/api",
   //  'method'   => 'GET',
   //  'auth'     => ['type' => 'basic', 'user' => $secrets['JENKINS_USER'], 'pass' => $secrets['JENKINS_TOKEN']],
@@ -223,6 +224,7 @@ return [
   //  'headers'  => ['Accept' => 'application/json'],
   //  ,
   //],
+  
   // Bearer-Token aus secrets
   //'other-api' => [
   //  'url'      => 'https://api.other/health',
@@ -231,4 +233,34 @@ return [
   //  'query'    => ['format' => 'json', 'foo' => 'bar'],
   //  'verifySSL' => true,
   //],
+  
+  // JSON-POST
+  //'create-user' => [
+  //  'url'      => 'https://api.example.com/users',
+  //  'method'   => 'POST',
+  //  'body'     => ['json' => ['name' => 'Alice', 'role' => 'admin']],
+  //  'headers'  => ['Authorization' => 'Bearer ' . $secrets['API_TOKEN']],
+  //],
+  
+  // Form-POST
+  //'login' => [
+  //  'url'      => 'https://api.example.com/login',
+  //  'method'   => 'POST',
+  //  'body'     => ['form' => ['username' => 'u', 'password' => 'p']],
+  //],
+  
+  //Raw-POST (z. B. XML)
+  //'send-xml' => [
+  //  'url'      => 'https://api.example.com/xml',
+  //  'method'   => 'POST',
+  //  'body'     => ['raw' => '<req><id>123</id></req>'],
+  //  'headers'  => ['Content-Type' => 'application/xml'],
+  //],
+  
+  //Passthrough vom Client (Body durchreichen)
+  //'proxy-post' => [
+  //  'url'             => 'https://api.example.com/echo',
+  //  'method'          => 'POST',
+  //  'passthroughBody' => true,  // Body aus php://input übernehmen
+  //]
 ];
