@@ -9,6 +9,8 @@ final class myCurl
      
     private static $DEBUG = false; 
 
+    public const DEFAULT_TIMEOUT = 10; // Sekunden
+
     public static function request(string $finalUrl, string $method, array $t, array $secrets): array
     {
         $ch = curl_init();
@@ -21,7 +23,7 @@ final class myCurl
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, myHelpers::DEFAULT_TIMEOUT);
+        curl_setopt($ch, CURLOPT_TIMEOUT, self::DEFAULT_TIMEOUT);
 
         // SSL
         $verifySSL = myHelpers::verifySSL($t);

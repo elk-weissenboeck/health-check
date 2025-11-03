@@ -2,7 +2,6 @@
 
 final class myHelpers
 {
-    public const DEFAULT_TIMEOUT = 8; // Sekunden
 
     /**
      * Liefert Target anhand key oder beendet mit 404.
