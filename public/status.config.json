@@ -14,6 +14,7 @@
       "description": null,
       "services": [
         {
+          "active": false,
           "key": "hfsrv-elk-prod",
           "label": "Elk Prodserver (win9)",
           "url": "https://forms.elk.at",

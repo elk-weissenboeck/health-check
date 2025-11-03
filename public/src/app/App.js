@@ -41,6 +41,16 @@ export class App {
   async refreshAll() {
     const groupStates = await Promise.all(this.groups.map(async (g) => {
       const results = await Promise.all(g.services.map(async (s) => {
+        if (s.active === false) {
+          // Badge neutral markieren und nichts prüfen
+          const badge = document.getElementById(`badge-${g.key}-${s.key}`);
+          const latency = document.getElementById(`latency-${g.key}-${s.key}`);
+          if (badge) { badge.className = 'badge px-3 text-bg-secondary'; badge.textContent = 'INAKTIV'; }
+          if (latency) { latency.textContent = '—'; }
+          // als "ok" zählen, damit der Gruppenstatus nicht rot wird
+          return true;
+        }
+  
         const r = await this.checker.check(s.url, s.method, s.expect);
         this.view.setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value, s);
         this.details.renderServiceFields(g.key, s, r.data);
