@@ -18,8 +18,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-enterprise-quick' => [
@@ -27,8 +27,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-hauseubergabe-ninox' => [
@@ -36,8 +36,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-hauseubergabe-documents' => [
@@ -45,8 +45,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-hauseubergabe-pictures' => [
@@ -54,8 +54,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-maengelkostenanzeige' => [
@@ -63,8 +63,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-planbesprechung' => [
@@ -72,8 +72,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-protokolle' => [
@@ -81,8 +81,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-qualitaetsmanagement' => [
@@ -90,8 +90,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'hf-regieschein' => [
@@ -99,16 +99,16 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
   ],
   'hf-wochenbericht' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'elkbau-calc-prod' => [
@@ -116,8 +116,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'html5app-ppl-prod' => [
@@ -125,8 +125,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
-    'headers'  => ['Accept: application/json'],
-    'verifySSL' => false
+    'headers'  => ['Accept: application/json']
+    
     
   ],
   'nc-vis' => [
@@ -134,8 +134,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_VIS_TOKEN']],
     'query'    => ['format' => 'json'],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
     
   ],
   'nc-lis2' => [
@@ -143,8 +143,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_LIS2_TOKEN']],
     'query'    => ['format' => 'json'],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
     
   ],
   'nc-fileshare' => [
@@ -152,8 +152,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_FLS_TOKEN']],
     'query'    => ['format' => 'json'],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
     
   ],
   'nc-kpat-prod' => [
@@ -161,8 +161,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPAT_PRD_TOKEN']],
     'query'    => ['format' => 'json'],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
     
   ],
   'nc-kpat-stage' => [
@@ -170,8 +170,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPAT_STG_TOKEN']],
     'query'    => ['format' => 'json'],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
     
   ],
   'nc-kpde-prod' => [
@@ -179,8 +179,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPDE_PRD_TOKEN']],
     'query'    => ['format' => 'json'],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
     
   ],
   'nc-kpde-stage' => [
@@ -188,8 +188,8 @@ return [
     'method'   => 'GET',
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPDE_STG_TOKEN']],
     'query'    => ['format' => 'json'],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
     
   ],
   'moodle' => [
@@ -201,8 +201,8 @@ return [
       'wsfunction' => 'core_webservice_get_site_info',
       'moodlewsrestformat' => 'json'
     ],
-    'headers'  => null,
-    'sslVerify' => true
+    'headers'  => null
+    
   ],
   'odoo-prod' => [
     'url'      => 'https://odoo-elk.elkschrems.co.at/web/webclient/version_info',
@@ -210,8 +210,8 @@ return [
     'body'     => ['json' => ['jsonrpc' => '2.0', 'method' => 'call', 'params' => []]],
     'auth'     => null,
     'query'    => null,
-    'headers'  => null,
-    'sslVerify' => false
+    'headers'  => ['Content-Type: application/json']
+
     
   ],
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)
@@ -221,7 +221,7 @@ return [
   //  'auth'     => ['type' => 'basic', 'user' => $secrets['JENKINS_USER'], 'pass' => $secrets['JENKINS_TOKEN']],
   //  'query'    => 'foo=bar&x=1',
   //  'headers'  => ['Accept' => 'application/json'],
-  //  'verifySSL' => false,
+  //  ,
   //],
   // Bearer-Token aus secrets
   //'other-api' => [

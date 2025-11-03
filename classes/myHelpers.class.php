@@ -94,7 +94,7 @@ final class myHelpers
         if (array_key_exists('insecure', $t)) {
             return !$t['insecure'];
         }
-        return true;
+        return false;
     }
 
     /**

@@ -239,26 +239,29 @@
       ]
     },
     {
-      "key": "odoo",
-      "title": "Odoo",
+      "key": "odoo-prod",
+      "title": "Odoo Prod",
       "description": null,
       "services": [
         {
-          "key": "odoo-prod",
-          "label": "Status Prod",
-          "url": "proxy.php?key=odoo-prod&nocache=1",
-          "method": "HEAD",
-          "warning": null
+          "key": "odoo-prod-status",
+          "label": "Core Status",
+          "url": "proxy.php?key=odoo-prod",
+          "method": "GET",
+          "warning": null,
+          "fields": [
+            { "label": "Version", "path": "result.server_version" }
+          ]
         },
         {
-          "key": "odoo-frontend",
-          "label": "Frontend",
+          "key": "odoo-prod-login",
+          "label": "Frontend Login",
           "url": "https://odoo-elk.elkschrems.co.at/web/login",
           "method": "HEAD",
           "warning": null
         },
         {
-          "key": "odoo-status",
+          "key": "odoo-prod-api-status",
           "label": "API Status",
           "url": "https://odoo-api.elk.at/status.php",
           "method": "GET",
@@ -269,7 +272,7 @@
           ]
         },
         {
-          "key": "odoo-getJobs",
+          "key": "odoo-prod-api-getJobs",
           "label": "API Jobs",
           "url": "https://odoo-api.elk.at/getJobs.php?v2",
           "method": "GET",
@@ -277,7 +280,7 @@
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
-          "key": "odoo-getReferences",
+          "key": "odoo-prod-api-getReferences",
           "label": "API Referenzen",
           "url": "https://odoo-api.elk.at/getReferences.php?v2",
           "method": "GET",

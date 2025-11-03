@@ -7,7 +7,7 @@ final class myCurl
      * - wendet SSL-Optionen, Header und Auth an
      */
      
-    private static $DEBUG = true;  // ggf. via myHelpers Konstante steuern
+    private static $DEBUG = false; 
 
     public static function request(string $finalUrl, string $method, array $t, array $secrets): array
     {
@@ -26,7 +26,6 @@ final class myCurl
         // SSL
         $verifySSL = myHelpers::verifySSL($t);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $verifySSL);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $verifySSL ? 2 : 0);
 
         // Header
         $headers = myHelpers::normalizeHeaders($t['headers'] ?? []);
@@ -148,20 +147,33 @@ final class myCurl
         // Execute
         $resp = curl_exec($ch);
         if ($resp === false) {
-            $err = curl_error($ch);
+            $errNo = curl_errno($ch);
+            $err   = curl_error($ch);
+            $info  = curl_getinfo($ch); // enthält URL, IP, SSL-Protokoll, Redirects etc.
+
             curl_close($ch);
+
+            if (self::$DEBUG) {
+                header('X-Debug-curl-errno: ' . $errNo);
+                header('X-Debug-curl-error: ' . $err);
+                header('X-Debug-url: ' . ($info['url'] ?? $finalUrl));
+                header('X-Debug-primary-ip: ' . ($info['primary_ip'] ?? ''));
+                header('X-Debug-ssl-proto: ' . ($info['ssl_verify_result'] ?? ''));
+            }
+            
             http_response_code(502);
             header('Content-Type: text/plain; charset=utf-8');
-            exit('Upstream error: ' . $err);
+            exit('Upstream error (cURL): ['.$errNo.'] '.$err);
         }
 
         // Split
         $headerSize  = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $status      = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpCode    = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $contentType = (string) (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: '');
         $body        = substr($resp, $headerSize);
+        $respHeaders = substr($resp, 0, $headerSize);
 
         curl_close($ch);
-        return [$status, $contentType, $body];
+        return [$httpCode, $contentType, $body];
     }
 }
