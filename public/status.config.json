@@ -244,6 +244,13 @@
       "description": null,
       "services": [
         {
+          "key": "odoo-prod",
+          "label": "Status Prod",
+          "url": "proxy.php?key=odoo-prod&nocache=1",
+          "method": "HEAD",
+          "warning": null
+        },
+        {
           "key": "odoo-frontend",
           "label": "Frontend",
           "url": "https://odoo-elk.elkschrems.co.at/web/login",

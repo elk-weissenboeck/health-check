@@ -203,6 +203,15 @@ return [
     ],
     'headers'  => null,
     'sslVerify' => true
+  ],
+  'odoo-prod' => [
+    'url'      => 'https://odoo-elk.elkschrems.co.at/web/webclient/version_info',
+    'method'   => 'POST',
+    'body'     => ['json' => ['jsonrpc' => '2.0', 'method' => 'call', 'params' => []]],
+    'auth'     => null,
+    'query'    => null,
+    'headers'  => null,
+    'sslVerify' => false
     
   ],
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)

@@ -6,6 +6,9 @@ final class myCurl
      * Führt eine HTTP-Anfrage aus und liefert [status, contentType, body].
      * - wendet SSL-Optionen, Header und Auth an
      */
+     
+    private static $DEBUG = true;  // ggf. via myHelpers Konstante steuern
+
     public static function request(string $finalUrl, string $method, array $t, array $secrets): array
     {
         $ch = curl_init();
@@ -83,6 +86,63 @@ final class myCurl
         // HEAD-Requests ohne Body
         if ($method === 'HEAD') {
             curl_setopt($ch, CURLOPT_NOBODY, true);
+        }
+
+        // ---------- Request-Body (für POST/PUT/PATCH/DELETE) ----------
+        $payload = null;
+        $hasBodyMethod = in_array($method, ['POST','PUT','PATCH','DELETE'], true);
+
+        // Body aus Targets oder optional Passthrough vom Client übernehmen
+        if ($hasBodyMethod) {
+            // 1) Explizit aus targets.php
+            if (isset($t['body']) && is_array($t['body'])) {
+                if (array_key_exists('json', $t['body'])) {
+                    // JSON-Body
+                    $payload = json_encode($t['body']['json'], JSON_UNESCAPED_SLASHES);
+                    // Content-Type setzen, falls nicht bereits gesetzt
+                    $hasCT = false;
+                    foreach ($headers as $h) {
+                        if (stripos($h, 'content-type:') === 0) { $hasCT = true; break; }
+                    }
+                    if (!$hasCT) $headers[] = 'Content-Type: application/json; charset=utf-8';
+                } elseif (array_key_exists('form', $t['body'])) {
+                    // application/x-www-form-urlencoded
+                    $payload = http_build_query($t['body']['form'], '', '&', PHP_QUERY_RFC3986);
+                    $hasCT = false;
+                    foreach ($headers as $h) {
+                        if (stripos($h, 'content-type:') === 0) { $hasCT = true; break; }
+                    }
+                    if (!$hasCT) $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+                } elseif (array_key_exists('raw', $t['body'])) {
+                    // Raw-String (du kannst Content-Type über headers im Target setzen)
+                    $payload = (string)$t['body']['raw'];
+                } elseif (array_key_exists('multipart', $t['body'])) {
+                    // multipart/form-data (Array-Struktur; ggf. mit CURLFile-Objekten)
+                    // Kein Content-Type manuell setzen, cURL generiert Boundary automatisch.
+                    $payload = $t['body']['multipart'];
+                }
+            }
+            // 2) Oder Body-Passthrough vom Client (wenn im Target erlaubt)
+            elseif (!empty($t['passthroughBody'])) {
+                $payload = file_get_contents('php://input');
+                // Content-Type vom Client wird automatisch weitergereicht, falls du ihn
+                // als Header in $headers schon übernommen hast – sonst hier optional parsen.
+            }
+
+            if ($payload !== null) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            }
+        }
+        
+        // --- DEBUG: cURL verbose in Logdatei ---
+        if (self::$DEBUG) {
+            $fp = fopen(__DIR__ . '/../log/curl-debug.log', 'ab');
+            if ($fp) {
+                curl_setopt($ch, CURLOPT_VERBOSE, true);
+                curl_setopt($ch, CURLOPT_STDERR, $fp);
+                // optional: Anfrage-ID ausgeben
+                fwrite($fp, "\\n==== ".date('c')." ".($method)." ".$finalUrl." ===="."\\n");
+            }
         }
 
         // Execute
