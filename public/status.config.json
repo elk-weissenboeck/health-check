@@ -505,6 +505,7 @@
           ]
         },
         {
+          "active": true,
           "key": "nc-kpde-stage",
           "label": "Kundenportal DE Test",
           "url": "proxy.php?key=nc-kpde-stage",
