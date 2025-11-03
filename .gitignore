@@ -2,3 +2,4 @@ config/secrets.php
 vendor/
 cache/*.json
 public/cache/*.json
+log/*.log
