@@ -49,7 +49,7 @@ export class Templates {
                   </div>
 
                   <div class="d-flex align-items-center gap-3 me-3">
-                    <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
+                    <small class="svc-latency text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
 
                     <span class="position-relative d-inline-block" id="statusWrap-${group.key}-${s.key}">
                       <span class="badge rounded-pill text-bg-secondary px-3" id="badge-${group.key}-${s.key}">N/A</span>

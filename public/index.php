@@ -89,6 +89,20 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
             <input class="form-check-input" type="checkbox" id="optShowHeaders">
             <label class="form-check-label" for="optShowHeaders">Headers anzeigen</label>
           </div>
+
+          <!-- Reaktionszeit zeigen/verstecken -->
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="optShowLatency">
+            <label class="form-check-label" for="optShowLatency">Server-Reaktionszeit anzeigen</label>
+          </div>
+
+          <!-- Optionsblock beim Laden automatisch öffnen -->
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="optOpenOptionsOnLoad">
+            <label class="form-check-label" for="optOpenOptionsOnLoad">
+              Optionsblock beim Laden geöffnet
+            </label>
+          </div>
           
           <!-- Auto-Refresh + Intervall -->
           <div class="d-flex align-items-center gap-2">
@@ -104,13 +118,6 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
             </select>
           </div>
           
-          <!-- Optionsblock beim Laden automatisch öffnen -->
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="optOpenOptionsOnLoad">
-            <label class="form-check-label" for="optOpenOptionsOnLoad">
-              Optionsblock beim Laden geöffnet
-            </label>
-          </div>
 
           <!-- Expand/Collapse -->
           <div class="btn-group btn-group-sm" role="group" aria-label="Expand/Collapse all">

@@ -2,12 +2,13 @@ import { Collapse } from '../ui/Collapse.js';
 
 const OPTIONS_COOKIE = 'statusOptions';
 const OPTIONS_DEFAULT = {
-  showHeaders: true,
-  showUrls: true,
+  showHeaders: false,
+  showUrls: false,
+  showAttr: false,
+  showLatency: false,
   autoRefresh: false,
   refreshInterval: 30,
   openOptionsOnLoad: false,
-  showAttr: undefined, // rückwärtskompatibel
 };
 
 export class OptionsManager {
@@ -45,6 +46,7 @@ export class OptionsManager {
     const open = byId('optOpenOptionsOnLoad');
     const attr = byId('optShowAttr');
     const head = byId('optShowHeaders');
+    const latency = byId('optShowLatency');
 
     if (show) show.checked = !!opts.showUrls;
     if (auto) auto.checked = !!opts.autoRefresh;
@@ -52,10 +54,12 @@ export class OptionsManager {
     if (open) open.checked = !!opts.openOptionsOnLoad;
     if (attr) attr.checked = !!opts.showAttr;
     if (head) head.checked = !!opts.showHeaders;
+    if (latency) latency.checked = !!opts.showLatency;
 
     document.body.classList.toggle('hide-urls', !opts.showUrls);
     document.body.classList.toggle('hide-attr', !opts.showAttr);
     document.body.classList.toggle('hide-headers', !opts.showHeaders);
+    document.body.classList.toggle('hide-latency', !opts.showLatency);
 
     if (this.autoTimer) { clearInterval(this.autoTimer); this.autoTimer = null; }
     if (opts.autoRefresh) {

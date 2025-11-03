@@ -41,7 +41,11 @@ body {
 /* Attribute ausblendbar machen */
 .hide-attr .svc-attr { display: none; }
 
+/* Server Headers ausblendbar machen */
 .hide-headers .svc-header { display: none; }
+
+/* Reaktionszeit ausblendbar machen */
+.hide-latency .svc-latency { display: none !important;}
 
 /* kompaktere Options-Card auf kleineren Screens */
 @media (max-width: 576px) {
