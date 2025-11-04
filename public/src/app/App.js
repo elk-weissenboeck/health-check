@@ -4,6 +4,7 @@ import { ServiceChecker } from '../services/ServiceChecker.js';
 import { ServiceDetails } from '../ui/ServiceDetails.js';
 import { StatusView } from '../ui/StatusView.js';
 import { Collapse } from '../ui/Collapse.js';
+import { OwnerModal } from '../ui/OwnerModal.js';
 
 export class App {
   constructor() {
@@ -15,6 +16,7 @@ export class App {
     this.checker = new ServiceChecker();
     this.details = new ServiceDetails();
     this.view = new StatusView();
+    this.ownerModal = new OwnerModal();
 
     // bequem für Debugging
     window.__healthResults = this.healthResults;
@@ -42,15 +44,12 @@ export class App {
     const groupStates = await Promise.all(this.groups.map(async (g) => {
       const results = await Promise.all(g.services.map(async (s) => {
         if (s.active === false) {
-          // Badge neutral markieren und nichts prüfen
           const badge = document.getElementById(`badge-${g.key}-${s.key}`);
           const latency = document.getElementById(`latency-${g.key}-${s.key}`);
           if (badge) { badge.className = 'badge px-3 text-bg-secondary'; badge.textContent = 'INAKTIV'; }
           if (latency) { latency.textContent = '—'; }
-          // als "ok" zählen, damit der Gruppenstatus nicht rot wird
           return true;
         }
-  
         const r = await this.checker.check(s.url, s.method, s.expect);
         this.view.setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value, s);
         this.details.renderServiceFields(g.key, s, r.data);
@@ -106,4 +105,14 @@ export class App {
       }
     }
   }
+
+    showOwner(groupKey, serviceKey) {
+      const g = this.groups.find(x => x.key === groupKey);
+      const s = g?.services?.find(x => x.key === serviceKey);
+      const upn = s?.owner?.upn || null; // nur Service-Owner akzeptieren
+      if (!upn) return;                  // kein Icon ⇒ kein Modal
+      const label = s?.label || s?.key || '';
+      this.ownerModal.open(upn, label);
+    }
+
 }

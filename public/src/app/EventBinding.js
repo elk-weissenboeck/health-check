@@ -26,5 +26,17 @@ export class EventBinding {
     this.on('optAutoRefresh', 'change', (e) => { this.optionsManager.options.autoRefresh = !!e.target.checked; this.optionsManager.apply(); });
     this.on('optRefreshInterval', 'change', (e) => { this.optionsManager.options.refreshInterval = parseInt(e.target.value, 10) || 30; this.optionsManager.apply(); });
     this.on('optOpenOptionsOnLoad', 'change', (e) => { this.optionsManager.options.openOptionsOnLoad = !!e.target.checked; this.optionsManager.apply(); });
+
+    // Delegation für Owner-Icon
+    const gc = document.getElementById('groupsContainer');
+    if (gc) {
+      gc.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('.owner-btn');
+        if (!btn) return;
+        const g = btn.getAttribute('data-owner-group');
+        const s = btn.getAttribute('data-owner-service');
+        this.app.showOwner(g, s);
+      });
+    }
   }
 }

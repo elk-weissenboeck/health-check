@@ -19,8 +19,8 @@
           "label": "Elk Prodserver (win9)",
           "url": "https://forms.elk.at",
           "method": "HEAD",
-          "warning": null,
-          "warning": "enable CORS"
+          "warning": "enable CORS",
+          "owner": { "upn": "georg.weissenboeck@elk.at" }
         },
         {
           "key": "hfsrv-elkkampa-test",
@@ -252,7 +252,8 @@
           "warning": null,
           "fields": [
             { "label": "Version", "path": "result.server_version" }
-          ]
+          ],
+          "owner": { "upn": "franz.habison@elk.at" }
         },
         {
           "key": "odoo-prod-login",

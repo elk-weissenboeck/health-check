@@ -41,7 +41,15 @@ export class Templates {
               <div class="list-group-item d-flex flex-column align-items-stretch">
                 <div class="d-flex justify-content-between align-items-center w-100">
                   <div class="d-flex flex-column">
-                    <span class="fw-medium mb-1">${escapeHtml(s.label)}</span>
+                    <span class="fw-medium mb-1">
+                      ${escapeHtml(s.label)}
+                      ${s.owner?.upn ? `
+                        <button type="button" class="btn btn-sm btn-link p-0 align-baseline owner-btn"
+                                title="Service Owner anzeigen"
+                                data-owner-group="${group.key}" data-owner-service="${s.key}">
+                          <i class="bi bi-person-badge"></i>
+                        </button>` : ``}
+                    </span>
                     <small class="text-secondary svc-url mb-1">${escapeHtml(s.url)}</small>
 
                     <div class="service-fields svc-attr mt-1" id="fields-${group.key}-${s.key}"></div>
@@ -49,7 +57,7 @@ export class Templates {
                   </div>
 
                   <div class="d-flex align-items-center gap-3 me-3">
-                    <small class="svc-latency text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
+                    <small class="text-secondary d-none d-sm-inline" id="latency-${group.key}-${s.key}">– ms</small>
 
                     <span class="position-relative d-inline-block" id="statusWrap-${group.key}-${s.key}">
                       <span class="badge rounded-pill text-bg-secondary px-3" id="badge-${group.key}-${s.key}">N/A</span>
