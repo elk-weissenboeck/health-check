@@ -21,6 +21,9 @@ header('Content-Type: application/json; charset=utf-8');
 /**
  * Konfiguration
  */
+$tenantId     = $secrets['ENTRA_TENANT_ID'];
+$clientId     = $secrets['ENTRA_APP_CLIENT'];
+$clientSecret = $secrets['ENTRA_APP_SECRET'];
 $scopes = ['https://graph.microsoft.com/.default'];
 
 
@@ -213,3 +216,4 @@ foreach ($users as $userId) {
     $out['users'][] = $entry;
 }
 
+echo json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
