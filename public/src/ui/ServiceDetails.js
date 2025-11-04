@@ -25,7 +25,7 @@ export class ServiceDetails {
       const labelHtml = f.label ? `<small class="sf-label">${this._esc(f.label)}:</small>` : '';
       const valueHtml = badgeClass
         ? `<small class="badge ${badgeClass}">${this._esc(String(val))}</small>`
-        : `<small class="sf-value">${this._esc(String(val))}</small>`;
+        : `<small class="sf-value badge text-bg-secondary">${this._esc(String(val))}</small>`;
 
       return `<small class="sf-item">${labelHtml} ${valueHtml}</small>`;
     });
@@ -84,7 +84,7 @@ export class ServiceDetails {
       parts.push(
         `<small class="sh-item">
            <small class="sh-label">Cache:</small>
-           <small class="sh-value" title="${this._esc(title)}">
+           <small class="sh-value badge text-bg-secondary" title="${this._esc(title)}">
              ${this._esc(cacheState)}${ttlSuffix}
            </small>
          </small>`

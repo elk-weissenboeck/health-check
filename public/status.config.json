@@ -354,9 +354,9 @@
           "warning": null,
           "expect": { "jsonPath": "environment", "equals": "prod"  },
           "fields": [
-            { "label": "Rex-Version", "path": "rexVersion" },
-            { "label": "Php-Version", "path": "phpVersion" },
-            { "label": "DocRoot", "path": "docRoot" }
+            { "label": "Version", "path": "rexVersion" },
+            { "label": "PHP", "path": "phpVersion" },
+            { "label": "docRoot", "path": "docRoot" }
           ]
         }
       ]

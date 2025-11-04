@@ -159,6 +159,11 @@ body {
   border-left: .5rem solid var(--bs-warning-border-subtle, #ffc107);
 }
 
+.sh-value,
+.sf-value {
+  font-weight: 400 !important;
+    
+}
 .text-warning small, .list-group-item small.text-warning {
   font-style: italic;
   opacity: 0.9;

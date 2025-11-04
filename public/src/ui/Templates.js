@@ -52,8 +52,8 @@ export class Templates {
                     </span>
                     <small class="text-secondary svc-url mb-1">${escapeHtml(s.url)}</small>
 
-                    <div class="service-fields svc-attr mt-1" id="fields-${group.key}-${s.key}"></div>
-                    <div class="service-headers svc-header mt-1" id="headers-${group.key}-${s.key}"></div>
+                    <div class="service-fields svc-attr mt-2" id="fields-${group.key}-${s.key}"></div>
+                    <div class="service-headers svc-header mt-2" id="headers-${group.key}-${s.key}"></div>
                   </div>
 
                   <div class="d-flex align-items-center gap-3 me-3">
