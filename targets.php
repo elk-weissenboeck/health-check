@@ -19,8 +19,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-enterprise-quick' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json",
@@ -220,7 +218,28 @@ return [
     'query'    => null,
     'headers'  => ['Rex-Token: ' . $secrets['REX_TOKEN']]
   ],
-  
+  'rex-elkhaus-de-prod' => [
+    'url'      => 'https://www.elkhaus.de/api/serverinfo',
+    'method'   => 'GET',
+    'body'     => null,
+    'auth'     => null,
+    'query'    => null,
+    'headers'  => ['Rex-Token: ' . $secrets['REX_TOKEN']]
+  ],
+  'odoo-prod-pipeline-check' => [
+    'url'      => 'https://jenkins-tng.elkschrems.co.at/job/odoo_freebsd_prov_run_prod_v13/lastCompletedBuild/api/json',
+    'method'   => 'GET',
+    'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
+    'headers'  => ['Accept: application/json']
+  ],
+  'odoo-prod-pipeline-transport' => [
+    'url'      => 'http://jenkins.sec.elkschrems.co.at/job/Provisionsabrechnung/lastCompletedBuild/api/json',
+    'method'   => 'GET',
+    'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
+    'headers'  => ['Accept: application/json']
+  ],
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)
   // 'jenkins' => [
   //  'url'      => "{$jenkinsTngBase}/some/api",

@@ -67,10 +67,12 @@ final class myCurl
                       case 'jenkins':
                         // Versand exakt wie Basic mit user/password:
                         // Wenn URL 'jenkins-tng' enthält -> TNG-Creds, sonst klassische Jenkins-Creds
-                        $isTng = (strpos((string)($t['url'] ?? ''), 'jenkins-tng') !== false);
-                        $user  = 'georgw';
-                        $pass  = $isTng ? ($secrets['JENKINS_TNG_TOKEN'] ?? '') : ($secrets['JENKINS_TOKEN'] ?? '');
-                        curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $pass);
+                        if(strpos((string)($t['url'] ?? ''), 'jenkins-tng') !== false)
+                          curl_setopt($ch, CURLOPT_USERPWD, 'georgw:' . $secrets['JENKINS_TNG_TOKEN']);
+                        else if(strpos((string)($t['url'] ?? ''), 'jenkins.sec') !== false)
+                          curl_setopt($ch, CURLOPT_USERPWD, 'georgw:' . $secrets['JENKINS_SNT_TOKEN']);
+                        else
+                          curl_setopt($ch, CURLOPT_USERPWD, 'georgw:' . $secrets['JENKINS_TOKEN']);
                         break;
 
                       case 'nextcloud':

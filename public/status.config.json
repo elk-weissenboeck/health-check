@@ -264,7 +264,7 @@
         },
         {
           "key": "odoo-prod-api-status",
-          "label": "API Status",
+          "label": "API Bewerber Status",
           "url": "https://odoo-api.elk.at/status.php",
           "method": "GET",
           "warning": null,
@@ -279,7 +279,10 @@
           "url": "https://odoo-api.elk.at/getJobs.php?v2",
           "method": "GET",
           "warning": null,
-          "expect": { "jsonPath": "results", "minLen": 1 }
+          "expect": { "jsonPath": "results", "minLen": 1 },
+          "fields": [
+            { "label": "Items", "path": "results.length" }
+          ]        
         },
         {
           "key": "odoo-prod-api-getReferences",
@@ -287,7 +290,34 @@
           "url": "https://odoo-api.elk.at/getReferences.php?v2",
           "method": "GET",
           "warning": null,
-          "expect": { "jsonPath": "results", "minLen": 1 }
+          "expect": { "jsonPath": "results", "minLen": 1 },
+          "fields": [
+            { "label": "Items", "path": "results.length" }
+          ]
+        },
+        {
+          "key": "odoo-prod-pipeline-check",
+          "label": "Pipeline Check",
+          "url": "proxy/proxy.php?key=odoo-prod-pipeline-check",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
+        },
+        {
+          "key": "odoo-prod-pipeline-transport",
+          "label": "Pipeline Transport",
+          "url": "proxy/proxy.php?key=odoo-prod-pipeline-transport",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
+          ]
         }
       ]
     },
@@ -341,15 +371,35 @@
       "services": [
         {
           "key": "elk.at-prod",
-          "label": "elk.at",
+          "label": "www.elk.at",
           "url": "https://www.elk.at",
           "method": "HEAD",
           "warning": null
         },
         {
           "key": "rex-elk-at-prod",
-          "label": "elk.at Redaxo",
+          "label": "www.elk.at Redaxo",
           "url": "proxy/proxy.php?key=rex-elk-at-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "environment", "equals": "prod"  },
+          "fields": [
+            { "label": "Version", "path": "rexVersion" },
+            { "label": "PHP", "path": "phpVersion" },
+            { "label": "docRoot", "path": "docRoot" }
+          ]
+        },
+        {
+          "key": "elkhaus.de-prod",
+          "label": "www.elkhaus.de",
+          "url": "https://www.elkhaus.de",
+          "method": "HEAD",
+          "warning": null
+        },
+        {
+          "key": "rex-elkhaus-de-prod",
+          "label": "www.elkhaus.de Redaxo",
+          "url": "proxy/proxy.php?key=rex-elkhaus-de-prod",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "environment", "equals": "prod"  },

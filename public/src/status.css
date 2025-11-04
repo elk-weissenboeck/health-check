@@ -10,10 +10,6 @@ body {
   border-left: .5rem solid var(--status-color, var(--bs-success));
 }
 
-.list-status .badge {
-  min-width: 3rem;
-}
-
 .card-group-status .status-dot {
   width: .65rem;
   height: .65rem;
