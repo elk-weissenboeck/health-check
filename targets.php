@@ -211,8 +211,14 @@ return [
     'auth'     => null,
     'query'    => null,
     'headers'  => ['Content-Type: application/json']
-
-    
+  ],
+  'rex-elk-at-prod' => [
+    'url'      => 'https://www.elk.at/api/serverinfo',
+    'method'   => 'GET',
+    'body'     => null,
+    'auth'     => null,
+    'query'    => null,
+    'headers'  => ['Rex-Token: ' . $secrets['REX_TOKEN']]
   ],
   
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)

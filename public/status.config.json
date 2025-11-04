@@ -340,11 +340,24 @@
       "description": "Öffentliche und interne Seiten",
       "services": [
         {
-          "key": "elk.at",
+          "key": "elk.at-prod",
           "label": "elk.at",
           "url": "https://www.elk.at",
           "method": "HEAD",
           "warning": null
+        },
+        {
+          "key": "rex-elk-at-prod",
+          "label": "elk.at Redaxo",
+          "url": "proxy/proxy.php?key=rex-elk-at-prod",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "environment", "equals": "prod"  },
+          "fields": [
+            { "label": "Rex-Version", "path": "rexVersion" },
+            { "label": "Php-Version", "path": "phpVersion" },
+            { "label": "DocRoot", "path": "docRoot" }
+          ]
         }
       ]
     },
