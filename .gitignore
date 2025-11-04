@@ -1,5 +1,5 @@
-config/secrets.php
+secrets.php
 vendor/
 cache/*.json
-public/cache/*.json
+public/proxy/cache/*.json
 log/*.log

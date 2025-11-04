@@ -54,7 +54,7 @@
         {
           "key": "hf-enterprised-full",
           "label": "Unternehmensdaten alle Stages",
-          "url": "proxy.php?key=hf-enterprise-full",
+          "url": "proxy/proxy.php?key=hf-enterprise-full",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -66,7 +66,7 @@
         {
           "key": "hf-enterprised-quick",
           "label": "Unternehmensdaten für S5+S6",
-          "url": "proxy.php?key=hf-enterprise-quick",
+          "url": "proxy/proxy.php?key=hf-enterprise-quick",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -78,7 +78,7 @@
         {
           "key": "hf-hauseubergabe-ninox",
           "label": "Hauseubergabe Ninox",
-          "url": "proxy.php?key=hf-hauseubergabe-ninox",
+          "url": "proxy/proxy.php?key=hf-hauseubergabe-ninox",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -90,7 +90,7 @@
         {
           "key": "hf-hauseubergabe-documents",
           "label": "Hauseubergabe Dokumente",
-          "url": "proxy.php?key=hf-hauseubergabe-documents",
+          "url": "proxy/proxy.php?key=hf-hauseubergabe-documents",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -102,7 +102,7 @@
         {
           "key": "hf-hauseubergabe-pictures",
           "label": "Hauseubergabe Fotos",
-          "url": "proxy.php?key=hf-hauseubergabe-pictures",
+          "url": "proxy/proxy.php?key=hf-hauseubergabe-pictures",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -114,7 +114,7 @@
         {
           "key": "hf-maengelkostenanzeige",
           "label": " Maengel-Kosten-Anzeige",
-          "url": "proxy.php?key=hf-maengelkostenanzeige",
+          "url": "proxy/proxy.php?key=hf-maengelkostenanzeige",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -126,7 +126,7 @@
         {
           "key": "hf-planbesprechung",
           "label": "Planbesprechung",
-          "url": "proxy.php?key=hf-planbesprechung",
+          "url": "proxy/proxy.php?key=hf-planbesprechung",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -138,7 +138,7 @@
         {
           "key": "hf-protokolle",
           "label": "Alle Protokolle",
-          "url": "proxy.php?key=hf-protokolle",
+          "url": "proxy/proxy.php?key=hf-protokolle",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -150,7 +150,7 @@
         {
           "key": "hf-qualitaetsmanagement",
           "label": "Qualitaetsmanagement",
-          "url": "proxy.php?key=hf-qualitaetsmanagement",
+          "url": "proxy/proxy.php?key=hf-qualitaetsmanagement",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -162,7 +162,7 @@
         {
           "key": "hf-regieschein",
           "label": "Regieschein",
-          "url": "proxy.php?key=hf-regieschein",
+          "url": "proxy/proxy.php?key=hf-regieschein",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -174,7 +174,7 @@
         {
           "key": "hf-wochenbericht",
           "label": "Wochenbericht",
-          "url": "proxy.php?key=hf-wochenbericht",
+          "url": "proxy/proxy.php?key=hf-wochenbericht",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -247,7 +247,7 @@
         {
           "key": "odoo-prod-status",
           "label": "Core Status",
-          "url": "proxy.php?key=odoo-prod",
+          "url": "proxy/proxy.php?key=odoo-prod",
           "method": "GET",
           "warning": null,
           "fields": [
@@ -298,7 +298,7 @@
         {
           "key": "html5app-ppl-prod",
           "label": "Pipeline",
-          "url": "proxy.php?key=html5app-ppl-prod",
+          "url": "proxy/proxy.php?key=html5app-ppl-prod",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -355,7 +355,7 @@
         {
           "key": "moodle",
           "label": "Status",
-          "url": "proxy.php?key=moodle",
+          "url": "proxy/proxy.php?key=moodle",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "userid", "equals": 1478, "format":  "number" },
@@ -380,7 +380,7 @@
         {
           "key": "elkbau-calc-prod",
           "label": "Pipeline",
-          "url": "proxy.php?key=elkbau-calc-prod",
+          "url": "proxy/proxy.php?key=elkbau-calc-prod",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
@@ -423,7 +423,7 @@
         {
           "key": "nc-vis",
           "label": "VIS",
-          "url": "proxy.php?key=nc-vis",
+          "url": "proxy/proxy.php?key=nc-vis",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
@@ -437,7 +437,7 @@
         {
           "key": "nc-lis2",
           "label": "LIS 2",
-          "url": "proxy.php?key=nc-lis2",
+          "url": "proxy/proxy.php?key=nc-lis2",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
@@ -451,7 +451,7 @@
         {
           "key": "nc-fileshare",
           "label": "Fileshare",
-          "url": "proxy.php?key=nc-fileshare",
+          "url": "proxy/proxy.php?key=nc-fileshare",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
@@ -465,7 +465,7 @@
         {
           "key": "nc-kpat-prod",
           "label": "Kundenportal AT Prod",
-          "url": "proxy.php?key=nc-kpat-prod",
+          "url": "proxy/proxy.php?key=nc-kpat-prod",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
@@ -479,7 +479,7 @@
         {
           "key": "nc-kpat-stage",
           "label": "Kundenportal AT Test",
-          "url": "proxy.php?key=nc-kpat-stage",
+          "url": "proxy/proxy.php?key=nc-kpat-stage",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
@@ -493,7 +493,7 @@
         {
           "key": "nc-kpde-prod",
           "label": "Kundenportal DE Prod",
-          "url": "proxy.php?key=nc-kpde-prod",
+          "url": "proxy/proxy.php?key=nc-kpde-prod",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
@@ -508,7 +508,7 @@
           "active": true,
           "key": "nc-kpde-stage",
           "label": "Kundenportal DE Test",
-          "url": "proxy.php?key=nc-kpde-stage",
+          "url": "proxy/proxy.php?key=nc-kpde-stage",
           "method": "GET",
           "warning": null,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },

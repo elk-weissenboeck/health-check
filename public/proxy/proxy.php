@@ -20,16 +20,16 @@ error_reporting(E_ALL);
 // -----------------------------------------------------------------------------
 // Klassen LADEN
 // -----------------------------------------------------------------------------
-require __DIR__ . '/../classes/myHelpers.class.php';
-require __DIR__ . '/../classes/myCurl.class.php';
-require __DIR__ . '/../classes/myCache.class.php';
+require __DIR__ . '/../../classes/myHelpers.class.php';
+require __DIR__ . '/../../classes/myCurl.class.php';
+require __DIR__ . '/../../classes/myCache.class.php';
 
 
 // -----------------------------------------------------------------------------
 // 0) SECRETS & TARGETS LADEN
 // -----------------------------------------------------------------------------
-$secrets = require dirname(__DIR__) . '/config/secrets.php';
-$targets = require dirname(__DIR__) . '/config/targets.php';
+$secrets = require dirname(__DIR__) . '/../secrets.php';
+$targets = require dirname(__DIR__) . '/../targets.php';
 
 
 // -----------------------------------------------------------------------------
