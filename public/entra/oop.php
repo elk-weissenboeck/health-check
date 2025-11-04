@@ -7,9 +7,9 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 */
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
-$secrets = require dirname(__DIR__) . '/secrets.php';
+$secrets = require dirname(__DIR__) . '/../secrets.php';
 
 use Microsoft\Graph\GraphServiceClient;
 use Microsoft\Kiota\Authentication\Oauth\ClientCredentialContext;
