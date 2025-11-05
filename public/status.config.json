@@ -47,6 +47,22 @@
       ]
     },
     {
+      "key": "levatis",
+      "title": "Levatis",
+      "description": null,
+      "services": [
+        {
+          "active": true,
+          "key": "levatis-prod",
+          "label": "Levatis 4",
+          "url": "https://start2.levatis.at/levatis4",
+          "method": "HEAD",
+          "warning": null,
+          "owner": { "upn": "support@levatis.com" }
+        }
+      ]
+    },
+    {
       "key": "hfppl",
       "title": "HybridForms Pipelines",
       "description": "Datenüberleitung ElkAb <> HybridForms",
