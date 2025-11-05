@@ -40,8 +40,8 @@
           "method": "HEAD",
           "warning": null,
           "headers": [
-             { "label": "Server", "name": "x-hf-serverversion" },
-             { "label": ".NET", "name": "x-net-version" }
+             { "label": "Server", "name": "x-serverver" },
+             { "label": ".NET", "name": "x-nodever" }
           ]
         }
       ]
