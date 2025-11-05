@@ -10,7 +10,7 @@ require '../vendor/autoload.php';
 require '../../classes/myEntra.class.php';
 
 $secrets = require dirname(__DIR__) . '/../secrets.php';
-
+$owners  = require dirname(__DIR__) . '/entra/serviceOwners.php';
 
 use App\Entra\MyEntra;
 
@@ -18,19 +18,13 @@ $entra = new myEntra(
     $secrets['ENTRA_TENANT_ID'],
     $secrets['ENTRA_APP_CLIENT'],
     $secrets['ENTRA_APP_SECRET'],
-    'Europe/Vienna',
-    3600,                           // in sekunden
+    'Europe/Vienna',                // timezone
+    3600,                           // cache time in secons
     __DIR__ . '/cache/'             // cache dir fallback
 );
  
 
-$entra->setFallbackDirectory([
-    'georg.weissenboeck@elk.at' => ['name' => 'Georg Weissenböck', 'email' => 'georg.weissenboeck@elk.at', 'durchwahl' => '527'],
-    'gabriele.schmid@elk.at' => ['name' => 'Gabi Schmid', 'email' => 'gabriele.schmid@elk.at', 'durchwahl' => '528'],
-    'lukas.faltin@elk.at' => ['name' => 'Lukas Faltin', 'email' => 'lukas.faltin@elk.at', 'durchwahl' => '529'],
-    'support@levatis.com' => ['name' => 'Hr. Weiss', 'email' => 'support@levatis.com', 'durchwahl' => '+ 43 (0) 5 700 900 700'],
-    'office@webdesignwien.co.at' => ['name' => 'Philipp Hofstätter', 'email' => 'office@webdesignwien.co.at', 'durchwahl' => '+43 699 10 50 65 38'],
-]);
+$entra->setFallbackDirectory($owners);
 
 header('Content-Type: application/json; charset=utf-8');
 

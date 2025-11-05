@@ -20,10 +20,10 @@ class myEntra
     /** @var array<string,array{name?:string,email?:string,durchwahl?:string}> */
     private array $fallbackDirectory = [];
 
-    private int $cacheTtlSeconds = 0;            // 0 = disabled
-    private string $cacheDir;                    // FS-Fallback dir
+    private int $cacheTtlSeconds = 0;         // 0 = disabled
+    private string $cacheDir;                 // FS-Fallback dir
+    private ?int $minRemainingTtl = null;     // kleinste verbleibende TTL aller Hits
     private array $cacheStats = ['hits' => 0, 'misses' => 0];
-    private ?int $minRemainingTtl = null; // kleinste verbleibende TTL aller Hits
 
     public function __construct(
         string $tenantId,
