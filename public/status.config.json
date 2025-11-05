@@ -52,12 +52,12 @@
       "description": null,
       "services": [
         {
-          "active": true,
+          "active": false,
           "key": "levatis-prod",
           "label": "Levatis 4",
-          "url": "https://start2.levatis.at/levatis4",
+          "url": "https://start2.levatis.at/levatis4/login",
           "method": "HEAD",
-          "warning": null,
+          "warning": "CORS disabled",
           "owner": { "upn": "support@levatis.com" }
         }
       ]
@@ -257,12 +257,12 @@
     },
     {
       "key": "odoo-prod",
-      "title": "Odoo Prod",
+      "title": "Odoo",
       "description": null,
       "services": [
         {
           "key": "odoo-prod-status",
-          "label": "Core Status",
+          "label": "Core",
           "url": "proxy/proxy.php?key=odoo-prod",
           "method": "GET",
           "warning": null,

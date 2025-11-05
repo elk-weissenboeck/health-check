@@ -11,7 +11,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Statusübersicht</title>
+  <title>Health-Check Dashboard</title>
 
   <!-- Bootstrap & Icons -->
   <link rel="stylesheet" href="<?= htmlspecialchars($BOOTSTRAP_CSS) ?>">
@@ -24,7 +24,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
 <body>
   <main class="container container-narrow py-4">
     <header class="mb-4">
-      <h1 class="h3 mb-1"><i class="bi bi-speedometer2 me-2"></i>Statusübersicht</h1>
+      <h1 class="h3 mb-1"><i class="bi bi-speedometer2 me-2"></i>Health-Check Dashboard</h1>
       <p class="text-secondary mb-0">Übersicht div. Systeme bei ELK/KAMPA</p>
     </header>
 

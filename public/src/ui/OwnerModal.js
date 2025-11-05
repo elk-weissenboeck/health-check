@@ -43,7 +43,7 @@ export class OwnerModal {
       <div class="modal-footer">
         <span class="me-auto text-secondary" id="${this.modalId}-status"></span>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
-        <a id="${this.modalId}-mailto" class="btn btn-primary" href="#">E-Mail schreiben</a>
+        <a id="${this.modalId}-mailto" class="btn btn-primary d-none" href="#">E-Mail schreiben</a>
       </div>
     </div>
   </div>
