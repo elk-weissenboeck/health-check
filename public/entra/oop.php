@@ -19,8 +19,8 @@ $entra = new myEntra(
     $secrets['ENTRA_APP_CLIENT'],
     $secrets['ENTRA_APP_SECRET'],
     'Europe/Vienna',
-    300,
-    __DIR__ . '/cache/'
+    3600,                           // in sekunden
+    __DIR__ . '/cache/'             // cache dir fallback
 );
  
 

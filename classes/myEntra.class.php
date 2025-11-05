@@ -23,6 +23,7 @@ class myEntra
     private int $cacheTtlSeconds = 0;            // 0 = disabled
     private string $cacheDir;                    // FS-Fallback dir
     private array $cacheStats = ['hits' => 0, 'misses' => 0];
+    private ?int $minRemainingTtl = null; // kleinste verbleibende TTL aller Hits
 
     public function __construct(
         string $tenantId,
@@ -52,42 +53,55 @@ class myEntra
 // signatur ändern: optional header ausgeben
     public function getUsersOofJson(array $users, bool $emitHeaders = false): string
     {
+        // &nocache=1  -> Cache-BY-PASS aktivieren (siehe Punkt 2)
+        $bypass = isset($_GET['nocache']) && $_GET['nocache'] === '1';
+
         $out = [
             'generatedAt' => (new \DateTimeImmutable('now', $this->targetTz))->format('c'),
             'timeZone'    => $this->targetTz->getName(),
-            // NEU: Cache-Summary (wird unten befüllt)
             'cache'       => [
-                'enabled'    => $this->cacheTtlSeconds > 0,
-                'ttlSeconds' => $this->cacheTtlSeconds,
-                'hits'       => 0,
-                'misses'     => 0,
+                'enabled'       => !$bypass && $this->cacheTtlSeconds > 0,
+                'ttlSeconds'    => $this->cacheTtlSeconds,
+                'hits'          => 0,
+                'misses'        => 0,
+                'minRemaining'  => null, // kleinste Rest-TTL unter allen Hits
+                'bypass'        => $bypass,
             ],
             'users'       => [],
         ];
 
-        // zurücksetzen
         $this->cacheStats = ['hits' => 0, 'misses' => 0];
+        $this->minRemainingTtl = null;
 
         foreach ($users as $userId) {
-            $out['users'][] = $this->getUserEntryCached($userId);
+            $out['users'][] = $this->getUserEntryCached($userId, $bypass);
         }
 
-        // Summary schreiben
-        $out['cache']['hits']   = $this->cacheStats['hits'];
-        $out['cache']['misses'] = $this->cacheStats['misses'];
+        $out['cache']['hits']        = $this->cacheStats['hits'];
+        $out['cache']['misses']      = $this->cacheStats['misses'];
+        $out['cache']['minRemaining']= $this->minRemainingTtl;
 
-        // Optional: HTTP-Header setzen (nur wenn sinnvoll)
         if ($emitHeaders) {
-            if ($this->cacheTtlSeconds > 0) {
+            if ($bypass) {
+                header('Cache-Control: no-store');
+                header('X-MyEntra-Cache: BYPASS');
+            } elseif ($this->cacheTtlSeconds > 0) {
                 header('Cache-Control: private, max-age=' . $this->cacheTtlSeconds);
+                $state = $this->cacheStats['hits'] > 0 ? 'HIT' : 'MISS';
+                header('X-MyEntra-Cache: ' . $state);
+                if ($this->minRemainingTtl !== null) {
+                    header('X-MyEntra-Cache-Remaining: ' . $this->minRemainingTtl);
+                }
             } else {
                 header('Cache-Control: no-store');
+                header('X-MyEntra-Cache: DISABLED');
             }
-            $hitOrMiss = ($this->cacheStats['hits'] > 0) ? 'HIT' : 'MISS';
-            header('X-MyEntra-Cache: ' . $hitOrMiss);
             header('X-MyEntra-Cache-Hits: ' . $this->cacheStats['hits']);
             header('X-MyEntra-Cache-Misses: ' . $this->cacheStats['misses']);
             header('X-MyEntra-Cache-TTL: ' . $this->cacheTtlSeconds);
+            if ($this->minRemainingTtl !== null) {
+                header('Age: ' . max(0, $this->cacheTtlSeconds - $this->minRemainingTtl));
+            }
         }
 
         return json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -96,33 +110,26 @@ class myEntra
 
     /* ===================== CACHE-LAYER ===================== */
 
-    private function getUserEntryCached(string $userId): array
+    private function getUserEntryCached(string $userId, bool $bypassCache = false): array
     {
-        $fromCache = false;
-        $entry = null;
-
-        if ($this->cacheTtlSeconds > 0) {
+        if (!$bypassCache && $this->cacheTtlSeconds > 0) {
             $key = $this->cacheKey($userId);
             $cached = $this->cacheGet($key);
             if ($cached !== null) {
-                $entry = $cached;
-                $fromCache = true;
+                $this->cacheStats['hits']++;
+                $this->minRemainingTtl = min($this->minRemainingTtl ?? PHP_INT_MAX, (int)$cached['remaining']);
+                $entry = $cached['data'];
+                $entry['cache'] = ['status' => 'hit', 'remainingSeconds' => (int)$cached['remaining']];
+                return $entry;
             }
         }
 
-        if ($entry === null) {
-            $entry = $this->buildUserEntry($userId);
-            if ($this->cacheTtlSeconds > 0) {
-                $this->cacheSet($this->cacheKey($userId), $entry, $this->cacheTtlSeconds);
-            }
-            $this->cacheStats['misses']++;
-            // pro-user flag
-            $entry['cache'] = ['status' => 'miss'];
-            return $entry;
+        $entry = $this->buildUserEntry($userId);
+        if (!$bypassCache && $this->cacheTtlSeconds > 0) {
+            $this->cacheSet($this->cacheKey($userId), $entry, $this->cacheTtlSeconds);
         }
-
-        $this->cacheStats['hits']++;
-        $entry['cache'] = ['status' => 'hit'];
+        $this->cacheStats['misses']++;
+        $entry['cache'] = ['status' => $bypassCache ? 'bypass' : 'miss', 'remainingSeconds' => 0];
         return $entry;
     }
 
@@ -136,43 +143,40 @@ class myEntra
     /** holt Wert aus APCu oder Dateisystem */
     private function cacheGet(string $key): ?array
     {
-        // APCu?
         if (function_exists('apcu_fetch') && ini_get('apc.enabled')) {
             $ok = false;
-            $val = apcu_fetch($key, $ok);
-            if ($ok && is_array($val)) return $val;
-            return null;
+            $payload = apcu_fetch($key, $ok);
+            if (!$ok || !is_array($payload) || !isset($payload['expires'], $payload['data'])) return null;
+            $remaining = max(0, (int)$payload['expires'] - time());
+            if ($remaining === 0) return null;
+            return ['data' => $payload['data'], 'remaining' => $remaining];
         }
-        // FS-Fallback
+
         $file = $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.json';
         if (!is_file($file)) return null;
-        $json = @file_get_contents($file);
-        if ($json === false) return null;
-
-        $payload = json_decode($json, true);
+        $payload = json_decode((string)@file_get_contents($file), true);
         if (!is_array($payload) || !isset($payload['expires'], $payload['data'])) return null;
-        if (time() >= (int)$payload['expires']) {
-            @unlink($file);
-            return null;
-        }
-        return is_array($payload['data']) ? $payload['data'] : null;
+
+        $remaining = max(0, (int)$payload['expires'] - time());
+        if ($remaining === 0) { @unlink($file); return null; }
+
+        return ['data' => $payload['data'], 'remaining' => $remaining];
     }
 
     /** setzt Wert in APCu oder Dateisystem */
     private function cacheSet(string $key, array $value, int $ttl): void
     {
         if ($ttl <= 0) return;
-
-        if (function_exists('apcu_store') && ini_get('apc.enabled')) {
-            @apcu_store($key, $value, $ttl);
-            return;
-        }
-        // FS-Fallback
-        $file = $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.json';
         $payload = [
             'expires' => time() + $ttl,
             'data'    => $value,
         ];
+
+        if (function_exists('apcu_store') && ini_get('apc.enabled')) {
+            @apcu_store($key, $payload, $ttl);
+            return;
+        }
+        $file = $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.json';
         @file_put_contents($file, json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), LOCK_EX);
     }
 
