@@ -58,7 +58,7 @@ export class ServiceDetails {
       const labelHtml = h.label ? `<small class="sh-label">${this._esc(h.label)}:</small>` : '';
       const valueHtml = badgeClass
         ? `<small class="badge ${badgeClass}">${this._esc(String(val))}</small>`
-        : `<small class="sh-value">${this._esc(String(val))}</small>`;
+        : `<small class="sh-value badge text-bg-secondary">${this._esc(String(val))}</small>`;
 
       return `<small class="sh-item">${labelHtml} ${valueHtml}</small>`;
     }).filter(Boolean);
