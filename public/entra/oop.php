@@ -22,7 +22,7 @@ $entra = new myEntra(
     300,
     __DIR__ . '/cache/'
 );
-
+ 
 
 $entra->setFallbackDirectory([
     'georg.weissenboeck@elk.at' => ['name' => 'Georg Weissenböck', 'email' => 'georg.weissenboeck@elk.at', 'durchwahl' => '527'],
@@ -33,6 +33,4 @@ $entra->setFallbackDirectory([
 
 header('Content-Type: application/json; charset=utf-8');
 
-echo $entra->getUsersOofJson([
-  $_GET['upn']
-]);
+echo $entra->getUsersOofJson([$_GET['upn']], true);
