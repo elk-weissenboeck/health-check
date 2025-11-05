@@ -112,10 +112,9 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
               <label class="form-check-label" for="optAutoRefresh">Auto-Refresh</label>
             </div>
             <select id="optRefreshInterval" class="form-select form-select-sm" style="width:auto">
-              <option value="15">15s</option>
-              <option value="30" selected>30s</option>
-              <option value="60">60s</option>
-              <option value="120">120s</option>
+              <option value="300">10min</option>
+              <option value="1800" selected>30min</option>
+              <option value="3600">60min</option>
             </select>
           </div>
           

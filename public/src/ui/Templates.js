@@ -44,10 +44,10 @@ export class Templates {
                     <span class="fw-medium mb-1">
                       ${escapeHtml(s.label)}
                       ${s.owner?.upn ? `
-                        <button type="button" class="btn btn-sm btn-link p-0 align-baseline owner-btn"
+                        <button type="button" class="btn btn-link btn-md p-0 align-baseline owner-btn"
                                 title="Service Owner anzeigen"
                                 data-owner-group="${group.key}" data-owner-service="${s.key}">
-                          <i class="bi bi-person-badge"></i>
+                          <i class="bi bi-person-fill-gear"></i>
                         </button>` : ``}
                     </span>
                     <small class="text-secondary svc-url mb-1">${escapeHtml(s.url)}</small>

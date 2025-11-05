@@ -28,6 +28,7 @@
           "url": "https://forms-test.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "headers": [
              { "label": "Server", "name": "x-serverver" },
              { "label": ".NET", "name": "x-nodever" }
@@ -39,6 +40,7 @@
           "url": "https://forms.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "headers": [
              { "label": "Server", "name": "x-serverver" },
              { "label": ".NET", "name": "x-nodever" }
@@ -73,6 +75,7 @@
           "url": "proxy/proxy.php?key=hf-enterprise-full",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -85,6 +88,7 @@
           "url": "proxy/proxy.php?key=hf-enterprise-quick",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -97,6 +101,7 @@
           "url": "proxy/proxy.php?key=hf-hauseubergabe-ninox",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -109,6 +114,7 @@
           "url": "proxy/proxy.php?key=hf-hauseubergabe-documents",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -121,6 +127,7 @@
           "url": "proxy/proxy.php?key=hf-hauseubergabe-pictures",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -133,6 +140,7 @@
           "url": "proxy/proxy.php?key=hf-maengelkostenanzeige",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -145,6 +153,7 @@
           "url": "proxy/proxy.php?key=hf-planbesprechung",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -157,6 +166,7 @@
           "url": "proxy/proxy.php?key=hf-protokolle",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -169,6 +179,7 @@
           "url": "proxy/proxy.php?key=hf-qualitaetsmanagement",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -181,6 +192,7 @@
           "url": "proxy/proxy.php?key=hf-regieschein",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -193,6 +205,7 @@
           "url": "proxy/proxy.php?key=hf-wochenbericht",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -211,7 +224,8 @@
           "label": "Frontend",
           "url": "https://bemusterung.elk.at/login/",
           "method": "HEAD",
-          "warning": null
+          "warning": null,
+          "owner": { "upn": "office@webdesignwien.co.at" }
         },
         {
           "key": "getArticles",
@@ -219,6 +233,7 @@
           "url": "https://bemu-api.elk.at/getArticles.php",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -227,6 +242,7 @@
           "url": "https://bemu-api.elk.at/getArticleById.php?id=AL-VISAAPP-00000",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -235,6 +251,7 @@
           "url": "https://bemu-api.elk.at/getGroups.php",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -243,6 +260,7 @@
           "url": "https://bemu-api.elk.at/getStyleGroups.php",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "results", "minLen": 1 }
         },
         {
@@ -251,6 +269,7 @@
           "url": "https://bemu-api.elk.at/getPriceGroups.php",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "results", "minLen": 1 }
         }
       ]

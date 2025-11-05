@@ -7,7 +7,7 @@ const OPTIONS_DEFAULT = {
   showAttr: false,
   showLatency: false,
   autoRefresh: false,
-  refreshInterval: 30,
+  refreshInterval: 1800,
   openOptionsOnLoad: false,
 };
 

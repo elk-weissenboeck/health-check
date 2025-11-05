@@ -29,6 +29,7 @@ $entra->setFallbackDirectory([
     'gabriele.schmid@elk.at' => ['name' => 'Gabi Schmid', 'email' => 'gabriele.schmid@elk.at', 'durchwahl' => '528'],
     'lukas.faltin@elk.at' => ['name' => 'Lukas Faltin', 'email' => 'lukas.faltin@elk.at', 'durchwahl' => '529'],
     'support@levatis.com' => ['name' => 'Hr. Weiss', 'email' => 'support@levatis.com', 'durchwahl' => '+ 43 (0) 5 700 900 700'],
+    'office@webdesignwien.co.at' => ['name' => 'Philipp Hofstätter', 'email' => 'office@webdesignwien.co.at', 'durchwahl' => '+43 699 10 50 65 38'],
 ]);
 
 header('Content-Type: application/json; charset=utf-8');
