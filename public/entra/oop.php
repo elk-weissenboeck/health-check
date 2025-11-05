@@ -18,7 +18,9 @@ $entra = new myEntra(
     $secrets['ENTRA_TENANT_ID'],
     $secrets['ENTRA_APP_CLIENT'],
     $secrets['ENTRA_APP_SECRET'],
-    'Europe/Vienna'
+    'Europe/Vienna',
+    300,
+    __DIR__ . '/cache/'
 );
 
 

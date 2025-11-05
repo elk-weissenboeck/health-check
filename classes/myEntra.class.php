@@ -19,6 +19,9 @@ class myEntra {
     /** @var array<string,array{name?:string,email?:string,durchwahl?:string}> */
     private array $fallbackDirectory = [];
 
+    private int $cacheTtlSeconds = 100;            // 0 = disabled
+    private string $cacheDir;                    // FS-Fallback dir
+    
     /**
      * @param string $tenantId
      * @param string $clientId
@@ -29,11 +32,19 @@ class myEntra {
         string $tenantId,
         string $clientId,
         string $clientSecret,
-        string $timeZone = 'Europe/Vienna'
+        string $timeZone = 'Europe/Vienna',
+        int $cacheTtlSeconds = 0,
+        ?string $cacheDir = null
     ) {
         $tokenContext = new ClientCredentialContext($tenantId, $clientId, $clientSecret);
         $this->graph = new GraphServiceClient($tokenContext, ['https://graph.microsoft.com/.default']);
         $this->targetTz = new DateTimeZone($timeZone);
+        
+        $this->cacheTtlSeconds = max(0, $cacheTtlSeconds);
+        $this->cacheDir = $cacheDir ?: (sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'myentra_cache');
+        if (!is_dir($this->cacheDir)) {
+            @mkdir($this->cacheDir, 0770, true);
+        }
     }
 
     /**
@@ -62,7 +73,7 @@ class myEntra {
         ];
 
         foreach ($users as $userId) {
-            $out['users'][] = $this->buildUserEntry($userId);
+            $out['users'][] = $this->getUserEntryCached($userId);
         }
 
         return json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -225,6 +236,75 @@ class myEntra {
     private function looksLikeEmail(string $s): bool
     {
         return (bool) filter_var($s, FILTER_VALIDATE_EMAIL);
+    }
+    
+    
+    private function getUserEntryCached(string $userId): array
+    {
+        if ($this->cacheTtlSeconds > 0) {
+            $key = $this->cacheKey($userId);
+            $cached = $this->cacheGet($key);
+            if ($cached !== null) {
+                return $cached;
+            }
+        }
+
+        $entry = $this->buildUserEntry($userId);
+
+        if ($this->cacheTtlSeconds > 0) {
+            $this->cacheSet($this->cacheKey($userId), $entry, $this->cacheTtlSeconds);
+        }
+        return $entry;
+    }
+
+    private function cacheKey(string $userId): string
+    {
+        // Zeitzone beeinflusst formatierte Zeiten → Bestandteil des Keys
+        $tz = $this->targetTz->getName();
+        return 'myentra:v1:'.$tz.':'.strtolower(trim($userId));
+    }
+
+    /** holt Wert aus APCu oder Dateisystem */
+    private function cacheGet(string $key): ?array
+    {
+        // APCu?
+        if (function_exists('apcu_fetch') && ini_get('apc.enabled')) {
+            $ok = false;
+            $val = apcu_fetch($key, $ok);
+            if ($ok && is_array($val)) return $val;
+            return null;
+        }
+        // FS-Fallback
+        $file = $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.json';
+        if (!is_file($file)) return null;
+        $json = @file_get_contents($file);
+        if ($json === false) return null;
+
+        $payload = json_decode($json, true);
+        if (!is_array($payload) || !isset($payload['expires'], $payload['data'])) return null;
+        if (time() >= (int)$payload['expires']) {
+            @unlink($file);
+            return null;
+        }
+        return is_array($payload['data']) ? $payload['data'] : null;
+    }
+
+    /** setzt Wert in APCu oder Dateisystem */
+    private function cacheSet(string $key, array $value, int $ttl): void
+    {
+        if ($ttl <= 0) return;
+
+        if (function_exists('apcu_store') && ini_get('apc.enabled')) {
+            @apcu_store($key, $value, $ttl);
+            return;
+        }
+        // FS-Fallback
+        $file = $this->cacheDir . DIRECTORY_SEPARATOR . md5($key) . '.json';
+        $payload = [
+            'expires' => time() + $ttl,
+            'data'    => $value,
+        ];
+        @file_put_contents($file, json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), LOCK_EX);
     }
 }
  

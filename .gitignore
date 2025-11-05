@@ -2,4 +2,5 @@ secrets.php
 vendor/
 cache/*.json
 public/proxy/cache/*.json
+public/entra/cache/*.json
 log/*.log
