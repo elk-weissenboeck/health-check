@@ -115,7 +115,6 @@
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "mantisUrl": "/mantis/getTickets.php?projectId=15;17&filterId=535",
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
@@ -129,6 +128,7 @@
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
+          "mantisUrl": "/mantis/getTickets.php?projectId=15;17&filterId=535",
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [
             { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
