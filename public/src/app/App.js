@@ -5,6 +5,7 @@ import { ServiceDetails } from '../ui/ServiceDetails.js';
 import { StatusView } from '../ui/StatusView.js';
 import { Collapse } from '../ui/Collapse.js';
 import { OwnerModal } from '../ui/OwnerModal.js';
+import { TicketModal } from '../ui/TicketModal.js';
 
 export class App {
   constructor() {
@@ -17,6 +18,7 @@ export class App {
     this.details = new ServiceDetails();
     this.view = new StatusView();
     this.ownerModal = new OwnerModal();
+    this.ticketsModal = new TicketModal();
 
     // bequem für Debugging
     window.__healthResults = this.healthResults;
@@ -114,5 +116,35 @@ export class App {
       const label = s?.label || s?.key || '';
       this.ownerModal.open(upn, label);
     }
+    
+    async showTickets(groupKey, serviceKey) {
+      const g = this.groups.find(x => x.key === groupKey);
+      const s = g?.services?.find(x => x.key === serviceKey);
+      const label = s?.label || s?.key || '';
+
+      // Ohne mantisUrl: nichts tun
+      const baseUrl = s?.mantisUrl;
+      if (!baseUrl) return;
+
+      // Wenn nötig, serviceKey als Param anhängen (nur wenn nicht schon vorhanden)
+      let url = baseUrl;
+      if (!/[?&]service=/.test(baseUrl)) {
+        url += (baseUrl.includes('?') ? '&' : '?') + `service=${encodeURIComponent(serviceKey)}`;
+      }
+
+      let data = null;
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        data = await res.json();
+      } catch (e) {
+        console.warn('[tickets] fetch failed', e);
+        return this.ticketsModal.open([], label); // leere Liste anzeigen
+      }
+
+      const issues = Array.isArray(data?.issues) ? data.issues : [];
+      this.ticketsModal.open(issues, label);
+    }
+
 
 }

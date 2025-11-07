@@ -49,6 +49,13 @@ export class Templates {
                                 data-owner-group="${group.key}" data-owner-service="${s.key}">
                           <i class="bi bi-person-fill-gear"></i>
                         </button>` : ``}
+                        
+                      ${s.mantisUrl ? `
+                        <button type="button" class="btn btn-sm btn-link p-0 align-baseline tickets-btn"
+                                title="Tickets anzeigen"
+                                data-tickets-group="${group.key}" data-tickets-service="${s.key}">
+                          <i class="bi bi-ticket-detailed"></i>
+                        </button>` : ``}
                     </span>
                     <small class="text-secondary svc-url mb-1">${escapeHtml(s.url)}</small>
 

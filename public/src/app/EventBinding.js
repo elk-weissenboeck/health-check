@@ -31,11 +31,19 @@ export class EventBinding {
     const gc = document.getElementById('groupsContainer');
     if (gc) {
       gc.addEventListener('click', (ev) => {
-        const btn = ev.target.closest('.owner-btn');
-        if (!btn) return;
-        const g = btn.getAttribute('data-owner-group');
-        const s = btn.getAttribute('data-owner-service');
-        this.app.showOwner(g, s);
+        const tbtn = ev.target.closest('.tickets-btn');
+        if (tbtn) {
+          const g = tbtn.getAttribute('data-tickets-group');
+          const s = tbtn.getAttribute('data-tickets-service');
+          this.app.showTickets(g, s);
+          return;
+        }
+        const obtn = ev.target.closest('.owner-btn');
+        if (obtn) {
+          const g = obtn.getAttribute('data-owner-group');
+          const s = obtn.getAttribute('data-owner-service');
+          this.app.showOwner(g, s);
+        }
       });
     }
   }
