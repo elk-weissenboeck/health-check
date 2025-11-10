@@ -65,6 +65,33 @@
       ]
     },
     {
+      "key": "foad",
+      "title": "FOAD / VisionMe",
+      "description": null,
+      "services": [
+        {
+          "active": true,
+          "key": "foad-stage-ldap",
+          "label": "LDAP Test",
+          "url": "https://foad-stage.elkkampa.com/api/status/ldap",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "connected", "equals": true, "format": "bool" },
+          "owner": { "upn": "gabriele.schmid@elk.at" }
+        },
+        {
+          "active": true,
+          "key": "foad-stage-api",
+          "label": "API Test",
+          "url": "https://foad-stage.elkkampa.com/api/status",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "status", "equals": "up" },
+          "owner": { "upn": "gabriele.schmid@elk.at" }
+        }
+      ]
+    },
+    {
       "key": "hfppl",
       "title": "HybridForms Pipelines",
       "description": "Datenüberleitung ElkAb <> HybridForms",
@@ -84,7 +111,7 @@
         },
         {
           "key": "hf-enterprised-quick",
-          "label": "Unternehmensdaten für S5+S6",
+          "label": "Unternehmensdaten für S1 / S5+S6",
           "url": "proxy/proxy.php?key=hf-enterprise-quick",
           "method": "GET",
           "warning": null,
