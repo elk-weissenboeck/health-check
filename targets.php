@@ -21,7 +21,7 @@ return [
     'headers'  => ['Accept: application/json']
   ],
   'hf-enterprise-quick' => [
-    'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20S5+S6/lastCompletedBuild/api/json",
+    'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Unternehmensdaten%20PROD%20Daily%20QUICK/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
