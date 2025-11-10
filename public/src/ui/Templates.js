@@ -12,7 +12,7 @@ export class Templates {
     const escapeHtml = Templates.escapeHtml;
     const collapseId = `collapse-${group.key}`;
     const headerId = `header-${group.key}`;
-
+ 
     return `
       <section class="card card-group-status" id="group-${group.key}" aria-live="polite">
         <div class="card-header card-header-toggle"
@@ -44,19 +44,19 @@ export class Templates {
                     <span class="fw-medium mb-1">
                       ${escapeHtml(s.label)}
                       ${s.owner?.upn ? `
-                        <button type="button" class="btn btn-link btn-md p-0 align-baseline owner-btn"
+                        <button type="button" class="btn btn-sm btn-link p-0 align-baseline owner-btn"
                                 title="Service Owner anzeigen"
                                 data-owner-group="${group.key}" data-owner-service="${s.key}">
-                          <i class="bi bi-person-fill-gear"></i>
+                          <i class="bi bi-person-badge"></i>
                         </button>` : ``}
-                        
-                      ${s.mantisUrl ? `
+                      ${(s.mantisURL || s.glpiURL) ? `
                         <button type="button" class="btn btn-sm btn-link p-0 align-baseline tickets-btn"
                                 title="Tickets anzeigen"
                                 data-tickets-group="${group.key}" data-tickets-service="${s.key}">
                           <i class="bi bi-ticket-detailed"></i>
                         </button>` : ``}
                     </span>
+
                     <small class="text-secondary svc-url mb-1">${escapeHtml(s.url)}</small>
 
                     <div class="service-fields svc-attr mt-2" id="fields-${group.key}-${s.key}"></div>

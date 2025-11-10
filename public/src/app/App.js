@@ -122,28 +122,12 @@ export class App {
       const s = g?.services?.find(x => x.key === serviceKey);
       const label = s?.label || s?.key || '';
 
-      // Ohne mantisUrl: nichts tun
-      const baseUrl = s?.mantisUrl;
-      if (!baseUrl) return;
+      const urls = {
+        mantis: s?.mantisURL || null,
+        glpi:   s?.glpiURL   || null,
+      };
 
-      // Wenn nötig, serviceKey als Param anhängen (nur wenn nicht schon vorhanden)
-      let url = baseUrl;
-      if (!/[?&]service=/.test(baseUrl)) {
-        url += (baseUrl.includes('?') ? '&' : '?') + `service=${encodeURIComponent(serviceKey)}`;
-      }
-
-      let data = null;
-      try {
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        data = await res.json();
-      } catch (e) {
-        console.warn('[tickets] fetch failed', e);
-        return this.ticketsModal.open([], label); // leere Liste anzeigen
-      }
-
-      const issues = Array.isArray(data?.issues) ? data.issues : [];
-      this.ticketsModal.open(issues, label);
+      this.ticketsModal.open(urls, label);
     }
 
 
