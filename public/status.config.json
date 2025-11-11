@@ -578,7 +578,12 @@
           "url": "https://secweb.elkschrems.co.at/status",
           "method": "GET",
           "warning": null,
-          "expect": { "jsonPath": "status", "equals": "up" }
+          "expect": { "jsonPath": "status", "equals": "up" },
+          "fields": [
+            { "label": "Websrv", "path": "webserver" },
+            { "label": "PHP", "path": "phpVersion" },
+            { "label": "docRoot", "path": "docRoot" }
+          ]
         },
         {
           "key": "aktspeichern-test-api",
@@ -587,7 +592,12 @@
           "method": "GET",
           "warning": null,
           "isDevEnv": true,
-          "expect": { "jsonPath": "status", "equals": "up" }
+          "expect": { "jsonPath": "status", "equals": "up" },
+          "fields": [
+            { "label": "Websrv", "path": "webserver" },
+            { "label": "PHP", "path": "phpVersion" },
+            { "label": "docRoot", "path": "docRoot" }
+          ]
         }
       ]
     },
