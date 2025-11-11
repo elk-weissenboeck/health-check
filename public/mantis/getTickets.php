@@ -14,7 +14,7 @@ $secrets = require dirname(__DIR__) . '/../secrets.php';
  
 $base       = 'https://mantis.elkschrems.co.at';
 $projectId  = $_GET['projectId'] ?? null;
-$filterTag   = $_GET['filterTag'] ?? null;
+$filterTag   = $_GET['filterByTag'] ?? null;
 $token      = $secrets['MANTIS_API_TOKEN']; 
 $target     = [
         'method' => 'GET',

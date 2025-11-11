@@ -155,7 +155,13 @@
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "mantisURL": "/mantis/getTickets.php?projectId=15;17&filterTag=pinnedToHC",
+          "mantis": {
+            "url": "/mantis/getTickets.php",
+            "queryParams": [
+              { "key": "projectId", "value": "15;17" },
+              { "key": "filterByTag", "value": "pinnedToHC" }
+            ]
+          },
           "glpiURL": "/glpi/getTickets.php",
           "expect": { "jsonPath": "result", "equals": "SUCCESS" },
           "fields": [

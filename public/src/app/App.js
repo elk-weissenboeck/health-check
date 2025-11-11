@@ -123,8 +123,8 @@ export class App {
       const label = s?.label || s?.key || '';
 
       const urls = {
-        mantis: s?.mantisURL || null,
-        glpi:   s?.glpiURL   || null,
+        mantis: s?.mantis || null,   // { url, queryParams:[{key,value}], filterByTag }
+        glpi:   s?.glpiURL || null   // string | null
       };
 
       this.ticketsModal.open(urls, label);

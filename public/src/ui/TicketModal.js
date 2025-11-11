@@ -2,6 +2,7 @@ export class TicketModal {
   constructor() {
     this.modalId = 'ticketsModal';
     this._loaded = { mantis: false, glpi: false };
+    this._meta   = { mantis: {}, glpi: {} };
     this.ensureModal();
   }
 
@@ -36,8 +37,11 @@ export class TicketModal {
         <div class="tab-content pt-3">
           <!-- Mantis -->
           <div class="tab-pane fade" id="${this.modalId}-pane-mantis" role="tabpanel" aria-labelledby="${this.modalId}-tab-mantis">
-            <div id="${this.modalId}-status-mantis" class="text-secondary mb-2"></div>
-            <div class="table-responsive">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div id="${this.modalId}-status-mantis" class="text-secondary"></div>
+              <div id="${this.modalId}-mantis-filter" class="text-secondary small"></div>
+            </div>
+            <div class="table-responsive table-bordered">
               <table class="table table-sm align-middle mb-0">
                 <thead><tr><th>Summary</th></tr></thead>
                 <tbody id="${this.modalId}-tbody-mantis"></tbody>
@@ -50,7 +54,7 @@ export class TicketModal {
             <div id="${this.modalId}-status-glpi" class="text-secondary mb-2"></div>
             <div class="table-responsive">
               <table class="table table-sm align-middle mb-0">
-                <thead><tr><th>Summary</th></tr></thead>
+                <thead><tr><th>angepinnte Tickets</th></tr></thead>
                 <tbody id="${this.modalId}-tbody-glpi"></tbody>
               </table>
             </div>
@@ -58,7 +62,6 @@ export class TicketModal {
         </div>
       </div>
       <div class="modal-footer">
-        <span class="me-auto text-secondary" id="${this.modalId}-footerStatus"></span>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
       </div>
     </div>
@@ -68,11 +71,10 @@ export class TicketModal {
     wrap.innerHTML = html;
     document.body.appendChild(wrap.firstElementChild);
 
-    // Tabs: Lazy-Load beim Aktivieren
     const tabsEl = document.getElementById(`${this.modalId}-tabs`);
     tabsEl?.addEventListener('shown.bs.tab', (ev) => {
       const id = ev.target?.id || '';
-      if (id.endsWith('-tab-mantis') && !this._loaded.mantis && this._urls?.mantis) {
+      if (id.endsWith('-tab-mantis') && !this._loaded.mantis && this._urls?.mantis?.url) {
         this._fetchAndRender('mantis', this._urls.mantis);
       }
       if (id.endsWith('-tab-glpi') && !this._loaded.glpi && this._urls?.glpi) {
@@ -107,16 +109,18 @@ export class TicketModal {
   _setCount(sys, n)   { const f = document.getElementById(`${this.modalId}-footerStatus`); if (f) f.textContent = `Anzahl (${sys}): ${n}`; }
 
   _linkFor(system, item) {
-    // Mantis: Anforderung – link = https://example.com?view.php?id=<id>
     if (system === 'mantis') {
       const id = item?.id ?? '';
       return id ? `https://mantis.elkschrems.co.at/view.php?id=${encodeURIComponent(id)}` : '#';
     }
-    // GLPI: wenn im Datensatz eine URL existiert, nutzen; sonst kein Link
-    if (system === 'glpi') {
-      return item?.url || '#';
-    }
+    if (system === 'glpi') return item?.url || '#';
     return '#';
+  }
+
+  _getParamValue(list, key) {
+    if (!Array.isArray(list) || !key) return '';
+    const found = list.find(p => String(p?.key) === String(key));
+    return (found && found.value != null) ? String(found.value) : '';
   }
 
   _render(system, issues) {
@@ -159,16 +163,49 @@ export class TicketModal {
     if (statusEl) statusEl.textContent = `Anzahl: ${list.length}`;
     this._setCount(system, list.length);
 
+    // Filteranzeige für Mantis: Wert aus queryParams[filterByTag]
+    if (system === 'mantis') {
+      const filt = document.getElementById(`${this.modalId}-mantis-filter`);
+      const tag = this._meta?.mantis?.filterByTag || '';
+      if (filt) filt.textContent = tag ? `Filter: ${tag}` : '';
+    }
+
     if (!window.bootstrap?.Modal) {
       alert(`${system.toUpperCase()} Tickets (${list.length})\n` + list.map(i => `${i.summary}`).join('\n'));
     }
   }
 
-  async _fetchAndRender(system, url) {
+  _buildUrlWithParams(baseUrl, kvList = []) {
+    try {
+      const u = new URL(baseUrl, window.location.origin);
+      const params = new URLSearchParams(u.search);
+      (kvList || []).forEach(({ key, value }) => {
+        if (key != null && value != null) params.set(String(key), String(value));
+      });
+      u.search = params.toString();
+      return u.toString();
+    } catch {
+      const qs = (kvList || [])
+        .filter(p => p && p.key != null && p.value != null)
+        .map(p => `${encodeURIComponent(p.key)}=${encodeURIComponent(p.value)}`)
+        .join('&');
+      return baseUrl + (baseUrl.includes('?') ? '&' : '?') + qs;
+    }
+  }
+
+  async _fetchAndRender(system, descriptor) {
     const statusEl = this._statusEl(system);
     const tbody = this._tbodyEl(system);
     if (statusEl) statusEl.textContent = 'Lade Ergebnisse…';
     if (tbody) tbody.innerHTML = '';
+
+    let url = '';
+    if (system === 'mantis') {
+      // descriptor = { url, queryParams:[{key,value}] }
+      url = this._buildUrlWithParams(descriptor.url, descriptor.queryParams);
+    } else if (system === 'glpi') {
+      url = descriptor; // string
+    }
 
     let data = null;
     try {
@@ -187,31 +224,32 @@ export class TicketModal {
   }
 
   open(urls, titleSuffix = '') {
-    // urls = { mantis: string|null, glpi: string|null }
+    // urls = { mantis: {url, queryParams:[{key,value}] } | null, glpi: string|null }
     this._urls = urls || {};
+    const mantisParams = this._urls?.mantis?.queryParams || [];
+    this._meta = {
+      mantis: { filterByTag: this._getParamValue(mantisParams, 'filterByTag') },
+      glpi: {}
+    };
     this._loaded = { mantis: false, glpi: false };
 
     const titleEl = document.getElementById(`${this.modalId}-title`);
     if (titleEl) titleEl.textContent = titleSuffix ? `Tickets – ${titleSuffix}` : 'Tickets';
 
-    // Tabs aktivieren/ausblenden je nach Verfügbarkeit
     const tabM = document.getElementById(`${this.modalId}-tab-mantis`);
     const tabG = document.getElementById(`${this.modalId}-tab-glpi`);
     const paneM = document.getElementById(`${this.modalId}-pane-mantis`);
     const paneG = document.getElementById(`${this.modalId}-pane-glpi`);
 
-    // visuell deaktivieren, wenn URL fehlt
-    const hasM = !!this._urls.mantis;
-    const hasG = !!this._urls.glpi;
+    const hasM = !!this._urls?.mantis?.url;
+    const hasG = !!this._urls?.glpi;
     tabM.parentElement.style.display = hasM ? '' : 'none';
     tabG.parentElement.style.display = hasG ? '' : 'none';
     paneM.style.display = hasM ? '' : 'none';
     paneG.style.display = hasG ? '' : 'none';
 
-    // Modal öffnen
     this._showModalSafely();
 
-    // Standard-Tab wählen & laden
     const preferred = hasM ? 'mantis' : (hasG ? 'glpi' : null);
     if (preferred === 'mantis') {
       tabM.classList.add('active'); paneM.classList.add('show','active');
@@ -220,7 +258,6 @@ export class TicketModal {
       tabG.classList.add('active'); paneG.classList.add('show','active');
       this._fetchAndRender('glpi', this._urls.glpi);
     } else {
-      // keine URLs -> Leermeldung
       const f = document.getElementById(`${this.modalId}-footerStatus`);
       if (f) f.textContent = 'Keine Endpunkte konfiguriert';
     }
@@ -228,10 +265,10 @@ export class TicketModal {
 
   _esc(s) {
     return String(s)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'","&#039;");
   }
 }
