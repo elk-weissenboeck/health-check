@@ -395,10 +395,10 @@
           "url": "proxy/proxy.php?key=odoo-prod",
           "method": "GET",
           "warning": null,
+          "owner": { "upn": "franz.habison@elk.at" },
           "fields": [
             { "label": "Version", "path": "result.server_version" }
-          ],
-          "owner": { "upn": "franz.habison@elk.at" }
+          ]
         },
         {
           "key": "odoo-prod-login",
@@ -573,6 +573,34 @@
           "expect": { "jsonPath": "userid", "equals": 1478, "format":  "number" },
           "fields": [
             { "label": "Release", "path": "release" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lis-legacy",
+      "title": "LIS (Legacy)",
+      "description": "Lieferanten-Info-System",
+      "services": [
+        {
+          "key": "lis-legacy-login",
+          "label": "Login",
+          "url": "https://lis.elk.at",
+          "method": "HEAD",
+          "warning": null,
+          "owner": { "upn": "gabriele.schmid@elk.at" }
+        },
+        {
+          "key": "lis-legacy-pp",
+          "label": "Pipeline",
+          "url": "proxy/proxy.php?key=lis-legacy-pp",
+          "method": "GET",
+          "warning": null,
+          "owner": { "upn": "gabriele.schmid@elk.at" },
+          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
+          "fields": [
+            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
+            { "label": "Dauer", "path": "duration", "format": "minutes" }
           ]
         }
       ]

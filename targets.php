@@ -26,8 +26,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-hauseubergabe-ninox' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Hausuebergabe%20Ninox%20PROD%20Daily/lastCompletedBuild/api/json",
@@ -35,8 +33,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-hauseubergabe-documents' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Documents/lastCompletedBuild/api/json",
@@ -44,8 +40,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-hauseubergabe-pictures' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Hausuebergabe%20PROD%20Daily%20Pictures/lastCompletedBuild/api/json",
@@ -53,8 +47,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-maengelkostenanzeige' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20MaengelKostenAnzeige%20PROD%20Daily/lastCompletedBuild/api/json",
@@ -62,8 +54,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-planbesprechung' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Planbesprechung%20PROD%20Daily/lastCompletedBuild/api/json",
@@ -71,8 +61,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-protokolle' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Protokolle%20PROD%20Daily/lastCompletedBuild/api/json",
@@ -80,8 +68,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-qualitaetsmanagement' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Qualitaetsmanagement%20PROD%20Daily/lastCompletedBuild/api/json",
@@ -89,8 +75,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'hf-regieschein' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Regieschein%20PROD%20Daily/lastCompletedBuild/api/json",
@@ -98,7 +82,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
   ],
   'hf-wochenbericht' => [
     'url'      => "https://jenkins-tng.elkschrems.co.at/job/HF-API%20Wochenbericht%20PROD%20Daily/lastCompletedBuild/api/json",
@@ -106,8 +89,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'elkbau-calc-prod' => [
     'url'      => "https://jenkins.elkschrems.co.at/job/ELK%20BAU%20Calculation%20Tool%20PROD/lastCompletedBuild/api/json",
@@ -115,8 +96,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'html5app-ppl-prod' => [
     'url'      => "https://jenkins.elkschrems.co.at/job/HTML5App%20RESTful%20-%20PROD/lastCompletedBuild/api/json",
@@ -124,8 +103,6 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
-    
-    
   ],
   'nc-vis' => [
     'url'      => "https://vis2.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info",
@@ -133,8 +110,6 @@ return [
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_VIS_TOKEN']],
     'query'    => ['format' => 'json'],
     'headers'  => null
-    
-    
   ],
   'nc-lis2' => [
     'url'      => "https://lis2.elk.at/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info",
@@ -142,8 +117,6 @@ return [
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_LIS2_TOKEN']],
     'query'    => ['format' => 'json'],
     'headers'  => null
-    
-    
   ],
   'nc-fileshare' => [
     'url'      => "https://fileshare.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info",
@@ -151,8 +124,6 @@ return [
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_FLS_TOKEN']],
     'query'    => ['format' => 'json'],
     'headers'  => null
-    
-    
   ],
   'nc-kpat-prod' => [
     'url'      => "https://kundenportal.elk.at/ocs/v2.php/apps/serverinfo/api/v1/info",
@@ -160,8 +131,6 @@ return [
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPAT_PRD_TOKEN']],
     'query'    => ['format' => 'json'],
     'headers'  => null
-    
-    
   ],
   'nc-kpat-stage' => [
     'url'      => "https://kis-stage.elk.at/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info",
@@ -169,8 +138,6 @@ return [
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPAT_STG_TOKEN']],
     'query'    => ['format' => 'json'],
     'headers'  => null
-    
-    
   ],
   'nc-kpde-prod' => [
     'url'      => "https://kundenportal.elkhaus.de/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info",
@@ -178,8 +145,6 @@ return [
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPDE_PRD_TOKEN']],
     'query'    => ['format' => 'json'],
     'headers'  => null
-    
-    
   ],
   'nc-kpde-stage' => [
     'url'      => "https://kis-stage.elkhaus.de/nextcloud/ocs/v2.php/apps/serverinfo/api/v1/info",
@@ -187,20 +152,17 @@ return [
     'auth'     => ['type' => 'nextcloud', 'token' => $secrets['NC_KPDE_STG_TOKEN']],
     'query'    => ['format' => 'json'],
     'headers'  => null
-    
-    
   ],
   'moodle' => [
     'url'      => 'https://moodle.elk.at/webservice/rest/server.php',
     'method'   => 'GET',
     'auth'     => null,
+    'headers'  => null,
     'query'    => [
       'wstoken' => $secrets['MOODLE_API_TOKEN'],
       'wsfunction' => 'core_webservice_get_site_info',
       'moodlewsrestformat' => 'json'
-    ],
-    'headers'  => null
-    
+    ]
   ],
   'odoo-prod' => [
     'url'      => 'https://odoo-elk.elkschrems.co.at/web/webclient/version_info',
@@ -240,6 +202,15 @@ return [
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
   ],
+  'lis-legacy-pp' => [
+    'url'      => "https://jenkins.elkschrems.co.at/job/KisplanKonsole%20Daily/lastCompletedBuild/api/json",
+    'method'   => 'GET',
+    'auth'     => ['type' => 'jenkins'],
+    'query'    => "tree={$jenkinsTree}",
+    'headers'  => ['Accept: application/json']
+  ]
+  
+  
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)
   // 'jenkins' => [
   //  'url'      => "{$jenkinsTngBase}/some/api",
