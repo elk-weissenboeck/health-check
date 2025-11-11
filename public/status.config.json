@@ -538,6 +538,30 @@
       ]
     },
     {
+      "key": "aktspeichern",
+      "title": "Aktspeichern",
+      "description": null,
+      "services": [
+        {
+          "key": "aktspeichern-prod-api",
+          "label": "API",
+          "url": "https://secweb.elkschrems.co.at/status",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "status", "equals": "up" }
+        },
+        {
+          "key": "aktspeichern-test-api",
+          "label": "API",
+          "url": "https://sectest.elkschrems.co.at/status",
+          "method": "GET",
+          "warning": null,
+          "isDevEnv": true,
+          "expect": { "jsonPath": "status", "equals": "up" }
+        }
+      ]
+    },
+    {
       "key": "elkbau-calc",
       "title": "Elkbau Kalkulations Tool",
       "description": "Tool von Robert Sachetti",
