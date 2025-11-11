@@ -292,7 +292,10 @@
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 }
+          "expect": { "jsonPath": "results", "minLen": 1 },
+          "fields": [
+            { "label": "Items", "path": "results.length", "format": "number" }
+          ]
         },
         {
           "key": "getArticlesById",
@@ -310,7 +313,10 @@
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 }
+          "expect": { "jsonPath": "results", "minLen": 1 },
+          "fields": [
+            { "label": "Items", "path": "results.length", "format": "number" }
+          ]
         },
         {
           "key": "getStyleGroups",
@@ -319,7 +325,10 @@
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 }
+          "expect": { "jsonPath": "results", "minLen": 1 },
+          "fields": [
+            { "label": "Items", "path": "results.length", "format": "number" }
+          ]
         },
         {
           "key": "getPriceGroups",
@@ -328,7 +337,10 @@
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 }
+          "expect": { "jsonPath": "results", "minLen": 1 },
+          "fields": [
+            { "label": "Items", "path": "results.length", "format": "number" }
+          ]
         }
       ]
     },
@@ -445,7 +457,10 @@
           "url": "https://html5app-prod.elk.at/v1/all-houses?v2",
           "method": "GET",
           "warning": null,
-          "expect": { "jsonPath": "results", "minLen": 1 }
+          "expect": { "jsonPath": "results", "minLen": 1 },
+          "fields": [
+            { "label": "Items", "path": "results.length", "format": "number" }
+          ]
         },
         {
           "key": "html5app-houseById",
