@@ -13,25 +13,43 @@ require '../../classes/myHelpers.class.php';
 $secrets = require dirname(__DIR__) . '/../secrets.php';
  
 $base       = 'https://mantis.elkschrems.co.at';
-$projectId  = $_GET['projectId'];
-$filterId   = $_GET['filterId'];
+$projectId  = $_GET['projectId'] ?? '';
+$filterTag   = $_GET['filterTag'] ?? '';
 $token      = $secrets['MANTIS_API_TOKEN']; 
+$target     = [
+        'method' => 'GET',
+        'auth' => ['type' => 'basic', 'authorization' => $token],
+        'headers' => [
+            'Accept' => 'application/json'
+        ]
+    ];
 
-$url = rtrim($base, '/') . '/api/rest/issues?project_id=' . $projectId.'&filter_id='. $filterId;
+$url = rtrim($base, '/') . '/api/rest/filters';
 
-// Request-Parameter für myCurl::request
-$target = [
-    'method' => 'GET',
-    'auth' => ['type' => 'basic', 'authorization' => $token],
-    'headers' => [
-        'Accept' => 'application/json'
-    ]
-];
+// GET-Request absetzen
+list($status, $contentType, $body) = 
+    myCurl::request(
+        rtrim($base, '/') . '/api/rest/filters', 
+        'GET', 
+        $target, 
+        []
+    );
+    
+    
+$filterId = myHelpers::findFilterIdByTagNameFromMantis($body, $filterTag);
 
 
 // GET-Request absetzen
-list($status, $contentType, $body) = myCurl::request($url, 'GET', $target, []);
+list($status, $contentType, $body) = 
+    myCurl::request(
+        rtrim($base, '/') . '/api/rest/issues?project_id=' . $projectId.'&filter_id='. $filterId, 
+        'GET', 
+        $target, 
+        []
+    );
 
+//$id = myHelpers::findFilterIdByTagNameFromMantis($body, 'pinnedToHC');
+//print_r($id);
 
 // Falls über Web aufgerufen, als JSON ausgeben
 http_response_code($status);

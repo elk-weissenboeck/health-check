@@ -105,4 +105,109 @@ final class myHelpers
         $v = $_GET['nocache'];
         return $v !== '0' && $v !== '' && $v !== 0 && $v !== null;
     }
+    
+    /**
+     * Extrahiert alle Tag-Namen aus filters[*].criteria.tags[*].name.
+     *
+     * @param string|array|object $input JSON-String oder bereits dekodierte Struktur (assoc array oder stdClass)
+     * @return array Liste der Tag-Namen (ohne Duplikate), z.B. ["pinnedToHC", "hybridforms"]
+     */
+    public static function extractTagNamesFromMantis($input): array {
+        // Falls ein JSON-String übergeben wurde: dekodieren
+        if (is_string($input)) { 
+            $decoded = json_decode($input, false); // als Objekt
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return [];
+            }
+        } else {
+            // beliebige Struktur in Objektform bringen, um einheitlich zu iterieren
+            $decoded = json_decode(json_encode($input), false);
+        }
+
+        $names = [];
+
+        if (!isset($decoded->filters) || !is_array($decoded->filters)) {
+            return [];
+        }
+
+        foreach ($decoded->filters as $filter) {
+            if (!isset($filter->criteria->tags) || !is_array($filter->criteria->tags)) {
+                continue;
+            }
+            foreach ($filter->criteria->tags as $tag) {
+                if (isset($tag->name) && $tag->name !== '') {
+                    $names[] = (string)$tag->name;
+                }
+            }
+        }
+
+        // Duplikate entfernen und Indizes neu setzen
+        return array_values(array_unique($names));
+    }
+    
+    /**
+     * Gibt ein Mapping Filter-ID => Liste von Tag-Namen zurück.
+     * @param string|array|object $input
+     * @return array z.B. [537 => ["pinnedToHC"], 535 => ["hybridforms"]]
+     */
+    public static function extractTagNamesByFilterFromMantis($input): array {
+        if (is_string($input)) {
+            $decoded = json_decode($input, false);
+            if (json_last_error() !== JSON_ERROR_NONE) return [];
+        } else {
+            $decoded = json_decode(json_encode($input), false);
+        }
+
+        $out = [];
+        if (!isset($decoded->filters) || !is_array($decoded->filters)) return [];
+
+        foreach ($decoded->filters as $filter) {
+            $fid = isset($filter->id) ? $filter->id : null;
+            if ($fid === null) continue;
+
+            $out[$fid] = [];
+            if (isset($filter->criteria->tags) && is_array($filter->criteria->tags)) {
+                foreach ($filter->criteria->tags as $tag) {
+                    if (isset($tag->name) && $tag->name !== '') {
+                        $out[$fid][] = (string)$tag->name;
+                    }
+                }
+            }
+        }
+        return $out;
+    }
+    
+    /**
+     * Sucht in filters[*].criteria.tags[*].name nach $tagName
+     * und gibt die ID des ersten passenden Filters zurück.
+     *
+     * @param string|array|object $input  JSON-String oder bereits dekodierte Daten
+     * @param string              $tagName Gesuchter Tag-Name (z.B. "hybridforms")
+     * @return int|null
+     */
+    public static function findFilterIdByTagNameFromMantis($input, string $tagName): ?int {
+        // In einheitliche Objektstruktur bringen
+        if (is_string($input)) {
+            $data = json_decode($input, false);
+            if (json_last_error() !== JSON_ERROR_NONE) return null;
+        } else {
+            $data = json_decode(json_encode($input), false);
+        }
+
+        if (!isset($data->filters) || !is_array($data->filters)) return null;
+
+        $needle = mb_strtolower($tagName);
+
+        foreach ($data->filters as $filter) {
+            if (!isset($filter->criteria->tags) || !is_array($filter->criteria->tags)) {
+                continue;
+            }
+            foreach ($filter->criteria->tags as $tag) {
+                if (isset($tag->name) && mb_strtolower((string)$tag->name) === $needle) {
+                    return isset($filter->id) ? (int)$filter->id : null;
+                }
+            }
+        }
+        return null;
+    }
 }
