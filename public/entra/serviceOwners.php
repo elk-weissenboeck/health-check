@@ -27,6 +27,11 @@ return [
     'office@webdesignwien.co.at' => [
         'name' => 'Philipp Hofstätter', 
         'email' => 'office@webdesignwien.co.at', 
-        'durchwahl' => '+43 699 10 50 65 38'
+        'durchwahl' => '+43 (0) 699 10 50 65 38'
+    ],
+    'sro@sro.at' => [
+        'name' => 'Robert Sachetti', 
+        'email' => 'sro@sro.at', 
+        'durchwahl' => ': +43 (0) 664 530 60 71'
     ],
 ];

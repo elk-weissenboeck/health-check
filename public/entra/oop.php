@@ -19,7 +19,7 @@ $entra = new myEntra(
     $secrets['ENTRA_APP_CLIENT'],
     $secrets['ENTRA_APP_SECRET'],
     'Europe/Vienna',                // timezone
-    3600,                           // cache time in secons
+    43200,                          // cache time in seconds
     __DIR__ . '/cache/'             // cache dir fallback
 );
  
