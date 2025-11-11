@@ -273,8 +273,38 @@
       ]
     },
     {
-      "key": "bemusterung",
-      "title": "Online-Bemusterung",
+      "key": "bemusterung-intern",
+      "title": "Bemusterung intern",
+      "description": "Legacy Bemusterung",
+      "services": [
+        {
+          "active": true,
+          "key": "bemu-legacy-login",
+          "label": "Login",
+          "url": "https://bemusterung.elkschrems.co.at/login.php",
+          "method": "HEAD",
+          "warning": null,
+          "owner": { "upn": "arnold.rauscher@elk.at" }
+        },
+        {
+          "active": true,
+          "key": "bemu-legacy",
+          "label": "Status",
+          "url": "https://bemusterung.elkschrems.co.at/status.php",
+          "method": "GET",
+          "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
+          "fields": [
+            { "label": "Websrv", "path": "webserver" },
+            { "label": "PHP", "path": "phpVersion" },
+            { "label": "docRoot", "path": "docRoot" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "online-bemusterung",
+      "title": "Bemusterung online",
       "description": "(Web-Tool)",
       "services": [
         {
