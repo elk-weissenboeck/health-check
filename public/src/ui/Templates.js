@@ -42,8 +42,15 @@ export class Templates {
                   <div class="d-flex justify-content-between align-items-center w-100">
                     <div class="d-flex flex-column w-100">
                       <div class="service-title d-flex align-items-center justify-content-between mb-1">
-                        <span class="service-label">${escapeHtml(s.label)}</span>
-
+                        <span class="service-label">
+                          ${escapeHtml(s.label)}
+                          ${s.isDevEnv ? `
+                            <span class="dev-badge" title="Entwicklungsumgebung">
+                              <i class="bi bi-code-square"></i>
+                            </span>
+                          ` : ``}
+                        </span>
+                        
                         <span class="btn-icon-group">
                           <!-- Owner -->
                           <button

@@ -16,7 +16,7 @@
         {
           "active": false,
           "key": "hfsrv-elk-prod",
-          "label": "Elk Prodserver (win9)",
+          "label": "Elk (win9)",
           "url": "https://forms.elk.at",
           "method": "HEAD",
           "warning": "enable CORS",
@@ -24,11 +24,12 @@
         },
         {
           "key": "hfsrv-elkkampa-test",
-          "label": "Elk/Kampa Testserver (win82)",
+          "label": "Elk/Kampa (win82)",
           "url": "https://forms-test.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
+          "isDevEnv": true,
           "headers": [
              { "label": "Server", "name": "x-serverver" },
              { "label": ".NET", "name": "x-nodever" }
@@ -36,7 +37,7 @@
         },
         {
           "key": "hfsrv-elkkampa-prod",
-          "label": "Elk/Kampa Prodserver (win80)",
+          "label": "Elk/Kampa (win80)",
           "url": "https://forms.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
@@ -92,9 +93,10 @@
         {
           "active": true,
           "key": "foad-stage-ldap",
-          "label": "LDAP Test",
+          "label": "LDAP",
           "url": "https://foad-stage.elkkampa.com/api/status/ldap",
           "method": "GET",
+          "isDevEnv": true,
           "warning": null,
           "expect": { "jsonPath": "connected", "equals": true, "format": "bool" },
           "owner": { "upn": "gabriele.schmid@elk.at" }
@@ -102,9 +104,10 @@
         {
           "active": true,
           "key": "foad-stage-api",
-          "label": "API Test",
+          "label": "API",
           "url": "https://foad-stage.elkkampa.com/api/status",
           "method": "GET",
+          "isDevEnv": true,
           "warning": null,
           "expect": { "jsonPath": "status", "equals": "up" },
           "owner": { "upn": "gabriele.schmid@elk.at" }
@@ -545,7 +548,7 @@
         },
         {
           "key": "elkbau-api-prod",
-          "label": "API Status Prod",
+          "label": "API Status",
           "url": "https://api-projekte.elkbau.at/",
           "method": "GET",
           "warning": null,
@@ -557,10 +560,11 @@
         },
         {
           "key": "elkbau-api-test",
-          "label": "API Status Test",
+          "label": "API Status",
           "url": "https://api-test-projekte.elkbau.at/",
           "method": "GET",
           "warning": null,
+          "isDevEnv": true,
           "expect": { "jsonPath": "status", "equals": "up" },
            "fields": [
             { "label": "debug", "path": "debug", "format": "bool" },
@@ -618,7 +622,7 @@
         },
         {
           "key": "nc-kpat-prod",
-          "label": "Kundenportal AT Prod",
+          "label": "Kundenportal AT",
           "url": "proxy/proxy.php?key=nc-kpat-prod",
           "method": "GET",
           "warning": null,
@@ -632,10 +636,11 @@
         },
         {
           "key": "nc-kpat-stage",
-          "label": "Kundenportal AT Test",
+          "label": "Kundenportal AT",
           "url": "proxy/proxy.php?key=nc-kpat-stage",
           "method": "GET",
           "warning": null,
+          "isDevEnv": true,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
@@ -646,7 +651,7 @@
         },
         {
           "key": "nc-kpde-prod",
-          "label": "Kundenportal DE Prod",
+          "label": "Kundenportal DE",
           "url": "proxy/proxy.php?key=nc-kpde-prod",
           "method": "GET",
           "warning": null,
@@ -661,10 +666,11 @@
         {
           "active": true,
           "key": "nc-kpde-stage",
-          "label": "Kundenportal DE Test",
+          "label": "Kundenportal DE",
           "url": "proxy/proxy.php?key=nc-kpde-stage",
           "method": "GET",
           "warning": null,
+          "isDevEnv": true,
           "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
           "fields": [
             { "label": "Version", "path": "ocs.data.nextcloud.system.version" },

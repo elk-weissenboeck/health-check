@@ -96,3 +96,24 @@
   min-width: 4.2rem;              /* für bündige Optik */
   text-align: right;
 }
+
+/* DEV-Badge: kompaktes rundes Icon-Label */
+.dev-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:1.4rem;               /* kompakte, runde Form */
+  height:1.4rem;
+  color:#fff;                 /* Icon weiß */
+  margin-left:.3rem;
+  font-size:.9rem;
+  line-height:1;
+  user-select:none;
+}
+
+.dev-badge i{
+  color: #d39e00;
+  font-size:1.2rem;
+  line-height:1;
+  transform:translateY(2px); /* optische Zentrierung */
+}
