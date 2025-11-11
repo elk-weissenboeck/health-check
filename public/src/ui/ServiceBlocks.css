@@ -1,0 +1,44 @@
+/* Abgesetzte Boxen für Felder & Header */
+.svc-section{
+  background:#f8f9fa;           /* hellgrau */
+  border:1px solid #dee2e6;      /* dunkelgrauer Rahmen */
+  border-radius:.5rem;
+  padding:.6rem .75rem;
+  margin:.5rem 0 0 0;            /* oben etwas Abstand, leicht eingerückt via left padding */
+}
+
+/* Überschrift der Sektion */
+.svc-section-title{
+  font-size:.9rem;
+  font-weight:600;
+  color:#495057;
+  margin-bottom:.35rem;
+  align-items:center;
+  gap:.4rem;
+}
+.svc-section-title::before{
+  content:"";
+  width:.35rem; height:.35rem; border-radius:50%;
+  background:#6c757d;           /* kleiner Markerpunkt */
+}
+
+/* Inhalte (kleine Chips wie bisher) */
+.svc-attr .sf-item,
+.svc-header .sh-item{
+  display:inline-flex;
+  gap:.35rem;
+  margin:.15rem .5rem .15rem 0;
+}
+.svc-attr .sf-label,
+.svc-header .sh-label{
+  color:#6c757d;
+}
+.svc-attr .sf-value,
+.svc-header .sh-value{
+  color:#495057;
+}
+
+/* Box ausblenden, wenn leer */
+.svc-section.is-empty{
+  display:none;
+}

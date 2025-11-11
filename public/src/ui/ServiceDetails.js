@@ -4,6 +4,8 @@ import { Formatters } from '../format/Formatters.js';
 export class ServiceDetails {
   renderServiceFields(groupKey, serviceDef, data) {
     const container = document.getElementById(`fields-${groupKey}-${serviceDef.key}`);
+    const box = document.getElementById(`fieldsbox-${groupKey}-${serviceDef.key}`);
+
     if (!container) return;
     const fields = serviceDef.fields || [];
     if (!data || fields.length === 0) { container.innerHTML = ''; return; }
@@ -31,11 +33,19 @@ export class ServiceDetails {
     });
 
     container.innerHTML = parts.join('');
+    
+    // Leer nach Rendering? Dann Box ausblenden, sonst zeigen
+    const isEmpty = !container.textContent.trim();
+    if (box) box.classList.toggle('is-empty', isEmpty);
   }
+  
+  
+  
 
   renderServiceHeaders(groupKey, serviceDef, headers) {
     const containerId = `headers-${groupKey}-${serviceDef.key}`;
     const container = document.getElementById(containerId);
+    const box = document.getElementById(`headersbox-${groupKey}-${serviceDef.key}`);
     if (!container) return;
 
     const defs = serviceDef.headers || [];
@@ -92,6 +102,9 @@ export class ServiceDetails {
     }
 
     container.innerHTML = parts.join('');
+    
+    const isEmpty = !container.textContent.trim();
+    if (box) box.classList.toggle('is-empty', isEmpty);
   }
 
   _esc(s) { return String(s)

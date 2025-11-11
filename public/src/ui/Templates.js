@@ -90,8 +90,17 @@ export class Templates {
 
                       <small class="text-secondary svc-url mb-1">${escapeHtml(s.url || '')}</small>
 
-                      <div class="service-fields svc-attr mt-1" id="fields-${group.key}-${s.key}"></div>
-                      <div class="service-headers svc-header mt-1" id="headers-${group.key}-${s.key}"></div>
+                       <!-- FELDER -->
+                       <div class="svc-section svc-attr is-empty" id="fieldsbox-${group.key}-${s.key}">
+                          <div class="svc-section-title">Response-Attribute</div>
+                          <div class="service-fields svc-attr" id="fields-${group.key}-${s.key}"></div>
+                       </div>
+
+                       <!-- HEADER -->
+                       <div class="svc-section svc-header is-empty" id="headersbox-${group.key}-${s.key}">
+                          <div class="svc-section-title">Response-Header</div>
+                          <div class="service-headers" id="headers-${group.key}-${s.key}"></div>
+                       </div>
                     </div>
                   </div>
 

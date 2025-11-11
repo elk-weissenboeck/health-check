@@ -20,6 +20,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   <!-- Eigenes CSS -->
   <link rel="stylesheet" href="./src/status.css?t=<?=time()?>">
   <link rel="stylesheet" href="./src/ui/Icons.css?t=<?=time()?>">
+  <link rel="stylesheet" href="./src/ui/ServiceBlocks.css?t=<?=time()?>">
 </head>
 
 <body>
@@ -83,13 +84,13 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
           <!-- Attribute zeigen/verstecken -->
           <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="optShowAttr">
-            <label class="form-check-label" for="optShowAttr">Attribute anzeigen</label>
+            <label class="form-check-label" for="optShowAttr">Response-Attribute anzeigen</label>
           </div>
           
           <!-- Header zeigen/verstecken -->
           <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="optShowHeaders">
-            <label class="form-check-label" for="optShowHeaders">Headers anzeigen</label>
+            <label class="form-check-label" for="optShowHeaders">Response-Header anzeigen</label>
           </div>
 
           <!-- Reaktionszeit zeigen/verstecken -->
