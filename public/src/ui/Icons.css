@@ -43,7 +43,8 @@
   line-height: 1;
 }
 
-.status-pill {
+.status-pill,
+.latency-chip {
   border-radius: 999px;
   padding: .25rem .6rem;
   font-weight: 600;
@@ -87,4 +88,11 @@
   grid-template-columns: 1fr var(--tools-width);
   align-items: center;
   gap: .5rem;
+}
+.latency-chip{
+  color:#6c757d;
+  background:#f1f3f5;
+  border-color:#e1e5ea;
+  min-width: 4.2rem;              /* für bündige Optik */
+  text-align: right;
 }

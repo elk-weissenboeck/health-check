@@ -77,6 +77,7 @@ export class Templates {
 
                           <!-- Status-Pill (OK grün, sonst hellgrau) -->
                           <span class="status-pill status-neutral" id="badge-${group.key}-${s.key}">N/A</span>
+                          <span class="latency-chip svc-latency" id="latency-${group.key}-${s.key}">– ms</span>
                         </span>
                       </div>
 

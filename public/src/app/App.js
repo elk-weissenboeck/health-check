@@ -52,10 +52,11 @@ export class App {
             pill.className = 'status-pill status-inactive';
             pill.textContent = 'I';               // NEU: nur "I"
           }
+          
           // Latenz ausblenden / neutralisieren
-          const latency = document.getElementById(`latency-${g.key}-${s.key}`);
-          if (latency) latency.textContent = '—';
-          return true; // als "ok" werten, damit die Gruppe nicht rot wird
+        const latency = document.getElementById(`latency-${g.key}-${s.key}`);
+        if (latency) latency.textContent = '—';    // hier auch in der Icon-Gruppe
+        return true;
         }
         const r = await this.checker.check(s.url, s.method, s.expect);
         this.view.setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value, s);
