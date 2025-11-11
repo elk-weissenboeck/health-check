@@ -288,7 +288,17 @@
         },
         {
           "active": true,
-          "key": "bemu-legacy",
+          "key": "bemu-legacy-elkab",
+          "label": "Anbindung Elk-AB",
+          "url": "https://bemusterung.elkschrems.co.at/status.php",
+          "method": "GET",
+          "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
+          "expect": { "jsonPath": "connected", "equals": true, "format": "bool" }
+        },
+        {
+          "active": true,
+          "key": "bemu-legacy-status",
           "label": "Status",
           "url": "https://bemusterung.elkschrems.co.at/status.php",
           "method": "GET",
