@@ -208,6 +208,13 @@ return [
     'auth'     => ['type' => 'jenkins'],
     'query'    => "tree={$jenkinsTree}",
     'headers'  => ['Accept: application/json']
+  ],
+  'lis-legacy-status' => [
+    'url'      => "https://lis.elk.at/status.php",
+    'method'   => 'GET',
+    'auth'     => null,
+    'query'    => null,
+    'headers'  => ['My-Token: ' . $secrets['LIS_LEGACY_TOKEN']]
   ]
   
   

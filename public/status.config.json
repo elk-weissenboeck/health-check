@@ -591,6 +591,19 @@
           "owner": { "upn": "gabriele.schmid@elk.at" }
         },
         {
+          "key": "lis-legacy-status",
+          "label": "Status",
+          "url": "proxy/proxy.php?key=lis-legacy-status",
+          "method": "GET",
+          "warning": null,
+          "owner": { "upn": "gabriele.schmid@elk.at" },
+          "fields": [
+            { "label": "Websrv", "path": "webserver" },
+            { "label": "PHP", "path": "phpVersion" },
+            { "label": "docRoot", "path": "docRoot" }
+          ]
+        },
+        {
           "key": "lis-legacy-pp",
           "label": "Pipeline",
           "url": "proxy/proxy.php?key=lis-legacy-pp",
