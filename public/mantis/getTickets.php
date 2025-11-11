@@ -13,8 +13,8 @@ require '../../classes/myHelpers.class.php';
 $secrets = require dirname(__DIR__) . '/../secrets.php';
  
 $base       = 'https://mantis.elkschrems.co.at';
-$projectId  = $_GET['projectId'] ?? '';
-$filterTag   = $_GET['filterTag'] ?? '';
+$projectId  = $_GET['projectId'] ?? null;
+$filterTag   = $_GET['filterTag'] ?? null;
 $token      = $secrets['MANTIS_API_TOKEN']; 
 $target     = [
         'method' => 'GET',
@@ -23,6 +23,10 @@ $target     = [
             'Accept' => 'application/json'
         ]
     ];
+
+
+if(!$projectId)
+    die('set projectId');
 
 $url = rtrim($base, '/') . '/api/rest/filters';
 
@@ -47,9 +51,6 @@ list($status, $contentType, $body) =
         $target, 
         []
     );
-
-//$id = myHelpers::findFilterIdByTagNameFromMantis($body, 'pinnedToHC');
-//print_r($id);
 
 // Falls über Web aufgerufen, als JSON ausgeben
 http_response_code($status);
