@@ -71,6 +71,26 @@
       "services": [
         {
           "active": true,
+          "key": "foad-prod-ldap",
+          "label": "LDAP",
+          "url": "https://foad.elkkampa.com/api/status/ldap",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "connected", "equals": true, "format": "bool" },
+          "owner": { "upn": "gabriele.schmid@elk.at" }
+        },
+        {
+          "active": true,
+          "key": "foad-prod-api",
+          "label": "API",
+          "url": "https://foad.elkkampa.com/api/status",
+          "method": "GET",
+          "warning": null,
+          "expect": { "jsonPath": "status", "equals": "up" },
+          "owner": { "upn": "gabriele.schmid@elk.at" }
+        },
+        {
+          "active": true,
           "key": "foad-stage-ldap",
           "label": "LDAP Test",
           "url": "https://foad-stage.elkkampa.com/api/status/ldap",
@@ -151,7 +171,7 @@
         {
           "key": "hf-hauseubergabe-pictures",
           "label": "Hauseubergabe Fotos",
-          "url": "proxy/proxy.php?key=hf-hauseubergabe-pictures___",
+          "url": "proxy/proxy.php?key=hf-hauseubergabe-pictures",
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
@@ -441,14 +461,14 @@
       "services": [
         {
           "key": "elk.at-prod",
-          "label": "www.elk.at",
+          "label": "elk.at",
           "url": "https://www.elk.at",
           "method": "HEAD",
           "warning": null
         },
         {
           "key": "rex-elk-at-prod",
-          "label": "www.elk.at Redaxo",
+          "label": "elk.at Redaxo",
           "url": "proxy/proxy.php?key=rex-elk-at-prod",
           "method": "GET",
           "warning": null,
@@ -461,14 +481,14 @@
         },
         {
           "key": "elkhaus.de-prod",
-          "label": "www.elkhaus.de",
+          "label": "elkhaus.de",
           "url": "https://www.elkhaus.de",
           "method": "HEAD",
           "warning": null
         },
         {
           "key": "rex-elkhaus-de-prod",
-          "label": "www.elkhaus.de Redaxo",
+          "label": "elkhaus.de Redaxo",
           "url": "proxy/proxy.php?key=rex-elkhaus-de-prod",
           "method": "GET",
           "warning": null,
