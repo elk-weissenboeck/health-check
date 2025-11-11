@@ -1,32 +1,14 @@
 export class StatusView {
-  setBadge(group, svc, ok, ms, count = null, value = null, serviceDef = null) {
-    const badge   = document.getElementById(`badge-${group}-${svc}`);
-    const bubble  = document.getElementById(`counter-${group}-${svc}`);
-    const latency = document.getElementById(`latency-${group}-${svc}`);
-
-    const hasWarning = !!serviceDef?.warning;
-
-    let cls = ok ? 'text-bg-success' : 'text-bg-danger';
-    let text = ok ? 'OK' : 'NOK';
-    if (hasWarning && ok) { cls = 'text-bg-warning text-dark'; }
-
-    if (badge) {
-      badge.className = `badge px-3 ${cls}`;
-      badge.textContent = text;
-      if (hasWarning && serviceDef.warning) badge.title = serviceDef.warning;
-    }
-    if (latency) latency.textContent = `${ms} ms`;
-
-    if (bubble) {
-      if (count != null && !Number.isNaN(count)) {
-        const n = Number(count);
-        bubble.textContent = (Number.isFinite(n) && n > 99) ? '99+' : String(n);
-        bubble.classList.remove('d-none');
-      } else {
-        bubble.classList.add('d-none');
+    setBadge(group, svc, ok, ms) {
+      const pill = document.getElementById(`badge-${group}-${svc}`);
+      if (pill) {
+        pill.className = `status-pill ${ok ? 'status-ok' : 'status-nok'}`;
+        pill.textContent = ok ? 'OK' : 'NOK';
       }
+      const latency = document.getElementById(`latency-${group}-${svc}`);
+      if (latency) latency.textContent = `${ms} ms`;
     }
-  }
+
 
   setGroupStatus(groupKey, state /* 'ok' | 'warn' | 'nok' */) {
     const dot = document.getElementById(`${groupKey}-dot`);

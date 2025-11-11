@@ -1,0 +1,90 @@
+/* Tools-Spalte rechtsbündig */
+.btn-icon-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;         /* bündig rechts */
+  gap: .5rem;
+}
+
+/* Neutrale, nicht-blaue Icons */
+.btn-icon {
+  --icon-color: #9aa1a9;        /* hellgrau */
+  --icon-color-hover: #6c757d;  /* dunkleres Grau beim Hover */
+  --icon-color-active: #198754; /* Grün (OK) falls du "aktiv" markieren willst) */
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0 .15rem;
+  line-height: 1;
+  color: var(--icon-color);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-icon:hover { color: var(--icon-color-hover); }
+.btn-icon:focus-visible {
+  outline: 2px solid #adb5bd;
+  outline-offset: 2px;
+  border-radius: .25rem;
+}
+
+/* Deaktiviert: sichtbar, aber nicht interaktiv */
+.btn-icon.is-disabled,
+.btn-icon[aria-disabled="true"] {
+  color: #cfd4da;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: .8;
+}
+
+.btn-icon i {
+  font-size: 1.125rem; /* einen Tick größer */
+  line-height: 1;
+}
+
+.status-pill {
+  border-radius: 999px;
+  padding: .25rem .6rem;
+  font-weight: 600;
+  font-size: .8rem;
+  line-height: 1;
+  display: inline-block;
+  border: 1px solid transparent;
+  min-width: 3.1rem;          /* gleiche Breite für OK/NOK */
+  text-align: center;
+}
+
+.status-pill.status-ok {
+  color: #fff;
+  background: #198754;         /* grün */
+  border-color: #198754;
+}
+
+.status-pill.status-nok {
+  color: #fff;
+  background: #dc3545;         /* rot */
+  border-color: #dc3545;
+}
+
+/* Rest bleibt hellgrau */
+.status-pill.status-neutral {
+  color: #495057;
+  background: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.status-pill.status-inactive { 
+    color:#fff; 
+    background:#6c757d; 
+    border-color:#6c757d; 
+}
+
+/* feste Spalten: links Label, rechts Tools (Icons + Status) */
+.service-title {
+  --tools-width: 180px;              /* bei Bedarf anpassen */
+  display: grid !important;
+  grid-template-columns: 1fr var(--tools-width);
+  align-items: center;
+  gap: .5rem;
+}

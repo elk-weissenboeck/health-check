@@ -46,11 +46,16 @@ export class App {
     const groupStates = await Promise.all(this.groups.map(async (g) => {
       const results = await Promise.all(g.services.map(async (s) => {
         if (s.active === false) {
-          const badge = document.getElementById(`badge-${g.key}-${s.key}`);
+          // Status-Pill in der Icon-Gruppe
+          const pill = document.getElementById(`badge-${g.key}-${s.key}`);
+          if (pill) {
+            pill.className = 'status-pill status-inactive';
+            pill.textContent = 'I';               // NEU: nur "I"
+          }
+          // Latenz ausblenden / neutralisieren
           const latency = document.getElementById(`latency-${g.key}-${s.key}`);
-          if (badge) { badge.className = 'badge px-3 text-bg-secondary'; badge.textContent = 'INAKTIV'; }
-          if (latency) { latency.textContent = '—'; }
-          return true;
+          if (latency) latency.textContent = '—';
+          return true; // als "ok" werten, damit die Gruppe nicht rot wird
         }
         const r = await this.checker.check(s.url, s.method, s.expect);
         this.view.setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value, s);

@@ -27,24 +27,35 @@ export class EventBinding {
     this.on('optRefreshInterval', 'change', (e) => { this.optionsManager.options.refreshInterval = parseInt(e.target.value, 10) || 30; this.optionsManager.apply(); });
     this.on('optOpenOptionsOnLoad', 'change', (e) => { this.optionsManager.options.openOptionsOnLoad = !!e.target.checked; this.optionsManager.apply(); });
 
-    // Delegation für Owner-Icon
+    // Delegation für Icon-Gruppe (Owner + Tickets)
     const gc = document.getElementById('groupsContainer');
     if (gc) {
       gc.addEventListener('click', (ev) => {
-        const tbtn = ev.target.closest('.tickets-btn');
-        if (tbtn) {
-          const g = tbtn.getAttribute('data-tickets-group');
-          const s = tbtn.getAttribute('data-tickets-service');
+        const btn = ev.target.closest('.btn-icon');
+        if (!btn) return;
+
+        // Deaktivierte Icons ignorieren
+        if (btn.classList.contains('is-disabled') || btn.getAttribute('aria-disabled') === 'true') {
+          return;
+        }
+
+        // Tickets
+        if (btn.classList.contains('tickets-btn')) {
+          const g = btn.getAttribute('data-tickets-group');
+          const s = btn.getAttribute('data-tickets-service');
           this.app.showTickets(g, s);
           return;
         }
-        const obtn = ev.target.closest('.owner-btn');
-        if (obtn) {
-          const g = obtn.getAttribute('data-owner-group');
-          const s = obtn.getAttribute('data-owner-service');
+
+        // Owner
+        if (btn.classList.contains('owner-btn')) {
+          const g = btn.getAttribute('data-owner-group');
+          const s = btn.getAttribute('data-owner-service');
           this.app.showOwner(g, s);
+          return;
         }
       });
     }
+
   }
 }

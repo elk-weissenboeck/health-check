@@ -151,7 +151,7 @@
         {
           "key": "hf-hauseubergabe-pictures",
           "label": "Hauseubergabe Fotos",
-          "url": "proxy/proxy.php?key=hf-hauseubergabe-pictures",
+          "url": "proxy/proxy.php?key=hf-hauseubergabe-pictures___",
           "method": "GET",
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
