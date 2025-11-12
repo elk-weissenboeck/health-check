@@ -18,6 +18,7 @@ export class EventBinding {
     this.on('refreshBtn', 'click', () => this.app.refreshAll());
     this.on('expandAllBtn', 'click', () => this.app.expandAll());
     this.on('collapseAllBtn', 'click', () => this.app.collapseAll());
+    this.on('ownerListBtn', 'click', () => this.app.showOwnerList());
 
     this.on('optShowUrls', 'change', (e) => { this.optionsManager.options.showUrls = !!e.target.checked; this.optionsManager.apply(); });
     this.on('optShowAttr', 'change', (e) => { this.optionsManager.options.showAttr = !!e.target.checked; this.optionsManager.apply(); });

@@ -6,6 +6,7 @@ import { StatusView } from '../ui/StatusView.js';
 import { Collapse } from '../ui/Collapse.js';
 import { OwnerModal } from '../ui/OwnerModal.js';
 import { TicketModal } from '../ui/TicketModal.js';
+import { OwnerListModal } from '../ui/OwnerListModal.js';
 
 export class App {
   constructor() {
@@ -19,6 +20,7 @@ export class App {
     this.view = new StatusView();
     this.ownerModal = new OwnerModal();
     this.ticketsModal = new TicketModal();
+    this.ownerListModal = new OwnerListModal();
 
     // bequem für Debugging
     window.__healthResults = this.healthResults;
@@ -134,6 +136,24 @@ export class App {
       };
 
       this.ticketsModal.open(urls, label);
+    }
+    
+    showOwnerList() {
+      const rows = [];
+      for (const g of this.groups || []) {
+        for (const s of g.services || []) {
+          rows.push({
+            group: g.title || g.key,
+            service: s.key,
+            label: s.label || s.key,
+            upn: s.owner?.upn || ''
+          });
+        }
+      }
+      this.ownerListModal.open(rows, (upn) => {
+        // beim Klick in der Liste direkt Owner-Detail-Modal öffnen
+        this.ownerModal?.open(upn, 'Service Owner');
+      });
     }
 
 
