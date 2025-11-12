@@ -90,6 +90,13 @@ export class Templates {
 
                       <small class="text-secondary svc-url mb-1">${escapeHtml(s.url || '')}</small>
 
+                      ${s.warning ? `
+                        <div class="alert alert-warning alert-compact w-100 mt-2 mb-0 d-flex align-items-center gap-2">
+                          <i class="bi bi-exclamation-triangle-fill"></i>
+                          <small>${escapeHtml(s.warning)}</small>
+                        </div>
+                      ` : ''}
+                  
                        <!-- FELDER -->
                        <div class="svc-section svc-attr is-empty" id="fieldsbox-${group.key}-${s.key}">
                           <div class="svc-section-title">Response-Attribute</div>
@@ -104,12 +111,6 @@ export class Templates {
                     </div>
                   </div>
 
-                  ${s.warning ? `
-                    <div class="alert alert-warning alert-compact w-100 mt-2 mb-0 d-flex align-items-center gap-2">
-                      <i class="bi bi-exclamation-triangle-fill"></i>
-                      <div>${escapeHtml(s.warning)}</div>
-                    </div>
-                  ` : ''}
                 </div>
               `).join('')}
             </div>

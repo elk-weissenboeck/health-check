@@ -19,7 +19,7 @@
           "label": "Elk (win9)",
           "url": "https://forms.elk.at",
           "method": "HEAD",
-          "warning": "enable CORS",
+          "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" }
         },
         {
@@ -27,7 +27,7 @@
           "label": "Elk/Kampa (win82)",
           "url": "https://forms-test.elkkampa.com/",
           "method": "HEAD",
-          "warning": null,
+          "warning": "Update geplant für 31.12.2025; Downtime ~20min",
           "owner": { "upn": "georg.weissenboeck@elk.at" },
           "isDevEnv": true,
           "headers": [
