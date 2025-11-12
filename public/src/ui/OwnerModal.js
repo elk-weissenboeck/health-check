@@ -32,7 +32,7 @@ export class OwnerModal {
               </div>
             </div>
             <div class="mt-2">
-              <small>Durchwahl: <a id="${this.modalId}-ext" href="#">—</a></small>
+              <small><a id="${this.modalId}-ext" href="#">—</a></small>
             </div>
             <div class="mt-2 text-secondary">
               <small id="${this.modalId}-source">Quelle: —</small>
@@ -127,18 +127,19 @@ export class OwnerModal {
     let api = null;
     try {
       if (upn) {
-        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
+        const res = await fetch(`entra/oop.php?nocache=1&upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
         if (res.ok) api = await res.json();
       }
     } catch (_) {}
 
-    // JSON-Struktur: { users: [ { user:{name,email,durchwahl}, oof:{status,period{start,end}}, source:{user}, ... } ] }
+    // JSON-Struktur: { users: [ { user:{name,email,mobileExt}, oof:{status,period{start,end}}, source:{user}, ... } ] }
     const first = api?.users?.[0] || null;
     const u = first?.user || null;
     const oof = first?.oof || null;
     const name = u?.name || upn || 'Unbekannt';
     const email = u?.email || '';
-    const durchwahl = u?.durchwahl || '';
+    const mobileExt = u?.mobileExt || '';
+    const mobilePhone = u?.mobilePhone || '';
     const source = first?.source?.user || '';
     const oofStatus = oof?.status || null;
     const period = oof?.period || null;
@@ -159,8 +160,8 @@ export class OwnerModal {
     if (oofBadgeEl) this.setOofBadge(oofBadgeEl, oofStatus);
     if (oofPeriodEl) oofPeriodEl.textContent = this.formatPeriod(period?.start, period?.end);
     if (extEl) {
-      if (durchwahl) { extEl.textContent = durchwahl; extEl.href = `tel:${durchwahl}`; }
-      else { extEl.textContent = '—'; extEl.removeAttribute('href'); }
+      if (mobileExt) { extEl.textContent = mobileExt; extEl.href = `${mobileExt}`; }
+      if (mobilePhone) { extEl.textContent = mobilePhone; extEl.href = `${mobilePhone}`; }
     }
     if (srcEl) srcEl.textContent = `Quelle: ${source || '—'}`;
 
@@ -168,7 +169,7 @@ export class OwnerModal {
 
     // Fallback ohne Bootstrap (falls Modal nicht angezeigt wurde)
     if (!window.bootstrap?.Modal) {
-      const lines = [name, email || upn || '', durchwahl ? `Durchwahl: ${durchwahl}` : '', source ? `Quelle: ${source}` : '']
+      const lines = [name, email || upn || '', mobileExt ? `${mobileExt}` : '', source ? `Quelle: ${source}` : '']
         .filter(Boolean).join('\n');
       alert(lines);
     }

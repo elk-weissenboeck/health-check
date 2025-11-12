@@ -151,7 +151,7 @@ export class App {
         }
       }
 
-      // 2) Details (name, durchwahl, email) via entra/oop.php?upn=…
+      // 2) Details (name, mobileExt, email) via entra/oop.php?upn=…
       const rows = [];
       await Promise.all(Array.from(byUpn.values()).map(async entry => {
         let details = null;
