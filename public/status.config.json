@@ -836,6 +836,31 @@
           ]
         }
       ]
+    },
+    {
+      "key": "not-classified",
+      "title": "Sonstiges",
+      "description": null,
+      "services": [
+        { 
+          "active": false,
+          "key": "ncfd-ninox",
+          "label": "Ninox",
+          "owner": { "upn": "simon.fach@q23.com" }
+        },
+        { 
+          "active": false,
+          "key": "ncfd-glpi",
+          "label": "GLPI",
+          "owner": { "upn": "paul.koepf@elk.at" }
+        },
+        { 
+          "active": false,
+          "key": "ncfd-powerbi",
+          "label": "PowerBI",
+          "owner": { "upn": "patrick.weixelbraun@elk.at" }
+        }
+      ]
     }
   ]
 }
