@@ -15,11 +15,18 @@
       "services": [
         {
           "active": false,
+          "key": "hfsrv-vendor",
+          "label": "Lieferantxxx",
+          "keywords": ["hybridforms", "icomedias", "eckhardt", "bene"],
+          "owner": { "upn": "info@icomedias.com" }
+        },
+        {
+          "active": false,
           "key": "hfsrv-elk-prod",
           "label": "Elk (win9)",
           "url": "https://forms.elk.at",
           "method": "HEAD",
-          "warning": null,
+          "warning": "enable CORS..",
           "owner": { "upn": "georg.weissenboeck@elk.at" }
         },
         {
@@ -27,7 +34,7 @@
           "label": "Elk/Kampa (win82)",
           "url": "https://forms-test.elkkampa.com/",
           "method": "HEAD",
-          "warning": "Update geplant für 31.12.2025; Downtime ~20min",
+          "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
           "isDevEnv": true,
           "headers": [
@@ -56,8 +63,14 @@
       "services": [
         {
           "active": false,
+          "key": "levatis-vendor",
+          "label": "Lieferant",
+          "owner": { "upn": "info@levatis.com" }
+        },
+        {
+          "active": false,
           "key": "levatis-prod",
-          "label": "Levatis 4",
+          "label": "Levatis",
           "url": "https://start2.levatis.at/levatis4/login",
           "method": "HEAD",
           "warning": "CORS disabled",
@@ -70,6 +83,12 @@
       "title": "FOAD / VisionMe",
       "description": null,
       "services": [
+        {
+          "active": false,
+          "key": "hf-vendor",
+          "label": "Lieferant",
+          "owner": { "upn": "info@visionme.de" }
+        },
         {
           "active": true,
           "key": "foad-prod-ldap",
