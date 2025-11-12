@@ -86,9 +86,10 @@ export class OwnerListModal {
       const parts = [];
       if (r.name) parts.push(`<div><strong>${this._esc(r.name)}</strong></div>`);
       const codes = [];
+      if (r.upn)   codes.push(`<code>${this._esc(r.upn)}</code>`);
       if (r.email) codes.push(`<code>${this._esc(r.email)}</code>`);
       if (codes.length) parts.push(`<div class="text-secondary small d-flex gap-2 flex-wrap">${codes.join('')}</div>`);
-      if (r.durchwahl) parts.push(`<div class="small">${this._esc(r.durchwahl)}</div>`);
+      if (r.durchwahl) parts.push(`<div class="small">Durchwahl: ${this._esc(r.durchwahl)}</div>`);
 
       const ownerCell = parts.join('');
 

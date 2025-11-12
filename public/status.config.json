@@ -846,18 +846,21 @@
           "active": false,
           "key": "ncfd-ninox",
           "label": "Ninox",
+          "keywords": ["ninox", "klumpat"],
           "owner": { "upn": "simon.fach@q23.com" }
         },
         { 
           "active": false,
           "key": "ncfd-glpi",
           "label": "GLPI",
+          "keywords": ["glpi", "ticketsystem", "helpdesk"],
           "owner": { "upn": "paul.koepf@elk.at" }
         },
         { 
           "active": false,
           "key": "ncfd-powerbi",
           "label": "PowerBI",
+          "keywords": ["powerbi"],
           "owner": { "upn": "patrick.weixelbraun@elk.at" }
         }
       ]
