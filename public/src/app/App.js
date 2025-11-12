@@ -138,23 +138,43 @@ export class App {
       this.ticketsModal.open(urls, label);
     }
     
-    showOwnerList() {
-      const rows = [];
+    async showOwnerList() {
+      // 1) Owner über Services einsammeln (nach UPN gruppieren)
+      const byUpn = new Map(); // upn -> { upn, services:Set<string> }
       for (const g of this.groups || []) {
         for (const s of g.services || []) {
-          rows.push({
-            group: g.title || g.key,
-            service: s.key,
-            label: s.label || s.key,
-            upn: s.owner?.upn || ''
-          });
+          const upn = s?.owner?.upn;
+          if (!upn) continue;
+          const label = s.label || s.key || '';
+          if (!byUpn.has(upn)) byUpn.set(upn, { upn, services: new Set() });
+          byUpn.get(upn).services.add(label);
         }
       }
-      this.ownerListModal.open(rows, (upn) => {
-        // beim Klick in der Liste direkt Owner-Detail-Modal öffnen
-        this.ownerModal?.open(upn, 'Service Owner');
-      });
+
+      // 2) Details (name, durchwahl, email) via entra/oop.php?upn=…
+      const rows = [];
+      await Promise.all(Array.from(byUpn.values()).map(async entry => {
+        let details = null;
+        try {
+          const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(entry.upn)}`, { cache: 'no-store' });
+          if (res.ok) details = await res.json();
+        } catch {}
+        const first = details?.users?.[0] || null;
+        const u = first?.user || {};
+        rows.push({
+          upn: entry.upn,
+          name: u.name || entry.upn,
+          email: u.email || '',
+          durchwahl: (u.durchwahl ?? ''),        // ohne "tel:" – plain text
+          services: Array.from(entry.services).sort((a,b)=>a.localeCompare(b,'de'))
+        });
+      }));
+
+      // 3) Rendern
+      rows.sort((a,b)=>a.name.localeCompare(b.name,'de'));
+      this.ownerListModal.render(rows);
     }
+
 
 
 }

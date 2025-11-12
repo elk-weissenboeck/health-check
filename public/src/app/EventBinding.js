@@ -18,7 +18,7 @@ export class EventBinding {
     this.on('refreshBtn', 'click', () => this.app.refreshAll());
     this.on('expandAllBtn', 'click', () => this.app.expandAll());
     this.on('collapseAllBtn', 'click', () => this.app.collapseAll());
-    this.on('ownerListBtn', 'click', () => this.app.showOwnerList());
+    this.on('listOwnersBtn', 'click', () => this.app.showOwnerList());
 
     this.on('optShowUrls', 'change', (e) => { this.optionsManager.options.showUrls = !!e.target.checked; this.optionsManager.apply(); });
     this.on('optShowAttr', 'change', (e) => { this.optionsManager.options.showAttr = !!e.target.checked; this.optionsManager.apply(); });
@@ -28,6 +28,7 @@ export class EventBinding {
     this.on('optRefreshInterval', 'change', (e) => { this.optionsManager.options.refreshInterval = parseInt(e.target.value, 10) || 30; this.optionsManager.apply(); });
     this.on('optOpenOptionsOnLoad', 'change', (e) => { this.optionsManager.options.openOptionsOnLoad = !!e.target.checked; this.optionsManager.apply(); });
 
+  
     // Delegation für Icon-Gruppe (Owner + Tickets)
     const gc = document.getElementById('groupsContainer');
     if (gc) {

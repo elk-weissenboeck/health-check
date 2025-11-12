@@ -155,7 +155,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
             </div>
             <div id="functionsCollapse" class="collapse show">
               <div class="card-body py-3 d-grid gap-2">
-                <button id="ownerListBtn" class="btn btn-outline-secondary btn-sm">
+                <button id="listOwnersBtn" class="btn btn-outline-secondary btn-sm">
                   Liste ServiceOwner
                 </button>
               </div>

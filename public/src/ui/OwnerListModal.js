@@ -12,17 +12,24 @@ export class OwnerListModal {
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">ServiceOwner – Übersicht</h5>
+        <h5 class="modal-title">Service Owner – Übersicht</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
       </div>
       <div class="modal-body">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="text-secondary" id="${this.modalId}-status">Lade…</div>
+          <div class="input-group input-group-sm" style="max-width: 320px">
+            <span class="input-group-text">Services filtern</span>
+            <input type="text" class="form-control" id="${this.modalId}-search" placeholder="Suchtext…">
+          </div>
+        </div>
+
         <div class="table-responsive">
-          <table class="table table-sm align-middle mb-0">
+          <table class="table table-sm table-bordered table-striped align-middle mb-0">
             <thead>
               <tr>
-                <th style="width:40%">Service</th>
-                <th style="width:30%">Gruppe</th>
-                <th style="width:30%">Owner (UPN)</th>
+                <th style="width:32%">Owner</th>
+                <th>Services</th>
               </tr>
             </thead>
             <tbody id="${this.modalId}-tbody"></tbody>
@@ -30,7 +37,7 @@ export class OwnerListModal {
         </div>
       </div>
       <div class="modal-footer">
-        <span class="me-auto text-secondary" id="${this.modalId}-count"></span>
+        <span class="me-auto text-secondary" id="${this.modalId}-footer"></span>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
       </div>
     </div>
@@ -39,60 +46,65 @@ export class OwnerListModal {
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     document.body.appendChild(wrap.firstElementChild);
+
+    // Suche: Live-Filter auf Services-Spalte
+    const search = document.getElementById(`${this.modalId}-search`);
+    const tbody  = document.getElementById(`${this.modalId}-tbody`);
+    search?.addEventListener('input', () => {
+      const q = (search.value || '').trim().toLowerCase();
+      const rows = tbody?.querySelectorAll('tr') || [];
+      rows.forEach(tr => {
+        const svc = tr.querySelector('[data-col="services"]')?.textContent?.toLowerCase() || '';
+        tr.style.display = !q || svc.includes(q) ? '' : 'none';
+      });
+    });
   }
 
-  _showModal() {
+  _show() {
     const el = document.getElementById(this.modalId);
-    const tryShow = () => {
+    const show = () => {
       try {
         if (!window.bootstrap?.Modal) return;
-        const inst = window.bootstrap.Modal.getOrCreateInstance(el, { keyboard: true });
-        inst.show();
+        window.bootstrap.Modal.getOrCreateInstance(el, { keyboard: true }).show();
       } catch {}
     };
-    queueMicrotask(tryShow);
-    setTimeout(tryShow, 0);
-  }
-
-  open(rows, onClickOwner) {
-    // rows: [{group, service, label, upn}]
-    const tbody = document.getElementById(`${this.modalId}-tbody`);
-    const cnt = document.getElementById(`${this.modalId}-count`);
-    if (tbody) {
-      tbody.innerHTML = rows.length
-        ? rows.map(r => `
-            <tr>
-              <td>${this._esc(r.label || r.service || '')}</td>
-              <td>${this._esc(r.group || '')}</td>
-              <td>
-                ${r.upn ? `<a href="#" data-upn="${this._esc(r.upn)}" class="owner-link">${this._esc(r.upn)}</a>` : '<span class="text-secondary">—</span>'}
-              </td>
-            </tr>
-          `).join('')
-        : `<tr><td colspan="3" class="text-secondary py-4">Keine Owner hinterlegt.</td></tr>`;
-    }
-    if (cnt) cnt.textContent = `Einträge: ${rows.length}`;
-
-    // Delegate clicks on owner links to open the single Owner modal:
-    if (tbody) {
-      tbody.onclick = (ev) => {
-        const a = ev.target.closest('.owner-link');
-        if (!a) return;
-        ev.preventDefault();
-        const upn = a.getAttribute('data-upn');
-        if (onClickOwner) onClickOwner(upn);
-      };
-    }
-
-    this._showModal();
+    queueMicrotask(show); setTimeout(show, 0);
   }
 
   _esc(s) {
-    return String(s)
-      .replaceAll('&','&amp;')
-      .replaceAll('<','&lt;')
-      .replaceAll('>','&gt;')
-      .replaceAll('"','&quot;')
-      .replaceAll("'",'&#039;');
+    return String(s ?? '')
+      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+      .replaceAll('"','&quot;').replaceAll("'",'&#039;');
+  }
+  
+  render(rows){
+    const tbody = document.getElementById(`${this.modalId}-tbody`);
+    const status= document.getElementById(`${this.modalId}-status`);
+    const footer= document.getElementById(`${this.modalId}-footer`);
+    if (tbody) tbody.innerHTML = rows.map(r => {
+      // Owner-Zelle: Name (ohne ServiceKey), darunter UPN/E-Mail in <code>, darunter Durchwahl (kein tel:)
+      const parts = [];
+      if (r.name) parts.push(`<div><strong>${this._esc(r.name)}</strong></div>`);
+      const codes = [];
+      if (r.email) codes.push(`<code>${this._esc(r.email)}</code>`);
+      if (codes.length) parts.push(`<div class="text-secondary small d-flex gap-2 flex-wrap">${codes.join('')}</div>`);
+      if (r.durchwahl) parts.push(`<div class="small">${this._esc(r.durchwahl)}</div>`);
+
+      const ownerCell = parts.join('');
+
+      // Services als Liste / Chips
+      const servicesHtml = (r.services || [])
+        .map(s => `<span class="badge rounded-pill text-bg-light border me-1 mb-1">${this._esc(s)}</span>`)
+        .join('');
+
+      return `<tr>
+        <td data-col="owner">${ownerCell}</td>
+        <td data-col="services">${servicesHtml}</td>
+      </tr>`;
+    }).join('');
+
+    if (status) status.textContent = `Einträge: ${rows.length}`;
+    if (footer) footer.textContent = '';
+    this._show();
   }
 }
