@@ -127,7 +127,7 @@ export class OwnerModal {
     let api = null;
     try {
       if (upn) {
-        const res = await fetch(`entra/oop.php?nocache=1&upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
+        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
         if (res.ok) api = await res.json();
       }
     } catch (_) {}
