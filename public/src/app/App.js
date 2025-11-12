@@ -165,7 +165,8 @@ export class App {
           upn: entry.upn,
           name: u.name || entry.upn,
           email: u.email || '',
-          durchwahl: (u.durchwahl ?? ''),        // ohne "tel:" – plain text
+          mobileExt: (u.mobileExt ?? ''),        // ohne "tel:" – plain text
+          mobilePhone: (u.mobilePhone ?? ''),    
           services: Array.from(entry.services).sort((a,b)=>a.localeCompare(b,'de'))
         });
       }));

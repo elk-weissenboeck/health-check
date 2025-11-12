@@ -17,7 +17,7 @@ class myEntra
     private GraphServiceClient $graph;
     private DateTimeZone $targetTz;
 
-    /** @var array<string,array{name?:string,email?:string,durchwahl?:string}> */
+    /** @var array<string,array{name?:string,email?:string,mobileExt?:string}> */
     private array $fallbackDirectory = [];
 
     private int $cacheTtlSeconds = 0;         // 0 = disabled
@@ -188,7 +188,8 @@ class myEntra
             'user' => [
                 'name'         => null,
                 'email'        => null,
-                'durchwahl'    => null,   // immer aus Fallback
+                'mobileExt'    => null,   // immer aus Fallback
+                'mobilePhone'  => null,
                 'beschreibung' => null,
             ],
             'oof' => [
@@ -198,15 +199,14 @@ class myEntra
             ],
             'error'  => null,
             'source' => [
-                'user'            => 'entra',   // entra|fallback|none
-                'durchwahlSource' => 'none',    // fallback|none
+                'user' => 'entra'   // entra|fallback|none
             ],
         ];
 
         try {
             // (A) User (defensiv)
             $userSelect = new UserItemRequestBuilderGetQueryParameters(
-                select: ['displayName','mail','userPrincipalName','jobTitle','department']
+                select: ['displayName','mail','userPrincipalName','mobilePhone', 'businessPhones']
             );
             $userConfig = new UserItemRequestBuilderGetRequestConfiguration();
             $userConfig->queryParameters = $userSelect;
@@ -214,6 +214,7 @@ class myEntra
             $user = null;
             try {
                 $user = $this->graph->users()->byUserId($userId)->get($userConfig)->wait();
+                //print_r($user);
             } catch (Throwable $e) {
                 $entry['error'] = trim(($entry['error'] ?? '').' | users.get: '.$e->getMessage(), ' |');
             }
@@ -222,7 +223,8 @@ class myEntra
             $mail        = $user?->getMail();
             $upn         = $user?->getUserPrincipalName();
             $email       = (is_string($mail) && $mail !== '') ? $mail : ((is_string($upn) && $upn !== '') ? $upn : null);
-
+            $mobilePhone = $user?->getMobilePhone();
+          
             $job  = $user?->getJobTitle();
             $dept = $user?->getDepartment();
             $parts = array_filter([$job ?: null, $dept ?: null], fn($x)=>is_string($x) && trim($x) !== '');
@@ -231,6 +233,7 @@ class myEntra
             $entry['user']['name']         = $displayName;
             $entry['user']['email']        = $email;
             $entry['user']['beschreibung'] = $beschreibung;
+            $entry['user']['mobilePhone'] =  $mobilePhone;
 
             // (B) Fallback nur wenn Name UND Email leer
             $needsFallback = ($displayName === null || $displayName === '')
@@ -240,8 +243,8 @@ class myEntra
                 if (!$matched) $entry['source']['user'] = 'none';
             }
 
-            // (C) Durchwahl immer aus Fallback
-            $this->applyDurchwahlFallback($entry, $userId, $entry['user']['email'] ?? null, $upn ?? null);
+            // (C) mobileExt immer aus Fallback
+            $this->applyMobileExtFallback($entry, $userId, $entry['user']['email'] ?? null, $upn ?? null);
 
             // (D) OOF (defensiv)
             try {
@@ -292,7 +295,7 @@ class myEntra
         return false;
     }
 
-    private function applyDurchwahlFallback(array &$entry, string $userId, ?string $email, ?string $upn): void
+    private function applyMobileExtFallback(array &$entry, string $userId, ?string $email, ?string $upn): void
     {
         $candidates = [];
         if (is_string($email) && $email !== '')           $candidates[] = strtolower($email);
@@ -300,14 +303,12 @@ class myEntra
         if (is_string($upn) && $upn !== '')               $candidates[] = strtolower($upn);
 
         foreach (array_unique($candidates) as $k) {
-            if (isset($this->fallbackDirectory[$k]['durchwahl'])) {
-                $entry['user']['durchwahl'] = $this->fallbackDirectory[$k]['durchwahl'];
-                $entry['source']['durchwahlSource'] = 'fallback';
+            if (isset($this->fallbackDirectory[$k]['mobileExt'])) {
+                $entry['user']['mobileExt'] = $this->fallbackDirectory[$k]['mobileExt'];
                 return;
             }
         }
-        $entry['user']['durchwahl'] = null;
-        $entry['source']['durchwahlSource'] = 'none';
+        $entry['user']['mobileExt'] = null;
     }
 
     private function enumToString($enumObj): ?string

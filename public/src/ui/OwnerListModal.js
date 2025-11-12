@@ -145,13 +145,14 @@ async render(rows){
     const status= document.getElementById(`${this.modalId}-status`);
     const footer= document.getElementById(`${this.modalId}-footer`);
     if (tbody) tbody.innerHTML = rows.map(r => {
-      // Owner-Zelle: Name (ohne ServiceKey), darunter UPN/E-Mail in <code>, darunter Durchwahl (kein tel:)
+      // Owner-Zelle: Name (ohne ServiceKey), darunter UPN/E-Mail in <code>, darunter mobileExt (kein tel:)
       const parts = [];
       if (r.name) parts.push(`<div><strong>${this._esc(r.name)}</strong></div>`);
       const codes = [];
       if (r.email) codes.push(`<code>${this._esc(r.email)}</code>`);
       if (codes.length) parts.push(`<div class="text-secondary small d-flex gap-2 flex-wrap">${codes.join('')}</div>`);
-      if (r.durchwahl) parts.push(`<div class="small">${this._esc(r.durchwahl)}</div>`);
+      if (r.mobileExt) parts.push(`<div class="small">${this._esc(r.mobileExt)}</div>`);
+      if (r.mobilePhone) parts.push(`<div class="small">${this._esc(r.mobilePhone)}</div>`);
 
       const ownerCell = parts.join('');
 
