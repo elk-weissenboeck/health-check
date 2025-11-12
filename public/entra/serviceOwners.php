@@ -7,17 +7,17 @@ return [
     'georg.weissenboeck@elk.at' => [
         'name' => 'Georg Weissenböck', 
         'email' => 'georg.weissenboeck@elk.at', 
-        'durchwahl' => '527'
+        'durchwahl' => 'DW527'
     ],
     'gabriele.schmid@elk.at' => [
         'name' => 'Gabi Schmid', 
         'email' => 'gabriele.schmid@elk.at', 
-        'durchwahl' => '528'
+        'durchwahl' => 'DW528'
     ],
     'lukas.faltin@elk.at' => [
         'name' => 'Lukas Faltin', 
         'email' => 'lukas.faltin@elk.at', 
-        'durchwahl' => '529'
+        'durchwahl' => 'DW529'
     ],
     'support@levatis.com' => [
         'name' => 'Hr. Weiss', 
@@ -32,6 +32,6 @@ return [
     'sro@sro.at' => [
         'name' => 'Robert Sachetti', 
         'email' => 'sro@sro.at', 
-        'durchwahl' => ': +43 (0) 664 530 60 71'
+        'durchwahl' => '+43 (0) 664 530 60 71'
     ],
 ];

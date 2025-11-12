@@ -1,3 +1,5 @@
+import { ConfigLoader } from '../config/ConfigLoader.js';
+
 export class OwnerListModal {
   constructor() {
     this.modalId = 'ownerListModal';
@@ -50,12 +52,19 @@ export class OwnerListModal {
     // Suche: Live-Filter auf Services-Spalte
     const search = document.getElementById(`${this.modalId}-search`);
     const tbody  = document.getElementById(`${this.modalId}-tbody`);
-    search?.addEventListener('input', () => {
+    search?.addEventListener('input', async () => {
       const q = (search.value || '').trim().toLowerCase();
+      await this._ensureKeywordIndex();
       const rows = tbody?.querySelectorAll('tr') || [];
       rows.forEach(tr => {
-        const svc = tr.querySelector('[data-col="services"]')?.textContent?.toLowerCase() || '';
-        tr.style.display = !q || svc.includes(q) ? '' : 'none';
+        const badges = Array.from(tr.querySelectorAll('[data-col="services"] .badge'));
+        let haystack = '';
+        for (const b of badges) {
+          const label = (b.textContent || '').trim().toLowerCase();
+          const kws = this._keywordIndex?.get(label) || new Set();
+          haystack += ' ' + Array.from(kws).join(' ');
+        }
+        tr.style.display = !q || haystack.includes(q) ? '' : 'none';
       });
     });
   }
@@ -86,10 +95,9 @@ export class OwnerListModal {
       const parts = [];
       if (r.name) parts.push(`<div><strong>${this._esc(r.name)}</strong></div>`);
       const codes = [];
-      if (r.upn)   codes.push(`<code>${this._esc(r.upn)}</code>`);
       if (r.email) codes.push(`<code>${this._esc(r.email)}</code>`);
       if (codes.length) parts.push(`<div class="text-secondary small d-flex gap-2 flex-wrap">${codes.join('')}</div>`);
-      if (r.durchwahl) parts.push(`<div class="small">Durchwahl: ${this._esc(r.durchwahl)}</div>`);
+      if (r.durchwahl) parts.push(`<div class="small">${this._esc(r.durchwahl)}</div>`);
 
       const ownerCell = parts.join('');
 
@@ -107,5 +115,34 @@ export class OwnerListModal {
     if (status) status.textContent = `Einträge: ${rows.length}`;
     if (footer) footer.textContent = '';
     this._show();
+  }
+ 
+  // --- Keyword index for services (built from status.config.json) ---
+  async _ensureKeywordIndex() {
+    if (this._keywordIndexReady) return this._keywordIndexReady;
+    this._keywordIndexReady = (async () => {
+      try {
+        const cfg = await ConfigLoader.load();
+        const idx = new Map(); // label|key -> Set<keyword>
+        for (const g of cfg?.groups || []) {
+          for (const s of g?.services || []) {
+            const label = (s?.label || s?.key || '').toLowerCase();
+            const key   = (s?.key || '').toLowerCase();
+            const kws = new Set();
+            for (const k of (s?.keywords || [])) {
+              if (typeof k === 'string' && k.trim()) kws.add(k.toLowerCase());
+            }
+            if (label) kws.add(label);
+            if (key)   kws.add(key);
+            if (label) idx.set(label, kws);
+            if (key)   idx.set(key, kws);
+          }
+        }
+        this._keywordIndex = idx;
+      } catch (e) {
+        this._keywordIndex = new Map();
+      }
+    })();
+    return this._keywordIndexReady;
   }
 }
