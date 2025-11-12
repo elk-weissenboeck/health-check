@@ -847,13 +847,13 @@
           "key": "ncfd-ninox",
           "label": "Ninox",
           "keywords": ["ninox", "klumpat"],
-          "owner": { "upn": "simon.fach@q23.com" }
+          "owner": { "upn": "s.fach@q23.de" }
         },
         { 
           "active": false,
           "key": "ncfd-glpi",
           "label": "GLPI",
-          "keywords": ["glpi", "ticketsystem", "helpdesk"],
+          "keywords": ["glpi", "ticketsystem", "helpdesk", "hotline"],
           "owner": { "upn": "paul.koepf@elk.at" }
         },
         { 

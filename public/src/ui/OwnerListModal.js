@@ -97,7 +97,7 @@ export class OwnerListModal {
       const codes = [];
       if (r.email) codes.push(`<code>${this._esc(r.email)}</code>`);
       if (codes.length) parts.push(`<div class="text-secondary small d-flex gap-2 flex-wrap">${codes.join('')}</div>`);
-      if (r.durchwahl) parts.push(`<div class="small">${this._esc(r.durchwahl)}</div>`);
+      if (r.durchwahl) parts.push(`<div class="text-secondary small">${this._esc(r.durchwahl)}</div>`);
 
       const ownerCell = parts.join('');
 

@@ -5,24 +5,18 @@
 //
 return [
     'georg.weissenboeck@elk.at' => [
-        'name' => 'Georg Weissenböck', 
-        'email' => 'georg.weissenboeck@elk.at', 
         'durchwahl' => 'DW527'
     ],
     'gabriele.schmid@elk.at' => [
-        'name' => 'Gabi Schmid', 
-        'email' => 'gabriele.schmid@elk.at', 
         'durchwahl' => 'DW528'
     ],
     'lukas.faltin@elk.at' => [
-        'name' => 'Lukas Faltin', 
-        'email' => 'lukas.faltin@elk.at', 
         'durchwahl' => 'DW529'
     ],
     'support@levatis.com' => [
         'name' => 'Hr. Weiss', 
         'email' => 'support@levatis.com', 
-        'durchwahl' => '+ 43 (0) 5 700 900 700'
+        'durchwahl' => '+43 (0) 5 700 900 700'
     ],
     'office@webdesignwien.co.at' => [
         'name' => 'Philipp Hofstätter', 
@@ -33,5 +27,10 @@ return [
         'name' => 'Robert Sachetti', 
         'email' => 'sro@sro.at', 
         'durchwahl' => '+43 (0) 664 530 60 71'
+    ],
+    's.fach@q23.de' => [
+        'name' => 'Simon Fach', 
+        'email' => 's.fach@q23.de', 
+        'durchwahl' => '+49 68 23 16 33'
     ],
 ];
