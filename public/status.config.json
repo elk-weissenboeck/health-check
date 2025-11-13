@@ -16,7 +16,7 @@
         {
           "active": false,
           "key": "hfsrv-vendor",
-          "label": "Lieferantxxx",
+          "label": "Lieferant",
           "keywords": ["hybridforms", "icomedias", "eckhardt", "bene"],
           "owner": { "upn": "info@icomedias.com" }
         },

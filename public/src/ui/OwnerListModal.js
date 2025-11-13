@@ -5,6 +5,7 @@ export class OwnerListModal {
     this._owners = [];
     this._ensureModal();
     this._attachSearchHandler();
+    this._attachKeywordToggleHandler();
   }
 
   _ensureModal() {
@@ -26,12 +27,22 @@ export class OwnerListModal {
         </div>
 
         <div id="${this.modalId}-content" class="d-none">
-          <div class="mb-3">
-            <input type="search"
-                   id="${this.modalId}-search"
-                   class="form-control"
-                   placeholder="Nach Stichworten filtern (z.B. &quot;hybridforms&quot;, &quot;levatis&quot;)">
-          </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="flex-grow-1 me-3">
+                <input type="search"
+                       id="${this.modalId}-search"
+                       class="form-control"
+                       placeholder="Nach Stichworten filtern (z.B. &quot;hybridforms&quot;, &quot;levatis&quot;)">
+              </div>
+              <div class="form-check ms-2">
+                <input class="form-check-input"
+                       type="checkbox"
+                       id="${this.modalId}-toggle-keywords">
+                <label class="form-check-label small" for="${this.modalId}-toggle-keywords">
+                  Keywords anzeigen
+                </label>
+              </div>
+            </div>
           <div id="${this.modalId}-list" class="list-group small"></div>
         </div>
       </div>
@@ -100,6 +111,22 @@ export class OwnerListModal {
       );
     });
   }
+
+    _attachKeywordToggleHandler() {
+      document.addEventListener('change', (ev) => {
+        const target = ev.target;
+        if (!(target instanceof HTMLInputElement)) return;
+        if (target.id !== `${this.modalId}-toggle-keywords`) return;
+
+        const show = target.checked;
+        const listEl = document.getElementById(`${this.modalId}-list`);
+        if (!listEl) return;
+
+        listEl.querySelectorAll('.owner-keywords').forEach(el => {
+          el.classList.toggle('d-none', !show);
+        });
+      });
+    }
 
   _collectOwnersFromGroups(groups) {
     const map = new Map();
@@ -250,13 +277,15 @@ export class OwnerListModal {
         contactParts.push(`<a href="tel:${tel}">${esc(tel)}</a>`);
       }
 
-      item.innerHTML = `
+    item.innerHTML = `
 <div class="d-flex justify-content-between align-items-start">
   <div class="me-3">
     <div class="fw-semibold">${esc(name)}</div>
     <div class="small text-secondary">${esc(owner.upn)}</div>
     <div class="small mt-1">${contactParts.join(' · ')}</div>
-    <div class="mt-2">${keywordBadges}</div>
+    <div class="mt-2 owner-keywords">
+      ${keywordBadges}
+    </div>
     <div class="d-none mt-2 small text-secondary">
       ${serviceLines}
     </div>
@@ -272,6 +301,14 @@ export class OwnerListModal {
     });
 
     if (statusEl) statusEl.textContent = `${owners.length} Service Owner`;
+    
+    const toggle = document.getElementById(`${this.modalId}-toggle-keywords`);
+    if (toggle) {
+      const show = toggle.checked;
+      listEl.querySelectorAll('.owner-keywords').forEach(el => {
+        el.classList.toggle('d-none', !show);
+      });
+    }
   }
 
   /**
