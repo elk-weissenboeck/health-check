@@ -45,7 +45,6 @@ try {
     if (!$photoBinary) {
         throw new \RuntimeException('No photo');
     }
-    
 
     $cacheSeconds = PHOTO_CACHE_HOURS * 3600;
     header('Cache-Control: private, max-age=' . $cacheSeconds);

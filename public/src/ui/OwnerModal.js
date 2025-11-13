@@ -9,7 +9,7 @@ export class OwnerModal {
 
     const html = `
 <div class="modal fade" id="${this.modalId}" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="${this.modalId}-title">Service Owner</h5>
@@ -17,8 +17,7 @@ export class OwnerModal {
       </div>
       <div class="modal-body">
         <div class="d-flex align-items-start gap-3">
-          <div id="${this.modalId}-avatar" class="rounded-circle flex-shrink-0"
-               style="width:48px;height:48px;background:#e9ecef;display:flex;align-items:center;justify-content:center;font-weight:600;"></div>
+          <div id="${this.modalId}-avatar" class="owner-avatar"></div>
           <div class="w-100">
             <div class="d-flex justify-content-between align-items-start">
               <div>
@@ -81,6 +80,55 @@ export class OwnerModal {
     return String(text || 'U').split(/\s+/).map(s => s[0]).slice(0,2).join('').toUpperCase();
   }
 
+  async updateAvatar(avatarEl, upn, name) {
+    if (!avatarEl) return;
+
+    // Fallback: erstmal Initialen anzeigen
+    avatarEl.innerHTML = '';
+    const initialsSpan = document.createElement('span');
+    initialsSpan.textContent = this.initials(name);
+    avatarEl.appendChild(initialsSpan);
+    avatarEl.style.background = '#e9ecef';
+
+    if (!upn) return;
+
+    try {
+      const res = await fetch(`entra/photo.php?id=${encodeURIComponent(upn)}`, { cache: 'no-store' });
+
+      // Bei 404 oder anderem Fehler: einfach Initialen lassen
+      if (!res.ok) return;
+
+      const ct = res.headers.get('Content-Type') || '';
+      if (!ct.toLowerCase().startsWith('image/')) {
+        return; // irgendwas Merkwürdiges → Initialen behalten
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = this.initials(name);
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '50%';
+
+      // Wenn Bild da ist → Initialen ersetzen
+      avatarEl.innerHTML = '';
+      avatarEl.appendChild(img);
+
+      img.addEventListener('error', () => {
+        // Wenn Bild nicht darstellbar ist → wieder Initialen anzeigen
+        avatarEl.innerHTML = '';
+        avatarEl.appendChild(initialsSpan);
+        URL.revokeObjectURL(url);
+      });
+    } catch (_) {
+      // Netzwerkfehler o.ä. → Initialen bleiben
+    }
+  }
+  
   _showModalSafely() {
     const modalEl = document.getElementById(this.modalId);
     const tryShow = () => {
@@ -127,7 +175,7 @@ export class OwnerModal {
     let api = null;
     try {
       if (upn) {
-        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
+        const res = await fetch(`entra/oop.php?nocache=1&upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
         if (res.ok) api = await res.json();
       }
     } catch (_) {}
@@ -154,8 +202,7 @@ export class OwnerModal {
       mailtoBtn.classList.toggle('disabled', !email);
     }
     if (avatarEl) {
-      avatarEl.textContent = this.initials(name);
-      avatarEl.style.background = '#e9ecef';
+      this.updateAvatar(avatarEl, upn, name);
     }
     if (oofBadgeEl) this.setOofBadge(oofBadgeEl, oofStatus);
     if (oofPeriodEl) oofPeriodEl.textContent = this.formatPeriod(period?.start, period?.end);

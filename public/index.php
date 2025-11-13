@@ -21,6 +21,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   <link rel="stylesheet" href="./src/status.css?t=<?=time()?>">
   <link rel="stylesheet" href="./src/ui/Icons.css?t=<?=time()?>">
   <link rel="stylesheet" href="./src/ui/ServiceBlocks.css?t=<?=time()?>">
+  <link rel="stylesheet" href="./src/ui/ServiceOwner.css?t=<?=time()?>">
 </head>
 
 <body>

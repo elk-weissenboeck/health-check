@@ -242,7 +242,6 @@ class myEntra
             $entry['user']['beschreibung'] = $beschreibung;
             $entry['user']['mobilePhone']  = $mobilePhone;
             $entry['user']['businessPhone']= count($businessPhone) ? $businessPhone[0] : null;
-            $entry['user']['photo']= $this->getUserPhotoUrl($userId);
 
             // (B) Fallback nur wenn Name UND Email leer
             $needsFallback = ($displayName === null || $displayName === '')

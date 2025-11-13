@@ -1,0 +1,22 @@
+.owner-avatar {
+    width: 112px;          /* größer */
+    height: 112px;
+    border-radius: 0.75rem; /* leicht abgerundete Ecken, nicht rund */
+    background: #e9ecef;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 2rem;       /* Initialen auch größer */
+    color: #495057;
+    flex-shrink: 0;
+}
+
+/* Bild übernimmt die Form des Containers */
+.owner-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit !important;  /* gleiche Rundung wie Container */
+}
