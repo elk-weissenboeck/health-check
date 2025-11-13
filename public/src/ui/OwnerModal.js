@@ -1,6 +1,7 @@
 export class OwnerModal {
   constructor() {
     this.modalId = 'serviceOwnerModal';
+    this._loadToken = 0;
     this.ensureModal();
   }
 
@@ -146,6 +147,51 @@ export class OwnerModal {
       // Netzwerkfehler o.ä. → Initialen bleiben
     }
   }
+
+  _resetView(upn, serviceLabel) {
+    const titleEl   = document.getElementById(`${this.modalId}-title`);
+    const nameEl    = document.getElementById(`${this.modalId}-name`);
+    const upnEl     = document.getElementById(`${this.modalId}-upn`);
+    const emailEl   = document.getElementById(`${this.modalId}-email`);      // <a>
+    const emailAlt  = document.getElementById(`${this.modalId}-email-alt`);  // div
+    const phonesEl  = document.getElementById(`${this.modalId}-phones`);     // div mit mehreren Nummern
+    const oofBadge  = document.getElementById(`${this.modalId}-oof-badge`);
+    const oofPeriod = document.getElementById(`${this.modalId}-oof-period`);
+    const sourceEl  = document.getElementById(`${this.modalId}-source`);
+    const avatarEl  = document.getElementById(`${this.modalId}-avatar`);
+
+    if (titleEl) {
+      titleEl.textContent = serviceLabel
+        ? `Service Owner – ${serviceLabel}`
+        : 'Service Owner';
+    }
+
+    if (nameEl)    nameEl.textContent = 'Lädt…';
+    if (upnEl)     upnEl.textContent = upn || '—';
+
+    if (emailEl) {
+      emailEl.textContent = '';
+      emailEl.removeAttribute('href');
+    }
+    if (emailAlt)  emailAlt.textContent = '';
+    if (phonesEl) {
+      phonesEl.innerHTML = '';
+      phonesEl.classList.add('d-none');
+    }
+
+    if (oofBadge) {
+      oofBadge.textContent = '';
+      oofBadge.className = 'badge'; // Basis zurücksetzen, Farbe wird später gesetzt
+    }
+    if (oofPeriod) oofPeriod.textContent = '';
+
+    if (sourceEl)  sourceEl.textContent = '';
+
+    if (avatarEl) {
+      avatarEl.innerHTML = '';
+      avatarEl.classList.add('owner-avatar--loading');
+    }
+  }
   
   _showModalSafely() {
     const modalEl = document.getElementById(this.modalId);
@@ -165,109 +211,108 @@ export class OwnerModal {
     setTimeout(tryShow, 0);
   }
 
-  async open(upn, serviceLabel) {
-    const nameEl = document.getElementById(`${this.modalId}-name`);
-    const mailEl = document.getElementById(`${this.modalId}-email`);
-    const titleEl = document.getElementById(`${this.modalId}-title`);
-    const avatarEl = document.getElementById(`${this.modalId}-avatar`);
-    const mailtoBtn = document.getElementById(`${this.modalId}-mailto`);
-    const upnEl = document.getElementById(`${this.modalId}-upn`);
-    const statusEl = document.getElementById(`${this.modalId}-status`);
-    const oofBadgeEl = document.getElementById(`${this.modalId}-oof-badge`);
-    const oofPeriodEl = document.getElementById(`${this.modalId}-oof-period`);
-    const extEl = document.getElementById(`${this.modalId}-ext`);
-    const srcEl = document.getElementById(`${this.modalId}-source`);
+    async open(upn, serviceLabel) {
+      // neuer Ladevorgang → Token erhöhen
+      const myToken = ++this._loadToken;
 
-    if (titleEl) titleEl.textContent = serviceLabel ? `Service Owner – ${serviceLabel}` : 'Service Owner';
-    if (upnEl) upnEl.textContent = upn || '—';
-    if (statusEl) statusEl.textContent = 'lädt…';
-    if (avatarEl) { avatarEl.textContent = '…'; avatarEl.style.background = '#e9ecef'; }
-    if (extEl) { extEl.textContent = '—'; extEl.removeAttribute('href'); }
-    if (oofBadgeEl) this.setOofBadge(oofBadgeEl, null);
-    if (oofPeriodEl) oofPeriodEl.textContent = '—';
+      this.ensureModal();
 
-    // Modal robust öffnen (auch wenn Bootstrap minimal später ready ist)
-    this._showModalSafely();
+      // View sofort zurücksetzen, damit kein alter Inhalt sichtbar ist
+      this._resetView(upn, serviceLabel);
 
-    let api = null;
-    try {
-      if (upn) {
-        const res = await fetch(`entra/oop.php?nocache=1&upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
-        if (res.ok) api = await res.json();
+      // Modal anzeigen (wie bisher)
+      if (window.bootstrap?.Modal) {
+        if (!this._bsModal) {
+          this._bsModal = new window.bootstrap.Modal(
+            document.getElementById(this.modalId)
+          );
+        }
+        this._bsModal.show();
       }
-    } catch (_) {}
 
-    // JSON-Struktur: { users: [ { user:{name,email,mobileExt}, oof:{status,period{start,end}}, source:{user}, ... } ] }
-    const first = api?.users?.[0] || null;
-    const u = first?.user || null;
-    
-    const oof = first?.oof || null;
-    
-    const name = u?.name || upn || 'Unbekannt';
-    const email = u?.email || '';
-    
-    const telExt      = u.mobileExt      || '';
-    const telMobile   = u.mobilePhone    || '';
-    const telBusiness = u.businessPhone  || '';
-    
-    const source = first?.source?.user || '';
-    const oofStatus = oof?.status || null;
-    const period = oof?.period || null;
+      try {
+        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    const phonesEl = document.getElementById(`${this.modalId}-phones`);
-    if (phonesEl) {
-      phonesEl.innerHTML = '';
+        const api = await res.json();
 
-      const addPhone = (number, label) => {
-        if (!number) return;
-        const a = document.createElement('a');
-        const telHref = number.replace(/\s+/g, '');
-        a.href = `tel:${telHref}`;
-        a.className = 'owner-phone d-inline-flex align-items-baseline text-decoration-none';
-        a.innerHTML = `
-          <span>${number}</span>
-          <span class="phone-label">(${label})</span>
-        `;
-        phonesEl.appendChild(a);
-      };
+        // Wenn inzwischen ein neuer open()-Aufruf stattgefunden hat → diese Antwort ignorieren
+        if (myToken !== this._loadToken) return;
 
-      // Reihenfolge: Geschäft → Mobil → Durchwahl
-      addPhone(telBusiness, 'Geschäft');
-      addPhone(telMobile, 'Mobil');
-      addPhone(telExt, 'Extern');
+        const first = api?.users?.[0] || {};
+        const u = first.user || {};
+        const oof = first.oof || null;
+        const source = first?.source?.user || '';
+        const oofStatus = oof?.status || null;
+        const period = oof?.period || null;
 
-      if (!phonesEl.children.length) {
-        phonesEl.classList.add('d-none');
-      } else {
-        phonesEl.classList.remove('d-none');
+        const name        = u.name || upn;
+        const email       = u.email || upn;
+        const emailAltVal = u.emailAlt || '';
+        const telExt      = u.mobileExt      || '';
+        const telMobile   = u.mobilePhone    || '';
+        const telBusiness = u.businessPhone  || '';
+
+        // … hier dein bestehender Code, nur jetzt mit sicheren Element-Refs …
+        const nameEl    = document.getElementById(`${this.modalId}-name`);
+        const upnEl     = document.getElementById(`${this.modalId}-upn`);
+        const emailEl   = document.getElementById(`${this.modalId}-email`);
+        const emailAlt  = document.getElementById(`${this.modalId}-email-alt`);
+        const phonesEl  = document.getElementById(`${this.modalId}-phones`);
+        const oofBadge  = document.getElementById(`${this.modalId}-oof-badge`);
+        const oofPeriod = document.getElementById(`${this.modalId}-oof-period`);
+        const sourceEl  = document.getElementById(`${this.modalId}-source`);
+        const avatarEl  = document.getElementById(`${this.modalId}-avatar`);
+
+        if (nameEl) nameEl.textContent = name;
+        if (upnEl)  upnEl.textContent  = upn || '—';
+
+        if (emailEl) {
+          emailEl.textContent = email;
+          emailEl.href = `mailto:${encodeURIComponent(email)}`;
+        }
+        if (emailAlt) {
+          emailAlt.textContent = emailAltVal || '';
+        }
+
+        if (phonesEl) {
+          phonesEl.innerHTML = '';
+          const addPhone = (number, label) => {
+            if (!number) return;
+            const a = document.createElement('a');
+            a.href = `tel:${number.replace(/\s+/g, '')}`;
+            a.className = 'owner-phone d-inline-flex align-items-baseline text-decoration-none';
+            a.innerHTML = `
+              <span>${number}</span>
+              <span class="phone-label">(${label})</span>
+            `;
+            phonesEl.appendChild(a);
+          };
+          addPhone(telBusiness, 'Geschäft');
+          addPhone(telMobile, 'Mobil');
+          addPhone(telExt, 'Extern');
+
+          phonesEl.classList.toggle('d-none', !phonesEl.children.length);
+        }
+
+
+        if (sourceEl) sourceEl.textContent = source || '';
+
+        if (avatarEl) {
+          avatarEl.classList.remove('owner-avatar--loading');
+          this.updateAvatar(avatarEl, upn, name);
+        }
+        
+        if (oofBadge) this.setOofBadge(oofBadge, oofStatus);
+        if (oofPeriod) oofPeriod.textContent = this.formatPeriod(period?.start, period?.end);
+
+
+      } catch (e) {
+        // Optional Fehler-Handling. Wichtig: Token checken, um nicht einen anderen Owner zu überschreiben
+        if (myToken !== this._loadToken) return;
+        const nameEl = document.getElementById(`${this.modalId}-name`);
+        if (nameEl) nameEl.textContent = 'Fehler beim Laden';
       }
     }
 
-
-    if (nameEl) nameEl.textContent = name;
-    if (mailEl) {
-      if (email) { mailEl.textContent = email; mailEl.href = `mailto:${email}`; }
-      else { mailEl.textContent = '—'; mailEl.removeAttribute('href'); }
-    }
-    if (mailtoBtn) {
-      mailtoBtn.href = email ? `mailto:${email}` : '#';
-      mailtoBtn.classList.toggle('disabled', !email);
-    }
-    if (avatarEl) {
-      this.updateAvatar(avatarEl, upn, name);
-    }
-    if (oofBadgeEl) this.setOofBadge(oofBadgeEl, oofStatus);
-    if (oofPeriodEl) oofPeriodEl.textContent = this.formatPeriod(period?.start, period?.end);
-    
-    if (srcEl) srcEl.textContent = `${source || '—'}`;
-
-    if (statusEl) statusEl.textContent = api ? '' : 'Details nicht verfügbar';
-
-    // Fallback ohne Bootstrap (falls Modal nicht angezeigt wurde)
-    if (!window.bootstrap?.Modal) {
-      const lines = [name, email || upn || '', mobileExt ? `${mobileExt}` : '', source ? `Quelle: ${source}` : '']
-        .filter(Boolean).join('\n');
-      alert(lines);
-    }
-  }
 }

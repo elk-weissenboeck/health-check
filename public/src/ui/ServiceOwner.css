@@ -1,3 +1,7 @@
+.owner-avatar--loading {
+    background: #e9ecef;
+}
+
 /* Modal-Body */
 .owner-modal {
     padding-top: 1.25rem;
