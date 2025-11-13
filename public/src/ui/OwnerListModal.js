@@ -1,15 +1,17 @@
-import { ConfigLoader } from '../config/ConfigLoader.js';
-
+// src/ui/OwnerListModal.js
 export class OwnerListModal {
   constructor() {
     this.modalId = 'ownerListModal';
-    this.ensureModal();
+    this._owners = [];
+    this._ensureModal();
+    this._attachSearchHandler();
   }
 
-  ensureModal() {
+  _ensureModal() {
     if (document.getElementById(this.modalId)) return;
 
-    const html = `
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
 <div class="modal fade" id="${this.modalId}" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -18,197 +20,283 @@ export class OwnerListModal {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
       </div>
       <div class="modal-body">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <div class="text-secondary" id="${this.modalId}-status">Lade…</div>
-          <div class="input-group input-group-sm" style="max-width: 320px">
-            <span class="input-group-text">Services filtern</span>
-            <input type="text" class="form-control" id="${this.modalId}-search" placeholder="Suchtext…">
-          </div>
+        <div id="${this.modalId}-loading" class="d-flex align-items-center gap-2">
+          <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+          <span>Lade Service Owner…</span>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-sm table-bordered table-striped align-middle mb-0">
-            <thead>
-              <tr>
-                <th style="width:32%">Owner</th>
-                <th>Services</th>
-              </tr>
-            </thead>
-            <tbody id="${this.modalId}-tbody"></tbody>
-          </table>
+        <div id="${this.modalId}-content" class="d-none">
+          <div class="mb-3">
+            <input type="search"
+                   id="${this.modalId}-search"
+                   class="form-control"
+                   placeholder="Nach Stichworten filtern (z.B. &quot;hybridforms&quot;, &quot;levatis&quot;)">
+          </div>
+          <div id="${this.modalId}-list" class="list-group small"></div>
         </div>
       </div>
       <div class="modal-footer">
-        <span class="me-auto text-secondary" id="${this.modalId}-footer"></span>
+        <span class="me-auto text-secondary" id="${this.modalId}-status"></span>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
       </div>
     </div>
   </div>
 </div>`;
-    const wrap = document.createElement('div');
-    wrap.innerHTML = html;
-    document.body.appendChild(wrap.firstElementChild);
+    document.body.appendChild(wrapper.firstElementChild);
+  }
 
-    
-    // Preload group-title lookup for service chips
-    this._ensureServiceGroupLookup();
-// Suche: Live-Filter auf Services-Spalte
-    const search = document.getElementById(`${this.modalId}-search`);
-    const tbody  = document.getElementById(`${this.modalId}-tbody`);
-    search?.addEventListener('input', async () => {
-      const q = (search.value || '').trim().toLowerCase();
-      this._ensureKeywordIndex();
-      const rows = tbody?.querySelectorAll('tr') || [];
-      rows.forEach(tr => {
-        const badges = Array.from(tr.querySelectorAll('[data-col="services"] .badge'));
-        let haystack = '';
-        for (const b of badges) {
-          const idAttr = (b.getAttribute('data-svcid') || '').toLowerCase();
-          const label = (b.textContent || '').trim().toLowerCase();
-          const keyForIndex = idAttr || label;
-          const kws = this._keywordIndex?.get(keyForIndex) || new Set();
-          haystack += ' ' + Array.from(kws).join(' ');
+  _getModal() {
+    return document.getElementById(this.modalId);
+  }
+
+  _showModal() {
+    const el = this._getModal();
+    if (!el) return;
+
+    if (window.bootstrap?.Modal) {
+      if (!this._bsModal) {
+        this._bsModal = new window.bootstrap.Modal(el);
+      }
+      this._bsModal.show();
+    } else {
+      // einfacher Fallback ohne Bootstrap-JS
+      el.classList.add('show');
+      el.style.display = 'block';
+    }
+  }
+
+  _setLoading(isLoading, message = '') {
+    const loadingEl = document.getElementById(`${this.modalId}-loading`);
+    const contentEl = document.getElementById(`${this.modalId}-content`);
+    const statusEl = document.getElementById(`${this.modalId}-status`);
+    if (loadingEl) loadingEl.classList.toggle('d-none', !isLoading);
+    if (contentEl) contentEl.classList.toggle('d-none', isLoading);
+    if (statusEl) statusEl.textContent = message || '';
+  }
+
+  _escapeHtml(str) {
+    return String(str ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  _attachSearchHandler() {
+    document.addEventListener('input', (ev) => {
+      const target = ev.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      if (target.id !== `${this.modalId}-search`) return;
+      const term = target.value.trim().toLowerCase();
+      this._renderList(
+        term
+          ? this._owners.filter(o =>
+              o.keywords.some(k => k.includes(term)) ||
+              (o.details.name || '').toLowerCase().includes(term) ||
+              o.upn.toLowerCase().includes(term)
+            )
+          : this._owners
+      );
+    });
+  }
+
+  _collectOwnersFromGroups(groups) {
+    const map = new Map();
+
+    (groups || []).forEach(group => {
+      (group.services || []).forEach(svc => {
+        const upn = svc?.owner?.upn;
+        if (!upn) return;
+
+        const key = upn.toLowerCase();
+        if (!map.has(key)) {
+          map.set(key, {
+            upn,
+            services: [],
+            keywords: new Set(),
+            details: {},
+            oof: null,
+            source: ''
+          });
         }
-        tr.style.display = !q || haystack.includes(q) ? '' : 'none';
+        const owner = map.get(key);
+
+        // Service-Info für Anzeige
+        owner.services.push({
+          groupKey: group.key,
+          groupTitle: group.title,
+          serviceKey: svc.key,
+          label: svc.label || svc.key || ''
+        });
+
+        // Keywords aus status.config.json
+        (svc.keywords || []).forEach(k => {
+          if (k) owner.keywords.add(String(k).toLowerCase());
+        });
       });
     });
+
+    return Array.from(map.values()).map(o => ({
+      ...o,
+      keywords: Array.from(o.keywords)
+    }));
   }
 
-  _decorateServiceBadges() {
-    const tbody = document.getElementById(`${this.modalId}-tbody`);
-    if (!tbody) return;
-    const badges = Array.from(tbody.querySelectorAll('[data-col="services"] .badge'));
-    badges.forEach(b => {
-      const label = (b.textContent || '').trim().toLowerCase();
-      const gTitle = this._serviceToGroupTitle?.get(label) || '';
-      if (!gTitle) return;
-      // Wenn noch nicht dekoriert, Titel hinzufügen
-      if (!b.dataset.decorated) {
-        b.dataset.decorated = '1';
-        b.setAttribute('title', gTitle);
-        b.innerHTML = `${b.innerHTML} <small class="text-secondary">— ${this._esc(gTitle)}</small>`;
-      }
-    });
-  }
-
-  _show() {
-    const el = document.getElementById(this.modalId);
-    const show = () => {
+  async _loadDetailsForOwners(owners) {
+    // Details pro Owner über entra/oop.php?upn=<owner.upn> laden
+    await Promise.all(owners.map(async (owner) => {
       try {
-        if (!window.bootstrap?.Modal) return;
-        window.bootstrap.Modal.getOrCreateInstance(el, { keyboard: true }).show();
-      } catch {}
-    };
-    queueMicrotask(show); setTimeout(show, 0);
-  }
+        if (!owner.upn) return;
+        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(owner.upn)}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const api = await res.json(); // Struktur wie user_result.json
 
-  _esc(s) {
-    return String(s ?? '')
-      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
-      .replaceAll('"','&quot;').replaceAll("'",'&#039;');
-  }
-  
-  
-  // --- Keyword index for services (built from status.config.json) ---
-  async _ensureKeywordIndex() {
-    if (this._keywordIndexReady) return this._keywordIndexReady;
-    this._keywordIndexReady = (async () => {
-      try {
-        const cfg = await ConfigLoader.load();
-        const idx = new Map(); // label|key -> Set<keyword>
-        for (const g of cfg?.groups || []) {
-          for (const s of g?.services || []) {
-            const label = (s?.label || s?.key || '').toLowerCase();
-            const key   = (s?.key || '').toLowerCase();
-            const kws = new Set();
-            // include explicit keywords if present
-            for (const k of (s?.keywords || [])) {
-              if (typeof k === 'string' && k.trim()) kws.add(k.toLowerCase());
-            }
-            // also include label/key as implicit search terms
-            if (label) kws.add(label);
-            if (key)   kws.add(key);
-            if (label) idx.set(label, kws);
-            if (key)   idx.set(key, kws);
-          }
-        }
-        this._keywordIndex = idx;
+        const first = api?.users?.[0] || {};
+        const u = first.user || {};
+        const oof = first.oof || null;
+        const source = first.source?.user || '';
+
+        owner.details = {
+          name: u.name || owner.upn,
+          email: u.email || owner.upn,
+          mobileExt: u.mobileExt || '',
+          mobilePhone: u.mobilePhone || ''
+        };
+        owner.oof = oof;
+        owner.source = source;
       } catch (e) {
-        // If loading fails, fall back to empty index
-        this._keywordIndex = new Map();
+        // Fehler bei einzelnen Ownern einfach ignorieren,
+        // damit das Modal trotzdem geladen wird
       }
-    })();
-    return this._keywordIndexReady;
-  }
-async render(rows){
-    const tbody = document.getElementById(`${this.modalId}-tbody`);
-    const status= document.getElementById(`${this.modalId}-status`);
-    const footer= document.getElementById(`${this.modalId}-footer`);
-    if (tbody) tbody.innerHTML = rows.map(r => {
-      // Owner-Zelle: Name (ohne ServiceKey), darunter UPN/E-Mail in <code>, darunter mobileExt (kein tel:)
-      const parts = [];
-      if (r.name) parts.push(`<div><strong>${this._esc(r.name)}</strong></div>`);
-      const codes = [];
-      if (r.email) codes.push(`<code>${this._esc(r.email)}</code>`);
-      if (codes.length) parts.push(`<div class="text-secondary small d-flex gap-2 flex-wrap">${codes.join('')}</div>`);
-      if (r.mobileExt) parts.push(`<div class="small">${this._esc(r.mobileExt)}</div>`);
-      if (r.mobilePhone) parts.push(`<div class="small">${this._esc(r.mobilePhone)}</div>`);
-
-      const ownerCell = parts.join('');
-
-      // Services als Liste / Chips
-      
-      // Services als Liste / Chips (Label + Group-Title)
-      this._ensureServiceGroupLookup();
-      this._ensureServiceGroupLookup();
-      
-
-const servicesHtml = (r.services || [])
-  .map(s => {
-    const label = String(s || '');
-    const id = label.toLowerCase();
-    const gTitle = this._serviceToGroupTitle?.get(id) || '';
-    const visible = gTitle ? `${this._esc(gTitle)} • ${this._esc(label)}` : this._esc(label);
-    const titleAttr = gTitle ? ` title="${this._esc(gTitle)}"` : '';
-    return `<span class="badge rounded-pill text-bg-light border me-1 mb-1" data-svcid="${this._esc(id)}"${titleAttr}>${visible}</span>`;
-  })
-  .join('');
-
-
-
-
-      return `<tr>
-        <td data-col="owner">${ownerCell}</td>
-        <td data-col="services">${servicesHtml}</td>
-      </tr>`;
-    }).join('');
-
-    if (status) status.textContent = `Einträge: ${rows.length}`;
-    if (footer) footer.textContent = '';
-    this._show();
+    }));
   }
 
-  // --- Map service identifiers to their group title ---
-  async _ensureServiceGroupLookup() {
-    if (this._groupLookupReady) return this._groupLookupReady;
-    this._groupLookupReady = (async () => {
-      try {
-        const cfg = await ConfigLoader.load();
-        const m = new Map(); // id -> groupTitle
-        for (const g of cfg?.groups || []) {
-          const gTitle = (g?.title || '').toString();
-          for (const s of g?.services || []) {
-            const label = (s?.label || s?.key || '').toString().toLowerCase();
-            const key   = (s?.key || '').toString().toLowerCase();
-            if (label) m.set(label, gTitle);
-            if (key)   m.set(key, gTitle);
-          }
-        }
-        this._serviceToGroupTitle = m;
-      } catch {
-        this._serviceToGroupTitle = new Map();
+  _formatOofPeriod(period) {
+    try {
+      if (!period) return '—';
+      const start = period.start ? new Date(period.start) : null;
+      const end = period.end ? new Date(period.end) : null;
+      const fmt = d => d.toLocaleString();
+      if (start && end) return `${fmt(start)} – ${fmt(end)}`;
+      if (start) return `ab ${fmt(start)}`;
+      if (end) return `bis ${fmt(end)}`;
+    } catch (_) {}
+    return '—';
+  }
+
+  _renderList(owners) {
+    const listEl = document.getElementById(`${this.modalId}-list`);
+    const statusEl = document.getElementById(`${this.modalId}-status`);
+    if (!listEl) return;
+
+    listEl.innerHTML = '';
+    if (!owners || owners.length === 0) {
+      listEl.innerHTML = '<div class="text-secondary">Keine Service Owner gefunden.</div>';
+      if (statusEl) statusEl.textContent = '0 Treffer';
+      return;
+    }
+
+    owners.sort((a, b) => {
+      const an = (a.details.name || a.upn || '').toLowerCase();
+      const bn = (b.details.name || b.upn || '').toLowerCase();
+      return an.localeCompare(bn);
+    });
+
+    const esc = (s) => this._escapeHtml(s);
+
+    owners.forEach(owner => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'list-group-item list-group-item-action text-start';
+
+      const name = owner.details.name || owner.upn;
+      const email = owner.details.email || owner.upn;
+      const telExt = owner.details.mobileExt || '';
+      const telPhone = owner.details.mobilePhone || '';
+      const oof = owner.oof;
+      const oofStatus = (oof?.status || '').toLowerCase();
+      const oofPeriod = this._formatOofPeriod(oof?.period);
+      const keywords = owner.keywords || [];
+      const services = owner.services || [];
+
+      let oofCls = 'text-bg-secondary';
+      let oofText = 'Unbekannt';
+      if (!oofStatus || oofStatus === 'disabled' || oofStatus === 'none') {
+        oofCls = 'text-bg-success';
+        oofText = 'verfügbar';
+      } else if (oofStatus === 'scheduled') {
+        oofCls = 'text-bg-warning text-dark';
+        oofText = 'abwesend (geplant)';
+      } else if (oofStatus === 'enabled' || oofStatus === 'always') {
+        oofCls = 'text-bg-danger';
+        oofText = 'abwesend';
       }
-    })();
-    return this._groupLookupReady;
+
+      const serviceLines = services.map(s =>
+        `${esc(s.groupTitle || s.groupKey || '')} – ${esc(s.label || s.serviceKey || '')}`
+      ).join('<br>');
+
+      const keywordBadges = keywords.map(k =>
+        `<span class="badge rounded-pill text-bg-light me-1 mb-1">${esc(k)}</span>`
+      ).join('');
+
+      const contactParts = [];
+      if (email) {
+        contactParts.push(`<a href="mailto:${encodeURIComponent(email)}">${esc(email)}</a>`);
+      }
+      if (telExt || telPhone) {
+        const tel = telPhone || telExt;
+        contactParts.push(`<a href="tel:${tel}">${esc(tel)}</a>`);
+      }
+
+      item.innerHTML = `
+<div class="d-flex justify-content-between align-items-start">
+  <div class="me-3">
+    <div class="fw-semibold">${esc(name)}</div>
+    <div class="small text-secondary">${esc(owner.upn)}</div>
+    <div class="small mt-1">${contactParts.join(' · ')}</div>
+    <div class="mt-2">${keywordBadges}</div>
+    <div class="d-none mt-2 small text-secondary">
+      ${serviceLines}
+    </div>
+  </div>
+  <div class="text-end">
+    <span class="badge ${oofCls}" title="Abwesenheitsstatus">${esc(oofText)}</span>
+    <div class="small text-secondary mt-1">${esc(oofPeriod)}</div>
+    ${owner.source ? `<div class="small text-secondary mt-1">Quelle: ${esc(owner.source)}</div>` : ''}
+  </div>
+</div>`;
+
+      listEl.appendChild(item);
+    });
+
+    if (statusEl) statusEl.textContent = `${owners.length} Service Owner`;
+  }
+
+  /**
+   * Öffnet das Modal und lädt die Daten.
+   * groups ist das gleiche Array wie this.groups in App (Config aus status.config.json)
+   */
+  async open(groups) {
+    this._setLoading(true, 'Lade Service Owner…');
+    this._showModal();
+
+    // Besitzer inkl. Keywords aus der Config sammeln
+    const owners = this._collectOwnersFromGroups(groups);
+    this._owners = owners;
+
+    try {
+      await this._loadDetailsForOwners(owners);
+      this._setLoading(false, `${owners.length} Service Owner geladen`);
+      this._renderList(owners);
+      // Suchfeld zurücksetzen
+      const search = document.getElementById(`${this.modalId}-search`);
+      if (search) search.value = '';
+    } catch (e) {
+      console.error('[owner-list] Fehler beim Laden der Owner', e);
+      this._setLoading(false, 'Fehler beim Laden der Service Owner');
+      this._renderList([]);
+    }
   }
 }

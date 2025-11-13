@@ -138,45 +138,14 @@ export class App {
       this.ticketsModal.open(urls, label);
     }
     
-    async showOwnerList() {
-      // 1) Owner über Services einsammeln (nach UPN gruppieren)
-      const byUpn = new Map(); // upn -> { upn, services:Set<string> }
-      for (const g of this.groups || []) {
-        for (const s of g.services || []) {
-          const upn = s?.owner?.upn;
-          if (!upn) continue;
-          const label = s.label || s.key || '';
-          if (!byUpn.has(upn)) byUpn.set(upn, { upn, services: new Set() });
-          byUpn.get(upn).services.add(label);
-        }
-      }
-
-      // 2) Details (name, mobileExt, email) via entra/oop.php?upn=…
-      const rows = [];
-      await Promise.all(Array.from(byUpn.values()).map(async entry => {
-        let details = null;
-        try {
-          const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(entry.upn)}`, { cache: 'no-store' });
-          if (res.ok) details = await res.json();
-        } catch {}
-        const first = details?.users?.[0] || null;
-        const u = first?.user || {};
-        rows.push({
-          upn: entry.upn,
-          name: u.name || entry.upn,
-          email: u.email || '',
-          mobileExt: (u.mobileExt ?? ''),        // ohne "tel:" – plain text
-          mobilePhone: (u.mobilePhone ?? ''),    
-          services: Array.from(entry.services).sort((a,b)=>a.localeCompare(b,'de'))
-        });
-      }));
-
-      // 3) Rendern
-      rows.sort((a,b)=>a.name.localeCompare(b.name,'de'));
-      this.ownerListModal.render(rows);
+  async showOwnerList() {
+    // nutzt die bereits geladene Config (this.groups)
+    if (!this.groups || this.groups.length === 0) {
+      console.warn('[owner-list] keine Gruppen geladen');
+      return;
     }
-
-
+    await this.ownerListModal.open(this.groups);
+  }
 
 
 }

@@ -27,6 +27,7 @@
           "url": "https://forms.elk.at",
           "method": "HEAD",
           "warning": "enable CORS..",
+          "keywords": ["hybridforms", "forms.elk.at", "win9", "forms.elkschrems.co.at"],
           "owner": { "upn": "georg.weissenboeck@elk.at" }
         },
         {
@@ -35,6 +36,7 @@
           "url": "https://forms-test.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
+          "keywords": ["hybridforms", "forms.elkkampa.at", "win82"],
           "owner": { "upn": "georg.weissenboeck@elk.at" },
           "isDevEnv": true,
           "headers": [
@@ -48,6 +50,7 @@
           "url": "https://forms.elkkampa.com/",
           "method": "HEAD",
           "warning": null,
+          "keywords": ["hybridforms", "forms-test.elkkampa.at", "win80"],
           "owner": { "upn": "georg.weissenboeck@elk.at" },
           "headers": [
              { "label": "Server", "name": "x-serverver" },
@@ -65,7 +68,8 @@
           "active": false,
           "key": "levatis-vendor",
           "label": "Lieferant",
-          "owner": { "upn": "info@levatis.com" }
+          "owner": { "upn": "info@levatis.com" },
+          "keywords": ["levatis", "lieferant", "klumpat"]
         },
         {
           "active": false,
@@ -74,7 +78,8 @@
           "url": "https://start2.levatis.at/levatis4/login",
           "method": "HEAD",
           "warning": "CORS disabled",
-          "owner": { "upn": "support@levatis.com" }
+          "owner": { "upn": "support@levatis.com" },
+          "keywords": ["levatis", "lohnabrechnung", "klumpat"]
         }
       ]
     },
