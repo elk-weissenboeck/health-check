@@ -175,7 +175,7 @@ export class OwnerListModal {
     await Promise.all(owners.map(async (owner) => {
       try {
         if (!owner.upn) return;
-        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(owner.upn)}`, { cache: 'no-store' });
+        const res = await fetch(`entra/oop.php?nocache=1&upn=${encodeURIComponent(owner.upn)}`, { cache: 'no-store' });
         if (!res.ok) return;
         const api = await res.json(); // Struktur wie user_result.json
 
@@ -188,7 +188,8 @@ export class OwnerListModal {
           name: u.name || owner.upn,
           email: u.email || owner.upn,
           mobileExt: u.mobileExt || '',
-          mobilePhone: u.mobilePhone || ''
+          mobilePhone: u.mobilePhone || '',
+          businessPhone: u.businessPhone || ''
         };
         owner.oof = oof;
         owner.source = source;
@@ -241,6 +242,7 @@ export class OwnerListModal {
       const email = owner.details.email || owner.upn;
       const telExt = owner.details.mobileExt || '';
       const telPhone = owner.details.mobilePhone || '';
+      const telBusiness = owner.details.businessPhone || '';
       const oof = owner.oof;
       const oofStatus = (oof?.status || '').toLowerCase();
       const oofPeriod = this._formatOofPeriod(oof?.period);
@@ -268,13 +270,22 @@ export class OwnerListModal {
         `<span class="badge rounded-pill text-bg-light me-1 mb-1">${esc(k)}</span>`
       ).join('');
 
+
       const contactParts = [];
       if (email) {
         contactParts.push(`<a href="mailto:${encodeURIComponent(email)}">${esc(email)}</a>`);
       }
-      if (telExt || telPhone) {
-        const tel = telPhone || telExt;
-        contactParts.push(`<a href="tel:${tel}">${esc(tel)}</a>`);
+
+      // Reihenfolge: Dienstnummer → Mobil → Durchwahl
+      if (telBusiness) {
+        contactParts.push(`<a href="tel:${telBusiness}">${esc(telBusiness)}</a>`);
+      }
+      if (telPhone) {
+        contactParts.push(`<a href="tel:${telPhone}">${esc(telPhone)}</a>`);
+      }
+      if (telExt && !telPhone && !telBusiness) {
+        // Durchwahl nur separat anzeigen, wenn sonst keine Nummer da ist
+        contactParts.push(`<a href="tel:${telExt}">${esc(telExt)}</a>`);
       }
 
     item.innerHTML = `
