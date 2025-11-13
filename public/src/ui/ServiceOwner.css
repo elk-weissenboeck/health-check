@@ -1,3 +1,71 @@
+/* Modal-Body */
+.owner-modal {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+}
+
+.owner-modal .owner-header {
+    margin-bottom: 0.5rem;
+}
+
+.owner-modal .owner-name {
+    font-size: 1.1rem;
+}
+
+.owner-modal .owner-upn {
+    font-size: 0.8rem;
+}
+
+/* E-Mail / Telefon */
+.owner-modal .owner-email {
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.owner-modal .owner-email-alt,
+.owner-modal .owner-phone {
+    word-break: break-all;
+}
+
+.owner-modal .owner-contact a {
+    color: inherit;
+}
+
+.owner-modal .owner-contact a:hover {
+    text-decoration: underline;
+}
+
+/* Telefon-Links im Owner-Modal */
+.owner-modal .owner-phones a {
+    font-weight: 500;
+    word-break: break-all;
+    color: inherit;
+    text-decoration: none;
+}
+
+.owner-modal .owner-phones a:hover {
+    text-decoration: underline;
+}
+
+.owner-modal .owner-phones .phone-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-left: 0.25rem;
+}
+
+/* OOF-Zeile unten */
+.owner-modal .owner-oof-row .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.7em;
+    border-radius: 999px;
+}
+
+/* Quelle im Footer */
+.modal-footer .owner-source {
+    color: #6c757d;
+}
+
+
 .owner-avatar {
     width: 112px;          /* größer */
     height: 112px;
