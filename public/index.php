@@ -178,6 +178,6 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   </main>
 
   <script src="<?= htmlspecialchars($BOOTSTRAP_JS) ?>"></script>
-  <script type="module" src="./src/app/main.js?t=<?=time()?>"></script>
+  <script type="module" src="./src/app/Main.js?t=<?=time()?>"></script>
 </body>
 </html>
