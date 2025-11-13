@@ -190,6 +190,7 @@ class myEntra
                 'email'        => null,
                 'mobileExt'    => null,   // immer aus Fallback
                 'mobilePhone'  => null,
+                'businessPhone'=> null,
                 'beschreibung' => null,
             ],
             'oof' => [
@@ -219,12 +220,13 @@ class myEntra
                 $entry['error'] = trim(($entry['error'] ?? '').' | users.get: '.$e->getMessage(), ' |');
             }
 
-            $displayName = $user?->getDisplayName() ?: null;
-            $mail        = $user?->getMail();
-            $upn         = $user?->getUserPrincipalName();
-            $email       = (is_string($mail) && $mail !== '') ? $mail : ((is_string($upn) && $upn !== '') ? $upn : null);
-            $mobilePhone = $user?->getMobilePhone();
-          
+            $displayName   = $user?->getDisplayName() ?: null;
+            $mail          = $user?->getMail();
+            $upn           = $user?->getUserPrincipalName();
+            $email         = (is_string($mail) && $mail !== '') ? $mail : ((is_string($upn) && $upn !== '') ? $upn : null);
+            $mobilePhone   = $user?->getMobilePhone();
+            $businessPhone = $user?->getBusinessPhones() ?: [];
+            
             $job  = $user?->getJobTitle();
             $dept = $user?->getDepartment();
             $parts = array_filter([$job ?: null, $dept ?: null], fn($x)=>is_string($x) && trim($x) !== '');
@@ -233,7 +235,8 @@ class myEntra
             $entry['user']['name']         = $displayName;
             $entry['user']['email']        = $email;
             $entry['user']['beschreibung'] = $beschreibung;
-            $entry['user']['mobilePhone'] =  $mobilePhone;
+            $entry['user']['mobilePhone']  = $mobilePhone;
+            $entry['user']['businessPhone']= count($businessPhone) ? $businessPhone[0] : null;
 
             // (B) Fallback nur wenn Name UND Email leer
             $needsFallback = ($displayName === null || $displayName === '')
