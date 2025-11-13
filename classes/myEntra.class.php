@@ -44,6 +44,11 @@ class myEntra
         }
     }
 
+    public function getGraphClient(): GraphServiceClient
+    {
+        return $this->graph;
+    }
+    
     public function setFallbackDirectory(array $directory): void
     {
         $this->fallbackDirectory = $directory;
@@ -237,6 +242,7 @@ class myEntra
             $entry['user']['beschreibung'] = $beschreibung;
             $entry['user']['mobilePhone']  = $mobilePhone;
             $entry['user']['businessPhone']= count($businessPhone) ? $businessPhone[0] : null;
+            $entry['user']['photo']= $this->getUserPhotoUrl($userId);
 
             // (B) Fallback nur wenn Name UND Email leer
             $needsFallback = ($displayName === null || $displayName === '')
@@ -280,6 +286,24 @@ class myEntra
         return $entry;
     }
 
+    /**
+     * Liefert eine öffentliche URL, die im <img>-Tag verwendet werden kann,
+     * um das Benutzerfoto auszugeben.
+     *
+     * Intern ruft diese URL ein PHP-Script auf, das das Foto von Microsoft Graph
+     * holt und direkt an den Browser streamt (ohne es zu speichern).
+     *
+     * @param string $userId  userPrincipalName (E-Mail) oder Objekt-ID
+     * @return string         Öffentliche URL, z. B. /entra_photo.php?id=...
+     */
+    public function getUserPhotoPublicUrl(string $userId): string
+    {
+        // Passe den Pfad zu deinem Foto-Proxy-Script an
+        $baseUrl = '/entra_photo.php';
+
+        return $baseUrl . '?id=' . urlencode($userId);
+    }
+    
     private function applyIdentityFallback(array &$entry, string $userId, ?string $upn): bool
     {
         $candidates = [];
