@@ -11,7 +11,7 @@ return [
     ],
     'info@levatis.com' => [
         'name' => 'levatis Software Service GmbH', 
-        'email' => 'info@icomedias.com', 
+        'email' => 'info@levatis.com', 
         'mobileExt' => '+43 (0) 5 700 900'
     ],
     'support@levatis.com' => [

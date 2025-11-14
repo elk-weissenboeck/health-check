@@ -53,15 +53,14 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
         </div>
         
         <div class="d-flex align-items-center gap-2">
-        <div class="btn-group-vertical">
-
-          <button class="btn btn-outline-secondary" id="refreshBtn">
-            <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
-          </button>
-          
-          <a class="btn btn-outline-secondary" href="https://helpdesk.elkkampa.com/Helpdesk" target="_blank">
-            <i class="bi bi-stack me-1"></i>  Ticketsystem
-          </a>
+          <div class="btn-group-vertical">
+            <button class="btn btn-outline-secondary" id="refreshBtn">
+              <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
+            </button>
+            
+            <a class="btn btn-outline-secondary" href="https://helpdesk.elkkampa.com/Helpdesk" target="_blank">
+              <i class="bi bi-stack me-1"></i>  Ticketsystem
+            </a>
           </div>
         </div>
       </div>
@@ -148,7 +147,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
                 </div>
               </div>
             </div>
-        </div>
+        </div> 
         
         <!-- Funktionen: 1/4 -->
         <div class="col-12 col-lg-3">
@@ -161,11 +160,18 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
                 <i class="bi bi-chevron-down"></i>
               </button>
             </div>
+            
             <div id="functionsCollapse" class="collapse show">
               <div class="card-body py-3 d-grid gap-2">
-                <button id="listOwnersBtn" class="btn btn-outline-secondary btn-sm">
-                  Liste ServiceOwner
-                </button>
+                <div class="btn-group-vertical">
+                    <button id="listOwnersBtn" class="btn btn-outline-secondary btn-sm">
+                      Liste ServiceOwner
+                    </button>
+                    
+                    <button id="listServicesBtn" class="btn btn-outline-secondary btn-sm">
+                      Liste Services
+                    </button>
+                  </div>
               </div>
             </div>
           </div>

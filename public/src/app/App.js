@@ -7,6 +7,7 @@ import { Collapse } from '../ui/Collapse.js';
 import { OwnerModal } from '../ui/OwnerModal.js';
 import { TicketModal } from '../ui/TicketModal.js';
 import { OwnerListModal } from '../ui/OwnerListModal.js';
+import { ServiceListModal } from '../ui/ServiceListModal.js';
 
 export class App {
   constructor() {
@@ -21,6 +22,7 @@ export class App {
     this.ownerModal = new OwnerModal();
     this.ticketsModal = new TicketModal();
     this.ownerListModal = new OwnerListModal();
+    this.serviceListModal = new ServiceListModal();
 
     // bequem für Debugging
     window.__healthResults = this.healthResults;
@@ -138,14 +140,20 @@ export class App {
       this.ticketsModal.open(urls, label);
     }
     
-  async showOwnerList() {
-    // nutzt die bereits geladene Config (this.groups)
-    if (!this.groups || this.groups.length === 0) {
-      console.warn('[owner-list] keine Gruppen geladen');
-      return;
+    async showOwnerList() {
+      // nutzt die bereits geladene Config (this.groups)
+      if (!this.groups || this.groups.length === 0) {
+        console.warn('[owner-list] keine Gruppen geladen');
+        return;
+      }
+      await this.ownerListModal.open(this.groups);
     }
-    await this.ownerListModal.open(this.groups);
-  }
 
-
+    showServiceList() {
+      if (!this.groups || this.groups.length === 0) {
+        console.warn('[service-list] keine Gruppen geladen');
+        return;
+      }
+      this.serviceListModal.open(this.groups);
+    }
 }
