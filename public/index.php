@@ -40,9 +40,9 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
       </div>
     </div>
 
-<section class="card px-3 py-3 status-banner mb-4" id="overallCard" style="--status-color: var(--bs-warning);">
+<section class="border rounded status-banner mb-4" id="overallCard" style="--status-color: var(--bs-warning);">
   <!-- Statuszeile mit Toggle rechts -->
-  <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 my-3 mx-3">
     <div>
       <div class="d-flex align-items-center gap-2">
         <i class="bi bi-activity text-warning fs-4" id="overallIcon"></i>
@@ -66,14 +66,13 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   </div>
 
   <!-- Gemeinsamer Collapse für Optionen + Funktionen -->
-  <div id="optionsCollapse" class="collapse show mt-3">
+  <div id="optionsCollapse" class="bg-light collapse show mt-3 px-3 py-3">
     <div class="row g-3">
-       <hr class="my-3 mx-2">
        
       <!-- Optionen links -->
-      <div class="col-12 col-lg-9">
+      <div class="col-12 col-lg-6">
         <div class="mb-2 d-flex align-items-center gap-2">
-          <i class="bi bi-gear"></i>
+          <i class="bi bi-sliders"></i>
           <span class="fw-semibold">Optionen</span>
         </div>
 
@@ -117,42 +116,37 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
               <option value="3600">60min</option>
             </select>
           </div>
-
-          <div class="btn-group btn-group-sm" role="group" aria-label="Expand/Collapse all">
-            <button class="btn btn-outline-primary" id="expandAllBtn">
-              <i class="bi bi-arrows-expand me-1"></i> Alle aufklappen
-            </button>
-            <button class="btn btn-outline-secondary" id="collapseAllBtn">
-              <i class="bi bi-arrows-collapse me-1"></i> Alle zuklappen
-            </button>
-          </div>
-
-          <div id="optionsExtra" class="d-none"></div>
         </div>
       </div>
 
       <!-- Funktionen rechts -->
       <div class="col-12 col-lg-3">
         <div class="mb-2 fw-semibold">
+          <i class="bi bi-gear"></i>
           Funktionen
         </div>
         <div class="d-grid gap-2">
           <div class="btn-group-vertical w-100">
-            <button id="refreshBtn" class="btn btn-outline-secondary text-start">
-              <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
-            </button>
 
-            <a class="btn btn-outline-secondary text-start"
+            <a class="btn btn-light text-start"
                href="https://helpdesk.elkkampa.com/Helpdesk" target="_blank">
               <i class="bi bi-stack me-1"></i> Ticketsystem
             </a>
 
-            <button id="listServicesBtn" class="btn btn-outline-secondary text-start">
+            <button id="listServicesBtn" class="btn btn-light text-start">
               <i class="bi bi-gear-fill me-1"></i> Liste Services
             </button>
 
-            <button id="listOwnersBtn" class="btn btn-outline-secondary text-start">
+            <button id="listOwnersBtn" class="btn btn-light text-start">
               <i class="bi bi-person-fill-gear me-1"></i> Liste ServiceOwner
+            </button>
+            
+            <button class="btn btn-light text-start" id="expandAllBtn">
+              <i class="bi bi-arrows-expand me-1"></i> Alle aufklappen
+            </button>
+            
+            <button class="btn btn-light text-start" id="collapseAllBtn">
+              <i class="bi bi-arrows-collapse me-1"></i> Alle zuklappen
             </button>
           </div>
         </div>

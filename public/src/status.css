@@ -7,7 +7,7 @@ body {
 }
 
 .status-banner {
-  border-left: .5rem solid var(--status-color, var(--bs-success));
+  border-left: .5rem solid var(--status-color, var(--bs-success)) !important;
 }
 
 .card-group-status .status-dot {
