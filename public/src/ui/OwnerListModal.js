@@ -175,7 +175,7 @@ export class OwnerListModal {
     await Promise.all(owners.map(async (owner) => {
       try {
         if (!owner.upn) return;
-        const res = await fetch(`entra/oop.php?nocache=1&upn=${encodeURIComponent(owner.upn)}`, { cache: 'no-store' });
+        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(owner.upn)}`, { cache: 'no-store' });
         if (!res.ok) return;
         const api = await res.json(); // Struktur wie user_result.json
 
