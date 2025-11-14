@@ -66,7 +66,7 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   </div>
 
   <!-- Gemeinsamer Collapse für Optionen + Funktionen -->
-  <div id="optionsCollapse" class="bg-light collapse show mt-3 px-3 py-3">
+  <div id="optionsCollapse" class="bg-light collapse mt-3 px-3 py-3">
     <div class="row g-3">
        
       <!-- Optionen links -->
