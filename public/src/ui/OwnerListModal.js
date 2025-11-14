@@ -31,7 +31,7 @@ export class OwnerListModal {
               <div class="flex-grow-1 me-3">
                 <input type="search"
                        id="${this.modalId}-search"
-                       class="form-control"
+                       class="form-control form-control-sm"
                        placeholder="Nach Stichworten filtern (z.B. &quot;hybridforms&quot;, &quot;levatis&quot;)">
               </div>
               <div class="form-check ms-2">

@@ -51,18 +51,6 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
             Letztes Update: <time id="lastUpdated">–</time>
           </small>
         </div>
-        
-        <div class="d-flex align-items-center gap-2">
-          <div class="btn-group-vertical">
-            <button class="btn btn-outline-secondary" id="refreshBtn">
-              <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
-            </button>
-            
-            <a class="btn btn-outline-secondary" href="https://helpdesk.elkkampa.com/Helpdesk" target="_blank">
-              <i class="bi bi-stack me-1"></i>  Ticketsystem
-            </a>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -163,13 +151,21 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
             
             <div id="functionsCollapse" class="collapse show">
               <div class="card-body py-3 d-grid gap-2">
-                <div class="btn-group-vertical">
-                    <button id="listOwnersBtn" class="btn btn-outline-secondary btn-sm">
-                      Liste ServiceOwner
+                <div class="btn-group-vertical w-100">
+                    <button id="refreshBtn" class="btn btn-outline-secondary text-start" >
+                       <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
+                     </button>
+                    
+                    <a class="btn btn-outline-secondary text-start" href="https://helpdesk.elkkampa.com/Helpdesk" target="_blank">
+                       <i class="bi bi-stack me-1"></i> Ticketsystem
+                    </a>
+
+                    <button id="listServicesBtn" class="btn btn-outline-secondary text-start">
+                      <i class="bi bi-gear-fill me-1"></i> Liste Services
                     </button>
                     
-                    <button id="listServicesBtn" class="btn btn-outline-secondary btn-sm">
-                      Liste Services
+                    <button id="listOwnersBtn" class="btn btn-outline-secondary text-start">
+                      <i class="bi bi-person-fill-gear me-1"></i> Liste ServiceOwner
                     </button>
                   </div>
               </div>
