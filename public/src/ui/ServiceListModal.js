@@ -5,6 +5,7 @@ export class ServiceListModal {
     this._services = [];
     this._ensureModal();
     this._attachSearchHandler();
+    this._attachGroupFilterHandler();
   }
 
   _ensureModal() {
@@ -13,21 +14,26 @@ export class ServiceListModal {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
 <div class="modal fade" id="${this.modalId}" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Alle Services</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
       </div>
       <div class="modal-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="flex-grow-1 me-3">
-            <input type="search"
-                   id="${this.modalId}-search"
-                   class="form-control"
-                   placeholder="Nach Keywords filtern (z.B. &quot;hybridforms&quot;, &quot;lieferant&quot;)">
-          </div>
-        </div>
+            <div class="d-flex align-items-center mb-3 gap-2">
+              <div style="min-width: 200px;">
+                <select id="${this.modalId}-group-filter" class="form-select form-select-sm">
+                  <option value="">Alle Gruppen</option>
+                </select>
+              </div>
+              <div class="flex-grow-1">
+                <input type="search"
+                       id="${this.modalId}-search"
+                       class="form-control form-control-sm"
+                       placeholder="Nach Keywords filtern (z.B. &quot;hybridforms&quot;, &quot;levatis&quot;)">
+              </div>
+            </div>
 
         <div id="${this.modalId}-list" class="small"></div>
       </div>
@@ -59,6 +65,31 @@ export class ServiceListModal {
       el.style.display = 'block';
     }
   }
+  
+    _applyFilters() {
+      const searchEl = document.getElementById(`${this.modalId}-search`);
+      const groupEl  = document.getElementById(`${this.modalId}-group-filter`);
+
+      const term  = (searchEl?.value || '').trim().toLowerCase();
+      const group = (groupEl?.value || '').trim();
+
+      let filtered = this._services.slice();
+
+      if (group) {
+        filtered = filtered.filter(svc =>
+          (svc.groupTitle || svc.groupKey || '') === group
+        );
+      }
+
+      if (term) {
+        filtered = filtered.filter(svc =>
+          svc.keywords.some(k => k.includes(term))
+        );
+      }
+
+      this._renderList(filtered);
+    }
+  
 
   _escapeHtml(str) {
     return String(str ?? '')
@@ -69,22 +100,24 @@ export class ServiceListModal {
       .replaceAll("'", '&#039;');
   }
 
-  _attachSearchHandler() {
-    document.addEventListener('input', (ev) => {
-      const target = ev.target;
-      if (!(target instanceof HTMLInputElement)) return;
-      if (target.id !== `${this.modalId}-search`) return;
+    _attachSearchHandler() {
+      document.addEventListener('input', (ev) => {
+        const target = ev.target;
+        if (!(target instanceof HTMLInputElement)) return;
+        if (target.id !== `${this.modalId}-search`) return;
+        this._applyFilters();
+      });
+    }
 
-      const term = target.value.trim().toLowerCase();
-      const filtered = term
-        ? this._services.filter(svc =>
-            svc.keywords.some(k => k.includes(term))
-          )
-        : this._services;
+    _attachGroupFilterHandler() {
+      document.addEventListener('change', (ev) => {
+        const target = ev.target;
+        if (!(target instanceof HTMLSelectElement)) return;
+        if (target.id !== `${this.modalId}-group-filter`) return;
+        this._applyFilters();
+      });
+    }
 
-      this._renderList(filtered);
-    });
-  }
 
   _collectServicesFromGroups(groups) {
     const result = [];
@@ -150,7 +183,7 @@ export class ServiceListModal {
 
       // Tabellen-Grundgerüst
       const tableHtml = `
-    <table class="table table-sm align-middle mb-0">
+    <table class="table table-sm table-bordered table-striped align-middle mb-0">
       <thead class="table-light">
         <tr>
           <th style="width: 25%;">Gruppe</th>
@@ -201,16 +234,39 @@ export class ServiceListModal {
    * Öffnet das Modal und rendert die Liste.
    * groups = this.groups (Config aus status.config.json)
    */
-  open(groups) {
-    this._showModal();
+    open(groups) {
+      this._showModal();
 
-    const services = this._collectServicesFromGroups(groups);
-    this._services = services;
+      const services = this._collectServicesFromGroups(groups);
+      this._services = services;
 
-    // Suchfeld zurücksetzen
-    const search = document.getElementById(`${this.modalId}-search`);
-    if (search) search.value = '';
+      // Suchfeld zurücksetzen
+      const search = document.getElementById(`${this.modalId}-search`);
+      if (search) search.value = '';
 
-    this._renderList(services);
-  }
+      // Gruppen-Dropdown befüllen
+      const groupSelect = document.getElementById(`${this.modalId}-group-filter`);
+      if (groupSelect) {
+        const groupsSet = new Set(
+          services.map(svc => svc.groupTitle || svc.groupKey || '').filter(Boolean)
+        );
+        const groupsSorted = Array.from(groupsSet).sort((a, b) =>
+          a.toLowerCase().localeCompare(b.toLowerCase())
+        );
+
+        groupSelect.innerHTML = '<option value="">Alle Gruppen</option>';
+        groupsSorted.forEach(g => {
+          const opt = document.createElement('option');
+          opt.value = g;
+          opt.textContent = g;
+          groupSelect.appendChild(opt);
+        });
+
+        groupSelect.value = ''; // Default: alle Gruppen
+      }
+
+      // Filter initial anwenden (zeigt komplette Liste)
+      this._applyFilters();
+    }
+
 }
