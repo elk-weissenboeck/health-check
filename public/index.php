@@ -53,9 +53,16 @@ $BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
         </div>
         
         <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary btn-sm" id="refreshBtn">
+        <div class="btn-group-vertical">
+
+          <button class="btn btn-outline-secondary" id="refreshBtn">
             <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
           </button>
+          
+          <a class="btn btn-outline-secondary" href="https://helpdesk.elkkampa.com/Helpdesk" target="_blank">
+            <i class="bi bi-stack me-1"></i>  Ticketsystem
+          </a>
+          </div>
         </div>
       </div>
     </section>
