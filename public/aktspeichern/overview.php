@@ -26,6 +26,7 @@ declare(strict_types=1);
       --btn-hover: #172133;
       --btn-danger: #2a0f17;
       --btn-danger-hover: #3a1320;
+      --link: #7fb3ff;
     }
     body {
       margin: 0;
@@ -95,13 +96,25 @@ declare(strict_types=1);
     .pill select:hover { background-color: var(--select-bg-hover); }
     .pill select option { background: var(--select-bg); color: var(--text); }
 
-    .pill input {
+    .pill input[type="text"] {
       background: transparent;
       color: var(--text);
       border: none;
       outline: none;
       font-size: 13px;
       min-width: 220px;
+    }
+
+    .pill input[type="date"] {
+      background-color: var(--select-bg);
+      color: var(--text);
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      line-height: 1.2;
     }
 
     .btn {
@@ -175,6 +188,16 @@ declare(strict_types=1);
       border: 1px dashed var(--line);
       border-radius: 12px;
     }
+
+    .loglinks a {
+      color: var(--link);
+      text-decoration: none;
+      margin-right: 8px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .loglinks a:hover { text-decoration: underline; }
+    .loglinks .none { color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
@@ -203,6 +226,11 @@ declare(strict_types=1);
       <input id="searchBox" type="text" placeholder="Machine/User/SessionId/Version">
     </label>
 
+    <label class="pill">
+      Log-Datum:
+      <input id="logDate" type="date">
+    </label>
+
     <button class="btn danger" id="btnClearAll" title="Komplett leeren">
       DB komplett leeren
     </button>
@@ -223,13 +251,17 @@ declare(strict_types=1);
 </div>
 
 <script>
-  const API_URL = "/aktspeichern/api/presence";
+  const API_PRESENCE = "/aktspeichern/api/presence";
+  const API_LOGS_LIST = "/aktspeichern/api/logs";
+  const API_LOGS_DL = "/aktspeichern/api/logs/download?id=";
+
   const API_DELETE_ALL = "/aktspeichern/api/presence";
   const API_DELETE_STALE = "/aktspeichern/api/presence/stale";
   const REFRESH_MS = 10_000;
 
   const stateFilterEl = document.getElementById("stateFilter");
   const searchBoxEl   = document.getElementById("searchBox");
+  const logDateEl     = document.getElementById("logDate");
   const toastEl       = document.getElementById("toast");
 
   const btnClearAll   = document.getElementById("btnClearAll");
@@ -238,22 +270,37 @@ declare(strict_types=1);
   // ---------------- URL Param Handling ----------------
   const urlParams = new URLSearchParams(window.location.search);
 
+  function todayISO() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
   function readParamsIntoUI() {
     const state = urlParams.get("state") || "";
     const search = urlParams.get("search") || "";
+    const logDate = urlParams.get("logDate") || todayISO();
+
     stateFilterEl.value = state;
     searchBoxEl.value = search;
+    logDateEl.value = logDate;
   }
 
   function writeUIIntoUrl() {
     const state = stateFilterEl.value;
     const search = (searchBoxEl.value || "").trim();
+    const logDate = logDateEl.value || todayISO();
 
     if (state) urlParams.set("state", state);
     else urlParams.delete("state");
 
     if (search) urlParams.set("search", search);
     else urlParams.delete("search");
+
+    if (logDate) urlParams.set("logDate", logDate);
+    else urlParams.delete("logDate");
 
     const newQs = urlParams.toString();
     const newUrl = newQs ? `${window.location.pathname}?${newQs}` : window.location.pathname;
@@ -280,7 +327,29 @@ declare(strict_types=1);
     return {text: "Stopped", cls: "bad"};
   }
 
-  function renderTable(rows) {
+  function applyClientFilters(rows) {
+    const search = (searchBoxEl.value || "").trim().toLowerCase();
+    if (!search) return rows;
+
+    return rows.filter(r => {
+      const hay = [r.machine, r.user, r.sessionId, r.version, String(r.pid ?? "")]
+        .join(" ").toLowerCase();
+      return hay.includes(search);
+    });
+  }
+
+  // Logs nach machine gruppieren: { machine: { logType: logRow } }
+  function groupLogs(logRows) {
+    const map = {};
+    for (const l of (logRows || [])) {
+      const m = l.machine;
+      if (!map[m]) map[m] = {};
+      map[m][l.logType] = l;
+    }
+    return map;
+  }
+
+  function renderTable(rows, logsByMachine) {
     if (!rows || rows.length === 0) {
       document.getElementById("content").innerHTML =
         `<div class="empty">Keine Einträge vorhanden.</div>`;
@@ -305,6 +374,7 @@ declare(strict_types=1);
             <th>SessionId</th>
             <th>LastSeen (UTC)</th>
             <th class="right">Age (s)</th>
+            <th>Logs</th>
           </tr>
         </thead>
         <tbody>
@@ -312,6 +382,21 @@ declare(strict_types=1);
 
     for (const r of rows) {
       const st = statusBadge(r);
+      const lm = logsByMachine?.[r.machine] || {};
+
+      function logLink(typeLabel, typeKey) {
+        const entry = lm[typeKey];
+        if (!entry) return "";
+        const url = API_LOGS_DL + encodeURIComponent(entry.id);
+        return `<a href="${url}" target="_blank" title="${entry.fileName}">${typeLabel}</a>`;
+      }
+
+      const links = [
+        logLink("auth", "auth"),
+        logLink("secweb", "secweb"),
+        logLink("presence", "presence")
+      ].filter(x => x !== "").join("");
+
       html += `
         <tr>
           <td>
@@ -328,6 +413,9 @@ declare(strict_types=1);
           <td class="mono">${r.sessionId}</td>
           <td>${fmtDate(r.lastSeenUtc)}</td>
           <td class="right mono">${r.ageSeconds ?? "-"}</td>
+          <td class="loglinks">
+            ${links || `<span class="none">–</span>`}
+          </td>
         </tr>
       `;
     }
@@ -336,31 +424,35 @@ declare(strict_types=1);
     document.getElementById("content").innerHTML = html;
   }
 
-  function applyClientFilters(rows) {
-    const search = (searchBoxEl.value || "").trim().toLowerCase();
-    if (!search) return rows;
-
-    return rows.filter(r => {
-      const hay = [r.machine, r.user, r.sessionId, r.version, String(r.pid ?? "")]
-        .join(" ").toLowerCase();
-      return hay.includes(search);
-    });
-  }
-
-  async function fetchPresence() {
+  async function fetchPresenceAndLogs() {
     try {
       writeUIIntoUrl();
 
+      // 1) Presence laden
       const state = stateFilterEl.value;
-      const url = state ? `${API_URL}?state=${encodeURIComponent(state)}` : API_URL;
+      const presenceUrl = state ? `${API_PRESENCE}?state=${encodeURIComponent(state)}` : API_PRESENCE;
 
-      const res = await fetch(url, {cache: "no-store"});
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const presRes = await fetch(presenceUrl, {cache: "no-store"});
+      if (!presRes.ok) throw new Error(`Presence HTTP ${presRes.status}`);
+      const presData = await presRes.json();
+      let presenceRows = applyClientFilters(presData.presence || []);
 
-      const data = await res.json();
-      let rows = applyClientFilters(data.presence || []);
+      // 2) Logs für gewähltes Datum laden
+      const logDate = logDateEl.value || todayISO();
+      let logsByMachine = {};
 
-      renderTable(rows);
+      try {
+        const logsRes = await fetch(`${API_LOGS_LIST}?date=${encodeURIComponent(logDate)}`, {cache: "no-store"});
+        if (logsRes.ok) {
+          const logsData = await logsRes.json();
+          logsByMachine = groupLogs(logsData.logs || []);
+        }
+      } catch (e) {
+        // Logs optional: presence trotzdem anzeigen
+        console.warn("Logs fetch failed", e);
+      }
+
+      renderTable(presenceRows, logsByMachine);
       document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
     } catch (e) {
       document.getElementById("content").innerHTML =
@@ -378,14 +470,14 @@ declare(strict_types=1);
       if (!res.ok) throw new Error(data?.error || res.status);
 
       toast(`DB geleert. Gelöschte Zeilen: ${data.deletedRows ?? 0}`);
-      fetchPresence();
+      fetchPresenceAndLogs();
     } catch (e) {
       toast(`Fehler beim Leeren: ${e.message}`, false);
     }
   });
 
   btnClearStale.addEventListener("click", async () => {
-    const ageSeconds = 3600; // 1h default wie Backend
+    const ageSeconds = 3600;
     if (!confirm(`Stale Einträge löschen (älter als ${ageSeconds/60} Minuten)?`)) return;
 
     try {
@@ -396,22 +488,25 @@ declare(strict_types=1);
       if (!res.ok) throw new Error(data?.error || res.status);
 
       toast(`Stale gelöscht. Gelöschte Zeilen: ${data.deletedRows ?? 0}`);
-      fetchPresence();
+      fetchPresenceAndLogs();
     } catch (e) {
       toast(`Fehler beim Stale-Löschen: ${e.message}`, false);
     }
   });
 
   // initial load + refresh loop
-  fetchPresence();
-  setInterval(fetchPresence, REFRESH_MS);
+  fetchPresenceAndLogs();
+  setInterval(fetchPresenceAndLogs, REFRESH_MS);
 
-  stateFilterEl.addEventListener("change", fetchPresence);
+  stateFilterEl.addEventListener("change", fetchPresenceAndLogs);
+
   let searchDebounce;
   searchBoxEl.addEventListener("input", () => {
     clearTimeout(searchDebounce);
-    searchDebounce = setTimeout(fetchPresence, 200);
+    searchDebounce = setTimeout(fetchPresenceAndLogs, 200);
   });
+
+  logDateEl.addEventListener("change", fetchPresenceAndLogs);
 </script>
 
 </body>

@@ -1,0 +1,5 @@
+# Liste log Files
+https://health-check.elkschrems.co.at/aktspeichern/api/logs?machine=NB334&date=2025-11-21
+
+#download log files
+https://health-check.elkschrems.co.at/aktspeichern/api/logs/download?id=1
