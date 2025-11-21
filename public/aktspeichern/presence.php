@@ -46,6 +46,32 @@ try {
         CREATE INDEX IF NOT EXISTS idx_presence_lastSeen
         ON presence(lastSeenUtc);
     ");
+    
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            machine TEXT NOT NULL,
+            user TEXT,
+            sessionId TEXT,
+            logType TEXT NOT NULL,          -- auth | secweb | presence | custom
+            logDate TEXT NOT NULL,          -- YYYY-MM-DD (clientseitig)
+            fileName TEXT NOT NULL,
+            filePath TEXT NOT NULL,         -- relativer Pfad im logstore
+            sizeBytes INTEGER NOT NULL,
+            checksum TEXT,                  -- optional sha256
+            uploadedUtc TEXT NOT NULL       -- ISO8601 UTC
+        );
+    ");
+
+    $pdo->exec("
+        CREATE INDEX IF NOT EXISTS idx_logs_lookup
+        ON logs(machine, logDate, logType);
+    ");
+    
+    $pdo->exec("
+        CREATE UNIQUE INDEX IF NOT EXISTS uidx_logs_unique
+        ON logs(machine, logDate, logType);
+    ");
 } catch (Throwable $e) {
     json_response(['error' => 'DB init failed', 'detail' => $e->getMessage()], 500);
 }
@@ -76,5 +102,21 @@ if ($path === '/api/presence' && $method === 'DELETE') {
 if ($path === '/api/presence/stale' && $method === 'DELETE') {
     require __DIR__ . '/delete.stale.presence.php';
 }
+ 
+// Logs Upload
+if ($path === '/api/logs' && $method === 'POST') {
+    require __DIR__ . '/post.logs.php';
+}
+
+// Logs Liste
+if ($path === '/api/logs' && $method === 'GET') {
+    require __DIR__ . '/get.logs.php';
+}
+
+// Logs Download
+if ($path === '/api/logs/download' && $method === 'GET') {
+    require __DIR__ . '/download.logs.php';
+}
+
 
 json_response(['error' => 'Not found'], 404);
