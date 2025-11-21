@@ -1,0 +1,35 @@
+# 1) Start senden
+curl -ik -X POST "https://health-check.elkschrems.co.at/aktspeichern/api/presence" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Type": "start",
+    "SessionId": "test-session-001",
+    "Machine": "PC-007",
+    "User": "jdoe",
+    "Pid": 4242,
+    "Version": "1.2.3"
+  }'
+  
+# 2) Heartbeat senden
+curl -ik -X POST "https://health-check.elkschrems.co.at/aktspeichern/api/presence" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Type": "heartbeat",
+    "SessionId": "test-session-001",
+    "Machine": "PC-007",
+    "User": "jdoe",
+    "Pid": 4242,
+    "Version": "1.2.3"
+  }'
+  
+# 3) Stop senden
+curl -ik -X POST "https://health-check.elkschrems.co.at/aktspeichern/api/presence" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Type": "stop",
+    "SessionId": "test-session-001",
+    "Machine": "PC-007",
+    "User": "jdoe",
+    "Pid": 4242,
+    "Version": "1.2.3"
+  }'
