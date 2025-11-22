@@ -344,7 +344,7 @@ declare(strict_types=1);
     for (const l of (logRows || [])) {
       const m = l.machine;
       if (!map[m]) map[m] = {};
-      map[m][l.logType] = l;
+      map[m][l.logType] = l; // enthält jetzt auch fileExists
     }
     return map;
   }
@@ -386,7 +386,10 @@ declare(strict_types=1);
 
       function logLink(typeLabel, typeKey) {
         const entry = lm[typeKey];
-        if (!entry) return "";
+
+        // NEU: nur Link anbieten, wenn fileExists === true
+        if (!entry || entry.fileExists !== true) return "";
+
         const url = API_LOGS_DL + encodeURIComponent(entry.id);
         return `<a href="${url}" target="_blank" title="${entry.fileName}">${typeLabel}</a>`;
       }
@@ -448,7 +451,6 @@ declare(strict_types=1);
           logsByMachine = groupLogs(logsData.logs || []);
         }
       } catch (e) {
-        // Logs optional: presence trotzdem anzeigen
         console.warn("Logs fetch failed", e);
       }
 
