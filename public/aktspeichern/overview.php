@@ -397,7 +397,8 @@ declare(strict_types=1);
       const links = [
         logLink("auth", "auth"),
         logLink("secweb", "secweb"),
-        logLink("presence", "presence")
+        logLink("presence", "presence"),
+        logLink("upload", "upload")
       ].filter(x => x !== "").join("");
 
       html += `
