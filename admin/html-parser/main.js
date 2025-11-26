@@ -7,7 +7,49 @@
     const controlFilter = document.getElementById("controlFilter");
     const tableBody = document.querySelector("#resultTable tbody");
 
+    const tableHeaders = document.querySelectorAll("#resultTable thead th");
+
+    // Sort-Schlüssel pro Spalte (#, tag, id, label, data-win-control, data-win-options)
+    const headerSortKeys = [
+        "index",
+        "tag",
+        "id",
+        "label",
+        "data-win-control",
+        "data-win-options"
+    ];
+
+    // Label-Texte für Header (für die Darstellung mit Icons)
+    const headerLabels = [
+        "#",
+        "tag",
+        "id",
+        "label",
+        "data-win-control",
+        "data-win-options"
+    ];
+
+    const sortState = {
+        column: null,     // z.B. "id", "label", ...
+        direction: "asc"  // "asc" | "desc"
+    };
+
     let allRows = [];
+
+    // --- sessionStorage: HTML-Eingabe speichern/wiederherstellen ---
+
+    // Beim Laden: gespeicherten Wert wiederherstellen
+    const savedHtml = sessionStorage.getItem("htmlInputValue");
+    if (savedHtml) {
+        input.value = savedHtml;
+    }
+
+    // Bei jeder Änderung im Textfeld speichern
+    input.addEventListener("input", () => {
+        sessionStorage.setItem("htmlInputValue", input.value);
+    });
+
+    // ----------------- Helper: data-win-options -----------------
 
     // data-win-options parsen (JSON oder JS-Objektliteral)
     function parseWinOptions(raw) {
@@ -64,12 +106,95 @@
         return lines.join("\n");
     }
 
+    // ----------------- Sortierung -----------------
+
+    function sortRows(rows) {
+        if (!sortState.column) return rows;
+
+        const key = sortState.column;
+        const dir = sortState.direction === "asc" ? 1 : -1;
+
+        const copy = rows.slice();
+
+        copy.sort((a, b) => {
+            let va, vb;
+
+            switch (key) {
+                case "index":
+                    va = a.originalIndex;
+                    vb = b.originalIndex;
+                    break;
+                case "tag":
+                    va = a.tag || "";
+                    vb = b.tag || "";
+                    break;
+                case "id":
+                    va = a.id || "";
+                    vb = b.id || "";
+                    break;
+                case "label":
+                    va = a.label || "";
+                    vb = b.label || "";
+                    break;
+                case "data-win-control":
+                    va = a.control || "";
+                    vb = b.control || "";
+                    break;
+                case "data-win-options":
+                    va = a.optionsObj ? formatOptions(a.optionsObj) : (a.optionsRaw || "");
+                    vb = b.optionsObj ? formatOptions(b.optionsObj) : (b.optionsRaw || "");
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (typeof va === "string") va = va.toLowerCase();
+            if (typeof vb === "string") vb = vb.toLowerCase();
+
+            if (va < vb) return -1 * dir;
+            if (va > vb) return 1 * dir;
+            return 0;
+        });
+
+        return copy;
+    }
+
+    // Icons im Header aktualisieren
+    function updateSortIcons() {
+        tableHeaders.forEach((th, index) => {
+            const sortKey = headerSortKeys[index];
+            const baseLabel = headerLabels[index];
+
+            if (!sortKey) {
+                th.textContent = baseLabel;
+                return;
+            }
+
+            let suffix = "";
+            if (sortState.column === sortKey) {
+                suffix = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            th.textContent = baseLabel + suffix;
+            th.style.cursor = "pointer";
+        });
+    }
+
+    // ----------------- Analyse -----------------
+
     analyzeBtn.addEventListener("click", () => {
         const html = input.value.trim();
         tableBody.innerHTML = "";
         allRows = [];
         controlFilter.innerHTML = '<option value="">(Alle)</option>';
         searchInput.value = "";
+
+        // aktuellen Inhalt auch explizit in sessionStorage sichern
+        sessionStorage.setItem("htmlInputValue", input.value);
+
+        sortState.column = null;
+        sortState.direction = "asc";
+        updateSortIcons();
 
         if (!html) {
             alert("Bitte zuerst HTML einfügen.");
@@ -94,6 +219,7 @@
         const controlSet = new Set();
 
         elements.forEach((el) => {
+            const originalIndex = allRows.length;
             const tag = el.tagName.toLowerCase();
             const id = el.getAttribute("id") || "";
             const control = el.getAttribute("data-win-control") || "";
@@ -112,6 +238,7 @@
                     : "";
 
             allRows.push({
+                originalIndex,
                 tag,
                 id,
                 control,
@@ -132,6 +259,8 @@
 
         applyFiltersAndRender();
     });
+
+    // ----------------- Filter + Suche -----------------
 
     function applyFiltersAndRender() {
         const searchQuery = searchInput.value.trim();
@@ -182,8 +311,12 @@
             }
         });
 
-        renderTable(filtered);
+        const sorted = sortRows(filtered);
+        renderTable(sorted);
+        updateSortIcons();
     }
+
+    // ----------------- Rendering -----------------
 
     function renderTable(rows) {
         tableBody.innerHTML = "";
@@ -201,7 +334,7 @@
         rows.forEach((row, index) => {
             const tr = document.createElement("tr");
 
-            // # (Index)
+            // # (laufende Nummer der angezeigten Zeile)
             const tdIndex = document.createElement("td");
             tdIndex.textContent = index + 1;
 
@@ -221,13 +354,14 @@
             const tdLabel = document.createElement("td");
             tdLabel.textContent = row.label;
 
-            // data-win-control
+            // data-win-control in <small>
             const tdCtrl = document.createElement("td");
-            const idSmall = document.createElement("small");
-            tdCtrl.textContent = row.control;
-            tdCtrl.appendChild(idSmall);
+            const ctrlSmall = document.createElement("small");
+            ctrlSmall.classList.add('text-secondary');
+            ctrlSmall.textContent = row.control;
+            tdCtrl.appendChild(ctrlSmall);
 
-            // data-win-options
+            // data-win-options (monospace / multi-line)
             const tdOpts = document.createElement("td");
             tdOpts.className = "json-cell";
             if (row.optionsObj) {
@@ -248,12 +382,38 @@
         });
     }
 
+    // ----------------- Header-Klicks für Sortierung -----------------
+
+    tableHeaders.forEach((th, index) => {
+        const sortKey = headerSortKeys[index];
+        if (!sortKey) return;
+
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            if (sortState.column === sortKey) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = sortKey;
+                sortState.direction = "asc";
+            }
+            applyFiltersAndRender();
+        });
+    });
+
+    // ----------------- UI-Events -----------------
+
     searchBtn.addEventListener("click", applyFiltersAndRender);
+
     resetBtn.addEventListener("click", () => {
         searchInput.value = "";
         controlFilter.value = "";
+        sortState.column = null;
+        sortState.direction = "asc";
+        updateSortIcons();
         applyFiltersAndRender();
     });
+
     controlFilter.addEventListener("change", applyFiltersAndRender);
 
     searchInput.addEventListener("keydown", (e) => {
@@ -262,4 +422,7 @@
             applyFiltersAndRender();
         }
     });
+
+    // initial Icons setzen
+    updateSortIcons();
 })();

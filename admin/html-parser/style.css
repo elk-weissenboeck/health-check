@@ -20,6 +20,9 @@ table#resultTable td {
     word-break: break-word;
 }
 
+table#resultTable thead th {
+    user-select: none; /* verhindert Markieren beim Klicken */
+}
 /* Darstellung der data-win-options-Zelle */
 .json-cell {
     white-space: pre-wrap;
