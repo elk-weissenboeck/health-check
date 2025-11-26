@@ -5,4 +5,58 @@ public/proxy/cache/*.json
 public/entra/cache/*.json
 public/aktspeichern/logstore/*
 public/aktspeichern/presence.sqlite
-log/*.log
+
+# ──────────────────────────────────────────
+# Python Bytecode
+# ──────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ──────────────────────────────────────────
+# Virtual Environment
+# ──────────────────────────────────────────
+venv/
+env/
+.logviewer_venv/
+
+# Gunicorn socket / PID files (falls erzeugt)
+*.pid
+*.sock
+
+# ──────────────────────────────────────────
+# Temporäre Dateien / Uploads
+# ──────────────────────────────────────────
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+*.swp
+*.bak
+
+# Flask Werkzeug Debugger Cache
+instance/
+
+# ──────────────────────────────────────────
+# System-/IDE-Dateien
+# ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.code-workspace
+
+# ──────────────────────────────────────────
+# Backup & Deployment Artefakte
+# ──────────────────────────────────────────
+*.tar
+*.zip
+*.old
+*.orig
+
+# Falls du PyInstaller oder ähnliche Tools nutzt:
+build/
+dist/
+*.spec

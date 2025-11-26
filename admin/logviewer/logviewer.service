@@ -1,0 +1,15 @@
+[Unit]
+Description=Logviewer Flask App über gunicorn
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/operational/admin/logviewer/
+Environment="PATH=/var/www/operational/admin/logviewer/venv/bin"
+ExecStart=/var/www/operational/admin/logviewer/venv/bin/gunicorn --bind 127.0.0.1:8099 web_app:app
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
