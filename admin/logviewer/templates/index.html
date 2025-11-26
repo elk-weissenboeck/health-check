@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <title>Log Analyzer</title>
+    <link rel="stylesheet" href="/admin/logviewer{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="container">
+    <h1>Log Analyzer</h1>
+
+    <form method="post" enctype="multipart/form-data" class="card">
+
+        <label>Log-Datei hochladen:</label>
+        <input type="file" name="logfile">
+
+        <label>ODER gespeicherte Datei auswählen:</label>
+        <select name="cached_file">
+            <option value="">-- keine --</option>
+            {% for file in cached_files %}
+                <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+
+        <label>GUID (optional – Filter):</label>
+        <input type="text" name="guid" placeholder="GUID eingeben …">
+
+        <button type="submit">Analyse starten</button>
+    </form>
+
+</div>
+</body>
+</html>

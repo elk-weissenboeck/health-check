@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <title>Analyse Ergebnis</title>
+    <link rel="stylesheet" href="/admin/logviewer{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div>
+    <h1>Analyse Ergebnis</h1>
+
+    {% if output %}
+    <div class="results">
+        <h3>Ergebnis</h3>
+        <pre>{{ output }}</pre>
+    </div>
+    {% endif %}
+
+    <a class="back" href="/admin/logviewer/">← zurück</a>
+</div>
+</body>
+</html>
