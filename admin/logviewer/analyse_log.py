@@ -78,7 +78,7 @@ def analyze_log(path, guid_filter=None):
     if guid_filter:
         guid_filter = guid_filter.lower()
 
-    # Neue Struktur (fünf Kategorien!)
+    # Struktur (fünf Kategorien)
     forms = defaultdict(lambda: {
         "errors": [],
         "actions": [],
@@ -184,11 +184,11 @@ def print_report(forms, guid_filter=None):
         print(f"GUID: {target_guid}")
         print("-" * 80)
 
-        # Kategorien rendern
-        print(render_category("Fehler", data["errors"]))
-        print(render_category("Aktionen", data["actions"]))
+        # Neue Ausgabe-Reihenfolge:
         print(render_category("Send mail", data["send_mail"]))
         print(render_category("Generating PDF", data["pdf"]))
+        print(render_category("Aktionen", data["actions"]))
+        print(render_category("Fehler", data["errors"]))
         print(render_category("Uploads", data["uploads"]))
 
         return
@@ -198,10 +198,10 @@ def print_report(forms, guid_filter=None):
         print(f"GUID: {guid}")
         print("-" * 80)
 
-        print(render_category("Fehler", data["errors"]))
-        print(render_category("Aktionen", data["actions"]))
         print(render_category("Send mail", data["send_mail"]))
         print(render_category("Generating PDF", data["pdf"]))
+        print(render_category("Aktionen", data["actions"]))
+        print(render_category("Fehler", data["errors"]))
         print(render_category("Uploads", data["uploads"]))
 
 
