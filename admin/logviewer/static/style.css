@@ -1,7 +1,8 @@
 body {
     background: #f4f4f4;
     font-family: Arial, sans-serif;
-    padding: 40px;
+    padding: 2rem;
+    margin: 0;
     color: #333;
 }
 
@@ -12,11 +13,6 @@ body {
     background: #ffffff;
     padding: 20px;
     border-radius: 8px;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 30px;
 }
 
 .card {
@@ -56,12 +52,11 @@ button:hover {
 .results {
     background: #ffffff;       /* weißer Hintergrund */
     width: 100%;              /* ganze Breite */
-    padding: 20px;            /* etwas Luft innen */
+    padding: 0 20px;            /* etwas Luft innen */
     border-radius: 8px;
     border: 1px solid #ddd;
     box-sizing: border-box;
     white-space: pre-wrap;    /* Zeilenumbrüche korrekt anzeigen */
-    margin-top: 20px;
 }
 
 .output {
@@ -82,4 +77,8 @@ button:hover {
 
 .back:hover {
     text-decoration: underline;
+}
+
+.category-list .hidden {
+    display: none;
 }

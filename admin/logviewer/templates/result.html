@@ -8,16 +8,18 @@
 
 <body>
 <div>
-    <h1>Analyse Ergebnis</h1>
+    <a class="back" href="/admin/logviewer/">← zurück</a>
+    
+    <h3>Analyse Ergebnis</h3>
 
     {% if output %}
     <div class="results">
-        <h3>Ergebnis</h3>
         <pre>{{ output }}</pre>
     </div>
     {% endif %}
-
+    
     <a class="back" href="/admin/logviewer/">← zurück</a>
+
 </div>
 </body>
 </html>

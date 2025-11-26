@@ -44,7 +44,7 @@ PDF_KEYWORDS = [
 # Uploads erkennen
 UPLOAD_KEYWORD = "FormHandler.UploadFormFile"
 
-# Fehler erkennen
+# Fehler erkennen (allgemein)
 ERROR_KEYWORDS = [
     "Exception",
     "SqlException",
@@ -53,6 +53,9 @@ ERROR_KEYWORDS = [
     "ERROR",
     "Critical",
 ]
+
+# Spezieller Fehler: DbUpdateException
+DBUPDATE_KEYWORD = "DbUpdateException"
 
 
 def shorten_timestamp_to_time(ts: str) -> str:
@@ -78,13 +81,14 @@ def analyze_log(path, guid_filter=None):
     if guid_filter:
         guid_filter = guid_filter.lower()
 
-    # Struktur (fünf Kategorien)
+    # Struktur mit unterteilten Fehlern
     forms = defaultdict(lambda: {
-        "errors": [],
+        "errors_dbupdate": [],
+        "errors_other": [],
         "actions": [],
         "send_mail": [],
         "pdf": [],
-        "uploads": []
+        "uploads": [],
     })
 
     with open(path, "r", encoding="utf-8", errors="replace") as f:
@@ -113,9 +117,14 @@ def analyze_log(path, guid_filter=None):
                 forms[guid]["uploads"].append((time_display, message_clean))
                 continue
 
-            # Fehler?
+            # Spezieller Fehler DbUpdateException?
+            if DBUPDATE_KEYWORD.lower() in msg_lower:
+                forms[guid]["errors_dbupdate"].append((time_display, message_clean))
+                continue
+
+            # Allgemeine Fehler?
             if any(err.lower() in msg_lower for err in ERROR_KEYWORDS):
-                forms[guid]["errors"].append((time_display, message_clean))
+                forms[guid]["errors_other"].append((time_display, message_clean))
                 continue
 
             # Generating PDF?
@@ -138,22 +147,18 @@ def analyze_log(path, guid_filter=None):
 
 def render_category(title, items):
     """Kategorie mit Zähler + max Sichtbarkeit + Show More-Link."""
-
     total = len(items)
     text = [f"{title} ({total}):"]
 
     if total == 0:
         return "\n".join(text + ["    (keine)\n"])
 
-    # Sichtbare & versteckte trennen
     visible = items[:MAX_VISIBLE]
     hidden = items[MAX_VISIBLE:]
 
-    # Sichtbare Elemente
     for ts, msg in visible:
         text.append(f"    - {ts}  {msg}")
 
-    # Versteckte Elemente → Einblend-Hinweis
     if hidden:
         text.append(f"\n    ▸ {len(hidden)} weitere anzeigen (gekürzt)\n")
 
@@ -184,12 +189,13 @@ def print_report(forms, guid_filter=None):
         print(f"GUID: {target_guid}")
         print("-" * 80)
 
-        # Neue Ausgabe-Reihenfolge:
+        # Reihenfolge: Send mail, Generating PDF, Aktionen, Uploads, Fehler…
         print(render_category("Send mail", data["send_mail"]))
         print(render_category("Generating PDF", data["pdf"]))
         print(render_category("Aktionen", data["actions"]))
-        print(render_category("Fehler", data["errors"]))
         print(render_category("Uploads", data["uploads"]))
+        print(render_category("Fehler - DbUpdateException", data["errors_dbupdate"]))
+        print(render_category("Fehler - sonstige", data["errors_other"]))
 
         return
 
@@ -201,8 +207,9 @@ def print_report(forms, guid_filter=None):
         print(render_category("Send mail", data["send_mail"]))
         print(render_category("Generating PDF", data["pdf"]))
         print(render_category("Aktionen", data["actions"]))
-        print(render_category("Fehler", data["errors"]))
         print(render_category("Uploads", data["uploads"]))
+        print(render_category("Fehler - DbUpdateException", data["errors_dbupdate"]))
+        print(render_category("Fehler - sonstige", data["errors_other"]))
 
 
 def main():
