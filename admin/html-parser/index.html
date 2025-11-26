@@ -62,23 +62,22 @@
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table id="resultTable" class="table table-sm table-bordered table-striped align-middle">
-            <thead class="table-light">
-            <tr>
-                <th style="width:4%">#</th>
-                <th style="width:8%">Tag</th>
-                <th style="width:16%">id</th>
-                <th style="width:18%">data-win-control</th>
-                <th style="width:18%">label</th>
-                <th style="width:36%">data-win-options</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- wird per JS befüllt -->
-            </tbody>
-        </table>
-    </div>
+    <!-- Tabelle direkt, ohne .table-responsive, damit kein horizontales Scrollen erzwungen wird -->
+    <table id="resultTable" class="table table-sm table-bordered table-striped align-middle w-100">
+        <thead class="table-light">
+        <tr>
+            <th style="width:4%">#</th>
+            <th style="width:8%">tag</th>
+            <th style="width:18%">id</th>
+            <th style="width:18%">label</th>
+            <th style="width:18%">data-win-control</th>
+            <th>data-win-options</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- wird per JS befüllt -->
+        </tbody>
+    </table>
 </div>
 
 <!-- Bootstrap JS (optional) -->

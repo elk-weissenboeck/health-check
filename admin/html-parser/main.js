@@ -161,8 +161,8 @@
             const columns = {
                 tag: row.tag,
                 id: row.id,
-                "data-win-control": row.control,
                 label: row.label,
+                "data-win-control": row.control,
                 "data-win-options": optionsText
             };
 
@@ -201,21 +201,33 @@
         rows.forEach((row, index) => {
             const tr = document.createElement("tr");
 
+            // # (Index)
             const tdIndex = document.createElement("td");
             tdIndex.textContent = index + 1;
 
+            // tag in <code>
             const tdTag = document.createElement("td");
-            tdTag.textContent = row.tag;
+            const tagCode = document.createElement("code");
+            tagCode.textContent = row.tag;
+            tdTag.appendChild(tagCode);
 
+            // id in <code>
             const tdId = document.createElement("td");
-            tdId.textContent = row.id;
+            const idCode = document.createElement("code");
+            idCode.textContent = row.id;
+            tdId.appendChild(idCode);
 
-            const tdCtrl = document.createElement("td");
-            tdCtrl.textContent = row.control;
-
+            // label
             const tdLabel = document.createElement("td");
             tdLabel.textContent = row.label;
 
+            // data-win-control
+            const tdCtrl = document.createElement("td");
+            const idSmall = document.createElement("small");
+            tdCtrl.textContent = row.control;
+            tdCtrl.appendChild(idSmall);
+
+            // data-win-options
             const tdOpts = document.createElement("td");
             tdOpts.className = "json-cell";
             if (row.optionsObj) {
@@ -224,11 +236,12 @@
                 tdOpts.textContent = row.optionsRaw;
             }
 
+            // Reihenfolge: #, tag, id, label, data-win-control, data-win-options
             tr.appendChild(tdIndex);
             tr.appendChild(tdTag);
             tr.appendChild(tdId);
-            tr.appendChild(tdCtrl);
             tr.appendChild(tdLabel);
+            tr.appendChild(tdCtrl);
             tr.appendChild(tdOpts);
 
             tableBody.appendChild(tr);

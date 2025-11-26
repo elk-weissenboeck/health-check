@@ -8,6 +8,18 @@ body {
     font-size: 0.9rem;
 }
 
+/* Tabelle soll auf 100 % bleiben, Inhalte umbrechen */
+table#resultTable {
+    width: 100%;
+    table-layout: fixed;      /* sorgt dafür, dass Inhalte eher umbrechen */
+}
+
+table#resultTable th,
+table#resultTable td {
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
 /* Darstellung der data-win-options-Zelle */
 .json-cell {
     white-space: pre-wrap;
