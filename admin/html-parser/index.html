@@ -2,337 +2,94 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HTML / WinJS-Feldanalyse</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-        }
-        textarea {
-            width: 100%;
-            height: 220px;
-            font-family: Consolas, "Courier New", monospace;
-            font-size: 0.9rem;
-            box-sizing: border-box;
-        }
-        button, select, input[type="text"] {
-            margin-top: 8px;
-            padding: 6px 10px;
-            font-size: 0.9rem;
-        }
-        .controls {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-        table {
-            margin-top: 20px;
-            border-collapse: collapse;
-            width: 100%;
-            table-layout: fixed;
-            font-size: 0.85rem;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 4px 6px;
-            vertical-align: top;
-            word-wrap: break-word;
-        }
-        th {
-            background: #f4f4f4;
-        }
-        .json-cell {
-            white-space: pre-wrap;
-            font-family: Consolas, "Courier New", monospace;
-        }
-    </style>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous"
+    >
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-light">
 
-<h1>HTML-Markup analysieren (WinJS)</h1>
+<div class="container py-4">
+    <h1 class="h4 mb-3">HTML-Markup analysieren (WinJS)</h1>
 
-<p>Füge hier dein HTML ein:</p>
-<textarea id="htmlInput" placeholder="&lt;div id=&quot;datum_kamin_kingfire&quot; data-win-control=&quot;HFWinJSCtrl.DatePicker&quot; data-win-options=&quot;{ fieldId: 'kopf_aktnr', weekNumber: true }&quot;&gt;..."></textarea>
+    <div class="mb-3">
+        <label for="htmlInput" class="form-label">HTML-Markup</label>
+        <textarea
+            id="htmlInput"
+            class="form-control font-monospace"
+            placeholder="&lt;div id=&quot;datum_kamin_kingfire&quot; data-win-control=&quot;HFWinJSCtrl.DatePicker&quot; data-win-options=&quot;{ fieldId: 'kopf_aktnr', label: 'Fertigstellung', weekNumber: true }&quot;&gt;..."
+        ></textarea>
+    </div>
 
-<div>
-    <button id="analyzeBtn">Analysieren</button>
+    <div class="mb-3">
+        <button id="analyzeBtn" class="btn btn-primary">
+            Analysieren
+        </button>
+    </div>
+
+    <div class="row g-3 align-items-end mb-3">
+        <div class="col-md-4">
+            <label for="searchInput" class="form-label">Suche</label>
+            <input
+                id="searchInput"
+                type="text"
+                class="form-control"
+                placeholder="z.B. id:kopf_aktnr oder label:Fertigstellung"
+            >
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button id="searchBtn" class="btn btn-outline-secondary flex-fill mt-3 mt-md-0">
+                Suchen
+            </button>
+            <button id="resetBtn" class="btn btn-outline-secondary flex-fill mt-3 mt-md-0">
+                Reset
+            </button>
+        </div>
+        <div class="col-md-5">
+            <label for="controlFilter" class="form-label">data-win-control</label>
+            <select id="controlFilter" class="form-select">
+                <option value="">(Alle)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="resultTable" class="table table-sm table-bordered table-striped align-middle">
+            <thead class="table-light">
+            <tr>
+                <th style="width:4%">#</th>
+                <th style="width:8%">Tag</th>
+                <th style="width:16%">id</th>
+                <th style="width:18%">data-win-control</th>
+                <th style="width:18%">label</th>
+                <th style="width:36%">data-win-options</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- wird per JS befüllt -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="controls">
-    <label>
-        Suche&nbsp;
-        <input id="searchInput" type="text" placeholder="z.B. id:kopf_aktnr oder datepicker">
-    </label>
-    <button id="searchBtn">Suchen</button>
-    <button id="resetBtn">Reset</button>
+<!-- Bootstrap JS (optional) -->
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+></script>
 
-    <label>
-        data-win-control:&nbsp;
-        <select id="controlFilter">
-            <option value="">(Alle)</option>
-        </select>
-    </label>
-</div>
-
-<table id="resultTable">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Tag</th>
-        <th>id</th>
-        <th>data-win-control</th>
-        <th>data-win-options</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- wird per JS befüllt -->
-    </tbody>
-</table>
-
-<script>
-(function () {
-    const input = document.getElementById("htmlInput");
-    const analyzeBtn = document.getElementById("analyzeBtn");
-    const searchInput = document.getElementById("searchInput");
-    const searchBtn = document.getElementById("searchBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const controlFilter = document.getElementById("controlFilter");
-    const tableBody = document.querySelector("#resultTable tbody");
-
-    let allRows = [];
-
-    // *** data-win-options parsen (JSON oder JS-Objektliteral) ***
-    function parseWinOptions(raw) {
-        if (!raw) return { obj: null, error: null };
-        let s = raw.trim();
-        if (!s) return { obj: null, error: null };
-
-        // 1) erst versuchen, ob es echtes JSON ist
-        try {
-            return { obj: JSON.parse(s), error: null };
-        } catch (e) {
-            // ignorieren, nächster Versuch
-        }
-
-        // 2) als JS-Expression auswerten (z.B. { fieldId: 'kopf_aktnr' })
-        try {
-            // sicherstellen, dass es wie ein Ausdruck aussieht
-            if (!s.startsWith("{") && !s.startsWith("[")) {
-                s = "{" + s + "}";
-            }
-            const fn = new Function("return (" + s + ");");
-            const obj = fn();  // Hinweis: nur mit vertrauenswürdigem Input benutzen!
-            return { obj, error: null };
-        } catch (e) {
-            return { obj: null, error: e };
-        }
-    }
-
-    // JSON/Objekt schön als key:value darstellen
-    function formatOptions(value, indent = 0) {
-        const pad = "  ".repeat(indent);
-
-        if (value === null) return pad + "null";
-        if (typeof value !== "object") {
-            return pad + String(value);
-        }
-
-        if (Array.isArray(value)) {
-            if (value.length === 0) return pad + "[]";
-            return value.map(v =>
-                pad + "- " + formatOptions(v, indent + 1).replace(/^\s+/, "")
-            ).join("\n");
-        }
-
-        const lines = [];
-        for (const key of Object.keys(value)) {
-            const v = value[key];
-            if (v && typeof v === "object") {
-                lines.push(pad + key + ":");
-                lines.push(formatOptions(v, indent + 1));
-            } else {
-                lines.push(pad + key + ": " + String(v));
-            }
-        }
-        return lines.join("\n");
-    }
-
-    analyzeBtn.addEventListener("click", () => {
-        const html = input.value.trim();
-        tableBody.innerHTML = "";
-        allRows = [];
-        controlFilter.innerHTML = '<option value="">(Alle)</option>';
-        searchInput.value = "";
-
-        if (!html) {
-            alert("Bitte zuerst HTML einfügen.");
-            return;
-        }
-
-        const container = document.createElement("div");
-        container.innerHTML = html;
-
-        const elements = container.querySelectorAll("[id], [data-win-control], [data-win-options]");
-
-        if (elements.length === 0) {
-            const tr = document.createElement("tr");
-            const td = document.createElement("td");
-            td.colSpan = 5;
-            td.textContent = "Keine passenden Elemente gefunden.";
-            tr.appendChild(td);
-            tableBody.appendChild(tr);
-            return;
-        }
-
-        const controlSet = new Set();
-
-        elements.forEach((el) => {
-            const tag = el.tagName.toLowerCase();
-            const id = el.getAttribute("id") || "";
-            const control = el.getAttribute("data-win-control") || "";
-            const optionsRaw = el.getAttribute("data-win-options") || "";
-
-            const parsed = parseWinOptions(optionsRaw);
-            const optionsObj = parsed.obj;
-
-            if (control) {
-                controlSet.add(control);
-            }
-
-            allRows.push({
-                tag,
-                id,
-                control,
-                optionsRaw,
-                optionsObj
-            });
-        });
-
-        Array.from(controlSet).sort().forEach(ctrl => {
-            const opt = document.createElement("option");
-            opt.value = ctrl;
-            opt.textContent = ctrl;
-            controlFilter.appendChild(opt);
-        });
-
-        applyFiltersAndRender();
-    });
-
-    function applyFiltersAndRender() {
-        const searchQuery = searchInput.value.trim();
-        const selectedControl = controlFilter.value;
-
-        const filtered = allRows.filter(row => {
-            if (selectedControl && row.control !== selectedControl) {
-                return false;
-            }
-
-            if (!searchQuery) return true;
-
-            let colKey = null;
-            let value = null;
-            const idx = searchQuery.indexOf(":");
-
-            if (idx > -1) {
-                colKey = searchQuery.slice(0, idx).trim().toLowerCase();
-                value = searchQuery.slice(idx + 1).trim().toLowerCase();
-            } else {
-                value = searchQuery.toLowerCase();
-            }
-
-            const optionsText =
-                row.optionsObj ? formatOptions(row.optionsObj) : row.optionsRaw;
-
-            const columns = {
-                "tag": row.tag,
-                "id": row.id,
-                "data-win-control": row.control,
-                "data-win-options": optionsText
-            };
-
-            if (colKey) {
-                const key = Object.keys(columns).find(k => k.toLowerCase() === colKey);
-                if (!key) return false;
-                return (columns[key] || "").toString().toLowerCase().includes(value);
-            } else {
-                return Object.values(columns).some(v =>
-                    (v || "").toString().toLowerCase().includes(value)
-                );
-            }
-        });
-
-        renderTable(filtered);
-    }
-
-    function renderTable(rows) {
-        tableBody.innerHTML = "";
-
-        if (rows.length === 0) {
-            const tr = document.createElement("tr");
-            const td = document.createElement("td");
-            td.colSpan = 5;
-            td.textContent = "Keine Zeilen für die aktuelle Filter/Suche.";
-            tr.appendChild(td);
-            tableBody.appendChild(tr);
-            return;
-        }
-
-        rows.forEach((row, index) => {
-            const tr = document.createElement("tr");
-
-            const tdIndex = document.createElement("td");
-            tdIndex.textContent = index + 1;
-
-            const tdTag = document.createElement("td");
-            tdTag.textContent = row.tag;
-
-            const tdId = document.createElement("td");
-            tdId.textContent = row.id;
-
-            const tdCtrl = document.createElement("td");
-            tdCtrl.textContent = row.control;
-
-            const tdOpts = document.createElement("td");
-            tdOpts.className = "json-cell";
-
-            if (row.optionsObj) {
-                tdOpts.textContent = formatOptions(row.optionsObj);
-            } else {
-                tdOpts.textContent = row.optionsRaw;
-            }
-
-            tr.appendChild(tdIndex);
-            tr.appendChild(tdTag);
-            tr.appendChild(tdId);
-            tr.appendChild(tdCtrl);
-            tr.appendChild(tdOpts);
-
-            tableBody.appendChild(tr);
-        });
-    }
-
-    searchBtn.addEventListener("click", applyFiltersAndRender);
-    resetBtn.addEventListener("click", () => {
-        searchInput.value = "";
-        controlFilter.value = "";
-        applyFiltersAndRender();
-    });
-    controlFilter.addEventListener("change", applyFiltersAndRender);
-
-    searchInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            applyFiltersAndRender();
-        }
-    });
-})();
-</script>
+<!-- Dein ausgelagertes Script -->
+<script src="main.js"></script>
 
 </body>
 </html>
