@@ -6,8 +6,11 @@
     const resetBtn = document.getElementById("resetBtn");
     const controlFilter = document.getElementById("controlFilter");
     const tableBody = document.querySelector("#resultTable tbody");
-
     const tableHeaders = document.querySelectorAll("#resultTable thead th");
+
+    // Checkboxen zum Spalten toggeln
+    const toggleControlColumn = document.getElementById("toggleControlColumn");
+    const toggleOptionsColumn = document.getElementById("toggleOptionsColumn");
 
     // Sort-Schlüssel pro Spalte (#, tag, id, label, data-win-control, data-win-options)
     const headerSortKeys = [
@@ -38,20 +41,17 @@
 
     // --- sessionStorage: HTML-Eingabe speichern/wiederherstellen ---
 
-    // Beim Laden: gespeicherten Wert wiederherstellen
     const savedHtml = sessionStorage.getItem("htmlInputValue");
     if (savedHtml) {
         input.value = savedHtml;
     }
 
-    // Bei jeder Änderung im Textfeld speichern
     input.addEventListener("input", () => {
         sessionStorage.setItem("htmlInputValue", input.value);
     });
 
     // ----------------- Helper: data-win-options -----------------
 
-    // data-win-options parsen (JSON oder JS-Objektliteral)
     function parseWinOptions(raw) {
         if (!raw) return { obj: null, error: null };
         let s = raw.trim();
@@ -77,7 +77,6 @@
         }
     }
 
-    // JSON/Objekt schön als key:value darstellen
     function formatOptions(value, indent = 0) {
         const pad = "  ".repeat(indent);
 
@@ -159,7 +158,6 @@
         return copy;
     }
 
-    // Icons im Header aktualisieren
     function updateSortIcons() {
         tableHeaders.forEach((th, index) => {
             const sortKey = headerSortKeys[index];
@@ -180,6 +178,32 @@
         });
     }
 
+    // ----------------- Spalten-Sichtbarkeit -----------------
+
+    function applyColumnVisibility() {
+        const showControl = toggleControlColumn.checked;
+        const showOptions = toggleOptionsColumn.checked;
+
+        // Header für control / options
+        const thControl = document.querySelector(".col-control-header");
+        const thOptions = document.querySelector(".col-options-header");
+
+        if (thControl) {
+            thControl.style.display = showControl ? "" : "none";
+        }
+        if (thOptions) {
+            thOptions.style.display = showOptions ? "" : "none";
+        }
+
+        // Zellen in allen Zeilen
+        document.querySelectorAll("td.col-control-cell").forEach(td => {
+            td.style.display = showControl ? "" : "none";
+        });
+        document.querySelectorAll("td.col-options-cell").forEach(td => {
+            td.style.display = showOptions ? "" : "none";
+        });
+    }
+
     // ----------------- Analyse -----------------
 
     analyzeBtn.addEventListener("click", () => {
@@ -189,7 +213,6 @@
         controlFilter.innerHTML = '<option value="">(Alle)</option>';
         searchInput.value = "";
 
-        // aktuellen Inhalt auch explizit in sessionStorage sichern
         sessionStorage.setItem("htmlInputValue", input.value);
 
         sortState.column = null;
@@ -314,6 +337,7 @@
         const sorted = sortRows(filtered);
         renderTable(sorted);
         updateSortIcons();
+        applyColumnVisibility(); // nach dem Rendern anwenden
     }
 
     // ----------------- Rendering -----------------
@@ -352,16 +376,16 @@
             const tdLabel = document.createElement("td");
             tdLabel.textContent = row.label;
 
-            // data-win-control in <small>
+            // data-win-control in <small>, mit class für Sichtbarkeit
             const tdCtrl = document.createElement("td");
+            tdCtrl.classList.add("col-control-cell");
             const ctrlSmall = document.createElement("small");
-            ctrlSmall.classList.add('text-secondary');
             ctrlSmall.textContent = row.control;
             tdCtrl.appendChild(ctrlSmall);
 
-            // data-win-options (monospace / multi-line)
+            // data-win-options (monospace / multi-line), mit class
             const tdOpts = document.createElement("td");
-            tdOpts.className = "json-cell";
+            tdOpts.className = "json-cell col-options-cell";
             if (row.optionsObj) {
                 tdOpts.textContent = formatOptions(row.optionsObj);
             } else {
@@ -421,6 +445,13 @@
         }
     });
 
-    // initial Icons setzen
+    // Checkboxen steuern Spalten-Sichtbarkeit
+    toggleControlColumn.addEventListener("change", applyColumnVisibility);
+    toggleOptionsColumn.addEventListener("change", applyColumnVisibility);
+
+    // initial Icons & Spalten-Sichtbarkeit (default: beide Spalten ausgeblendet)
     updateSortIcons();
+    toggleControlColumn.checked = false;
+    toggleOptionsColumn.checked = false;
+    applyColumnVisibility();
 })();

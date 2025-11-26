@@ -62,16 +62,39 @@
         </div>
     </div>
 
-    <!-- Tabelle direkt, ohne .table-responsive, damit kein horizontales Scrollen erzwungen wird -->
+    <!-- NEU: Spalten-Checkboxen -->
+    <div class="row mb-3">
+        <div class="col">
+            <span class="me-2">Spalten:</span>
+
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox"
+                       id="toggleControlColumn">
+                <label class="form-check-label" for="toggleControlColumn">
+                    data-win-control anzeigen
+                </label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox"
+                       id="toggleOptionsColumn">
+                <label class="form-check-label" for="toggleOptionsColumn">
+                    data-win-options anzeigen
+                </label>
+            </div>
+        </div>
+    </div>
+
     <table id="resultTable" class="table table-sm table-bordered table-striped align-middle w-100">
         <thead class="table-light">
         <tr>
             <th style="width:4%">#</th>
             <th style="width:8%">tag</th>
-            <th style="width:20%">id</th>
+            <th style="width:18%">id</th>
             <th style="width:18%">label</th>
-            <th style="width:18%">data-win-control</th>
-            <th>data-win-options</th>
+            <!-- ths bekommen Klassen zur Steuerung -->
+            <th style="width:18%" class="col-control-header">data-win-control</th>
+            <th class="col-options-header">data-win-options</th>
         </tr>
         </thead>
         <tbody>
