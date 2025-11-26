@@ -340,9 +340,7 @@
 
             // tag in <code>
             const tdTag = document.createElement("td");
-            const tagCode = document.createElement("code");
-            tagCode.textContent = row.tag;
-            tdTag.appendChild(tagCode);
+            tdTag.textContent = row.tag;
 
             // id in <code>
             const tdId = document.createElement("td");
