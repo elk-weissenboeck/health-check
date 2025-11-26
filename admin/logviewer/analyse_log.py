@@ -4,7 +4,7 @@ from collections import defaultdict
 from datetime import datetime
 
 # Maximum sichtbare Elemente pro Kategorie
-MAX_VISIBLE = 20
+MAX_VISIBLE = 999
 
 # GUID erkennen
 GUID_PATTERN = re.compile(
@@ -16,21 +16,25 @@ LOG_PATTERN = re.compile(
     r'^(\d{4}-\d{2}-\d{2}T[0-9:.]+[+-][0-9:]+)\s+(?:\S+\s+)?\[(.*?)\]\s+(.*)$'
 )
 
-# Aktionen erkennen
+# Aktionen erkennen (ohne PDF-bezogene Begriffe!)
 ACTION_KEYWORDS = [
     "Send Mail",
     "SendMail",
     "Mail sent",
     "Workflow",
     "Start Workflow",
-    "PDF",
-    "Generate PDF",
     "Save",
     "Submit",
     "Store",
     "Update",
     "SQL",
     "Database",
+]
+
+# Generating-PDF-Kategorie
+PDF_KEYWORDS = [
+    "Generate PDF",
+    "PDF",
 ]
 
 # Uploads erkennen
@@ -70,11 +74,12 @@ def analyze_log(path, guid_filter=None):
     if guid_filter:
         guid_filter = guid_filter.lower()
 
-    # Neue Struktur (drei Kategorien!)
+    # Neue Struktur (vier Kategorien)
     forms = defaultdict(lambda: {
         "errors": [],
         "actions": [],
-        "uploads": []
+        "uploads": [],
+        "pdf": [],          # neu: Generating PDF
     })
 
     with open(path, "r", encoding="utf-8", errors="replace") as f:
@@ -106,6 +111,11 @@ def analyze_log(path, guid_filter=None):
             # Fehler?
             if any(err.lower() in msg_lower for err in ERROR_KEYWORDS):
                 forms[guid]["errors"].append((time_display, message_clean))
+                continue
+
+            # Generating PDF?
+            if any(kw.lower() in msg_lower for kw in PDF_KEYWORDS):
+                forms[guid]["pdf"].append((time_display, message_clean))
                 continue
 
             # Aktionen?
@@ -167,6 +177,7 @@ def print_report(forms, guid_filter=None):
         # Kategorien rendern
         print(render_category("Fehler", data["errors"]))
         print(render_category("Aktionen", data["actions"]))
+        print(render_category("Generating PDF", data["pdf"]))
         print(render_category("Uploads", data["uploads"]))
 
         return
@@ -178,6 +189,7 @@ def print_report(forms, guid_filter=None):
 
         print(render_category("Fehler", data["errors"]))
         print(render_category("Aktionen", data["actions"]))
+        print(render_category("Generating PDF", data["pdf"]))
         print(render_category("Uploads", data["uploads"]))
 
 
