@@ -2,16 +2,16 @@ body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/* Höhe und Lesbarkeit für das Eingabe-Textarea */
+/* Eingabe-Textarea */
 #htmlInput {
     min-height: 220px;
     font-size: 0.9rem;
 }
 
-/* Tabelle soll auf 100 % bleiben, Inhalte umbrechen */
+/* Tabelle auf 100% Breite, Inhalte umbrechen */
 table#resultTable {
     width: 100%;
-    table-layout: fixed;      /* sorgt dafür, dass Inhalte eher umbrechen */
+    table-layout: fixed;
 }
 
 table#resultTable th,
@@ -20,12 +20,20 @@ table#resultTable td {
     word-break: break-word;
 }
 
-table#resultTable thead th {
-    user-select: none; /* verhindert Markieren beim Klicken */
-}
-/* Darstellung der data-win-options-Zelle */
+/* data-win-options */
 .json-cell {
     white-space: pre-wrap;
     font-family: var(--bs-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
     font-size: 0.8rem;
+}
+
+/* data-hf-condition */
+.condition-cell {
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+}
+
+/* Header klickbar, aber nicht selektierbar */
+#resultTable thead th {
+    user-select: none;
 }

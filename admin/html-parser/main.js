@@ -11,30 +11,33 @@
     // Checkboxen zum Spalten toggeln
     const toggleControlColumn = document.getElementById("toggleControlColumn");
     const toggleOptionsColumn = document.getElementById("toggleOptionsColumn");
+    const toggleConditionColumn = document.getElementById("toggleConditionColumn");
 
-    // Sort-Schlüssel pro Spalte (#, tag, id, label, data-win-control, data-win-options)
+    // Sort-Schlüssel pro Spalte (#, tag, id, label, data-win-control, data-win-options, data-hf-condition)
     const headerSortKeys = [
         "index",
         "tag",
         "id",
         "label",
         "data-win-control",
-        "data-win-options"
+        "data-win-options",
+        "data-hf-condition"
     ];
 
-    // Label-Texte für Header (für die Darstellung mit Icons)
+    // Label-Texte für Header (für Icons)
     const headerLabels = [
         "#",
         "tag",
         "id",
         "label",
         "data-win-control",
-        "data-win-options"
+        "data-win-options",
+        "data-hf-condition"
     ];
 
     const sortState = {
-        column: null,     // z.B. "id", "label", ...
-        direction: "asc"  // "asc" | "desc"
+        column: null,
+        direction: "asc"
     };
 
     let allRows = [];
@@ -50,27 +53,25 @@
         sessionStorage.setItem("htmlInputValue", input.value);
     });
 
-    // ----------------- Helper: data-win-options -----------------
+    // ----------------- Helper: JSON / Objekt-Literale -----------------
 
-    function parseWinOptions(raw) {
+    function tryParseJsonLike(raw) {
         if (!raw) return { obj: null, error: null };
         let s = raw.trim();
         if (!s) return { obj: null, error: null };
 
-        // 1) JSON versuchen
+        // 1) JSON
         try {
             return { obj: JSON.parse(s), error: null };
-        } catch (e) {
-            // ignorieren, nächster Versuch
-        }
+        } catch (_) {}
 
-        // 2) JS-Expression (z.B. { fieldId: 'kopf_aktnr' })
+        // 2) JS-Expression (Objektliteral)
         try {
             if (!s.startsWith("{") && !s.startsWith("[")) {
                 s = "{" + s + "}";
             }
             const fn = new Function("return (" + s + ");");
-            const obj = fn(); // nur mit vertrauenswürdigem Input verwenden!
+            const obj = fn();
             return { obj, error: null };
         } catch (e) {
             return { obj: null, error: e };
@@ -104,6 +105,68 @@
         }
         return lines.join("\n");
     }
+
+    // ---- data-hf-condition Interpretation ----
+    function deriveThenFromElse(elseVal) {
+        if (elseVal == null) return "Standardzustand";
+
+        const v = String(elseVal).toLowerCase();
+
+        if (v === "invisible" || v === "unsichtbar") {
+            return "sichtbar";
+        }
+        if (v === "optional") {
+            return "Pflichtfeld (nicht optional)";
+        }
+
+        // Fallback – hier kannst du eigene Projektregeln ergänzen
+        return 'Standard (Gegenteil von "' + elseVal + '" unbekannt)';
+    }
+
+
+    function formatConditionObj(obj) {
+        if (!obj || typeof obj !== "object") return "";
+
+        const op = (obj.op || "and").toLowerCase();
+        const conds = Array.isArray(obj.cond) ? obj.cond : [];
+        const elseVal = obj.else;
+
+        const lines = [];
+
+        // WENN-Teil
+        if (conds.length) {
+            lines.push("WENN:");
+            conds.forEach((c, index) => {
+                if (!c || typeof c !== "object") return;
+
+                let prefix = "  "; // Einrückung
+                if (index > 0) {
+                    prefix += op === "or" ? "ODER " : "UND ";
+                }
+
+                const id = c.id || "?";
+                let valStr;
+
+                if (typeof c.val === "string") {
+                    valStr = `"${c.val}"`;
+                } else {
+                    valStr = String(c.val);
+                }
+
+                lines.push(prefix + id + " == " + valStr);
+            });
+        }
+
+        // DANN / SONST-Teil
+        if (elseVal !== undefined) {
+            const thenText = deriveThenFromElse(elseVal);
+            lines.push("DANN: " + thenText);
+            lines.push("SONST: " + String(elseVal));
+        }
+
+        return lines.join("\n");
+    }
+
 
     // ----------------- Sortierung -----------------
 
@@ -142,6 +205,10 @@
                 case "data-win-options":
                     va = a.optionsObj ? formatOptions(a.optionsObj) : (a.optionsRaw || "");
                     vb = b.optionsObj ? formatOptions(b.optionsObj) : (b.optionsRaw || "");
+                    break;
+                case "data-hf-condition":
+                    va = a.conditionText || "";
+                    vb = b.conditionText || "";
                     break;
                 default:
                     return 0;
@@ -183,24 +250,24 @@
     function applyColumnVisibility() {
         const showControl = toggleControlColumn.checked;
         const showOptions = toggleOptionsColumn.checked;
+        const showCondition = toggleConditionColumn.checked;
 
-        // Header für control / options
         const thControl = document.querySelector(".col-control-header");
         const thOptions = document.querySelector(".col-options-header");
+        const thCondition = document.querySelector(".col-condition-header");
 
-        if (thControl) {
-            thControl.style.display = showControl ? "" : "none";
-        }
-        if (thOptions) {
-            thOptions.style.display = showOptions ? "" : "none";
-        }
+        if (thControl) thControl.style.display = showControl ? "" : "none";
+        if (thOptions) thOptions.style.display = showOptions ? "" : "none";
+        if (thCondition) thCondition.style.display = showCondition ? "" : "none";
 
-        // Zellen in allen Zeilen
         document.querySelectorAll("td.col-control-cell").forEach(td => {
             td.style.display = showControl ? "" : "none";
         });
         document.querySelectorAll("td.col-options-cell").forEach(td => {
             td.style.display = showOptions ? "" : "none";
+        });
+        document.querySelectorAll("td.col-condition-cell").forEach(td => {
+            td.style.display = showCondition ? "" : "none";
         });
     }
 
@@ -227,12 +294,12 @@
         const container = document.createElement("div");
         container.innerHTML = html;
 
-        const elements = container.querySelectorAll("[id], [data-win-control], [data-win-options]");
+        const elements = container.querySelectorAll("[id], [data-win-control], [data-win-options], [data-hf-condition]");
 
         if (elements.length === 0) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
-            td.colSpan = 6;
+            td.colSpan = 7;
             td.textContent = "Keine passenden Elemente gefunden.";
             tr.appendChild(td);
             tableBody.appendChild(tr);
@@ -247,9 +314,14 @@
             const id = el.getAttribute("id") || "";
             const control = el.getAttribute("data-win-control") || "";
             const optionsRaw = el.getAttribute("data-win-options") || "";
+            const conditionRaw = el.getAttribute("data-hf-condition") || "";
 
-            const parsed = parseWinOptions(optionsRaw);
-            const optionsObj = parsed.obj;
+            const optionsParsed = tryParseJsonLike(optionsRaw);
+            const optionsObj = optionsParsed.obj;
+
+            const conditionParsed = tryParseJsonLike(conditionRaw);
+            const conditionObj = conditionParsed.obj;
+            const conditionText = conditionObj ? formatConditionObj(conditionObj) : conditionRaw;
 
             if (control) {
                 controlSet.add(control);
@@ -267,7 +339,10 @@
                 control,
                 label,
                 optionsRaw,
-                optionsObj
+                optionsObj,
+                conditionRaw,
+                conditionObj,
+                conditionText
             });
         });
 
@@ -315,7 +390,8 @@
                 id: row.id,
                 label: row.label,
                 "data-win-control": row.control,
-                "data-win-options": optionsText
+                "data-win-options": optionsText,
+                "data-hf-condition": row.conditionText || row.conditionRaw
             };
 
             if (colKey) {
@@ -337,7 +413,7 @@
         const sorted = sortRows(filtered);
         renderTable(sorted);
         updateSortIcons();
-        applyColumnVisibility(); // nach dem Rendern anwenden
+        applyColumnVisibility();
     }
 
     // ----------------- Rendering -----------------
@@ -348,7 +424,7 @@
         if (rows.length === 0) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
-            td.colSpan = 6;
+            td.colSpan = 7;
             td.textContent = "Keine Zeilen für die aktuelle Filter/Suche.";
             tr.appendChild(td);
             tableBody.appendChild(tr);
@@ -358,32 +434,28 @@
         rows.forEach((row, index) => {
             const tr = document.createElement("tr");
 
-            // # (laufende Nummer der angezeigten Zeile)
             const tdIndex = document.createElement("td");
             tdIndex.textContent = index + 1;
 
-            // tag in <code>
             const tdTag = document.createElement("td");
-            tdTag.textContent = row.tag;
+            const tagCode = document.createElement("code");
+            tagCode.textContent = row.tag;
+            tdTag.appendChild(tagCode);
 
-            // id in <code>
             const tdId = document.createElement("td");
             const idCode = document.createElement("code");
             idCode.textContent = row.id;
             tdId.appendChild(idCode);
 
-            // label
             const tdLabel = document.createElement("td");
             tdLabel.textContent = row.label;
 
-            // data-win-control in <small>, mit class für Sichtbarkeit
             const tdCtrl = document.createElement("td");
             tdCtrl.classList.add("col-control-cell");
             const ctrlSmall = document.createElement("small");
             ctrlSmall.textContent = row.control;
             tdCtrl.appendChild(ctrlSmall);
 
-            // data-win-options (monospace / multi-line), mit class
             const tdOpts = document.createElement("td");
             tdOpts.className = "json-cell col-options-cell";
             if (row.optionsObj) {
@@ -392,13 +464,18 @@
                 tdOpts.textContent = row.optionsRaw;
             }
 
-            // Reihenfolge: #, tag, id, label, data-win-control, data-win-options
+            const tdCond = document.createElement("td");
+            tdCond.className = "condition-cell col-condition-cell";
+            tdCond.textContent = row.conditionText || row.conditionRaw;
+
+            // Reihenfolge: #, tag, id, label, data-win-control, data-win-options, data-hf-condition
             tr.appendChild(tdIndex);
             tr.appendChild(tdTag);
             tr.appendChild(tdId);
             tr.appendChild(tdLabel);
             tr.appendChild(tdCtrl);
             tr.appendChild(tdOpts);
+            tr.appendChild(tdCond);
 
             tableBody.appendChild(tr);
         });
@@ -445,13 +522,15 @@
         }
     });
 
-    // Checkboxen steuern Spalten-Sichtbarkeit
     toggleControlColumn.addEventListener("change", applyColumnVisibility);
     toggleOptionsColumn.addEventListener("change", applyColumnVisibility);
+    toggleConditionColumn.addEventListener("change", applyColumnVisibility);
 
-    // initial Icons & Spalten-Sichtbarkeit (default: beide Spalten ausgeblendet)
-    updateSortIcons();
+    // initialer Zustand: alle 3 Detailspalten ausgeblendet
     toggleControlColumn.checked = false;
     toggleOptionsColumn.checked = false;
+    toggleConditionColumn.checked = false;
+
+    updateSortIcons();
     applyColumnVisibility();
 })();
