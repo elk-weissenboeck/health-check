@@ -34,6 +34,10 @@ if (!array_key_exists($selectedMailbox, $mailboxes)) {
 // Optionaler Betreff-Filter aus GET-Parameter ?subject=...
 $subjectFilter = isset($_GET['subject']) ? trim($_GET['subject']) : '';
 
+$emails      = [];
+$errorMessage = '';
+$hasSearched  = !empty($_GET); // true, sobald das Formular einmal abgeschickt wurde
+
 /****************************************************
  * Funktion: Access Token holen (Client Credentials)
  ****************************************************/
@@ -81,7 +85,7 @@ function getSentEmails($accessToken, $mailboxUserPrincipalName, $subjectFilter =
 
     // Basis-Parameter
     $params = [
-        '$select' => 'subject,toRecipients,hasAttachments,sentDateTime',
+        '$select' => 'subject,toRecipients,ccRecipients,hasAttachments,sentDateTime',
         '$top'    => 50
     ];
 
@@ -132,18 +136,20 @@ function getSentEmails($accessToken, $mailboxUserPrincipalName, $subjectFilter =
 }
 
 
-
 /****************************************************
- * Main: Token holen + Mails ausgeben
+ * Nur suchen, wenn das Formular abgeschickt wurde
  ****************************************************/
-try {
-    $accessToken = getAccessToken($tenantId, $clientId, $clientSecret);
-    $emails = getSentEmails($accessToken, $selectedMailbox, $subjectFilter);
-} catch (Exception $e) {
-    $errorMessage = $e->getMessage();
-    $emails = [];
+if ($hasSearched) {
+    try {
+        $accessToken = getAccessToken($tenantId, $clientId, $clientSecret);
+        $emails = getSentEmails($accessToken, $selectedMailbox, $subjectFilter);
+    } catch (Exception $e) {
+        $errorMessage = $e->getMessage();
+        $emails = [];
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -211,14 +217,16 @@ try {
                     <tr>
                         <th scope="col">Betreff</th>
                         <th scope="col">Empfänger</th>
+                        <th scope="col">CC</th>
                         <th scope="col">Anhang</th>
                         <th scope="col">Gesendet am</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     <?php if (empty($emails)): ?>
                         <tr>
-                            <td colspan="4" class="text-center py-3">
+                            <td colspan="5" class="text-center py-3">
                                 Keine Ergebnisse gefunden.
                             </td>
                         </tr>
@@ -240,6 +248,24 @@ try {
                                             }
                                         }
                                         echo implode('<br>', $recipients);
+                                    }
+                                    ?>
+                                </td>
+                                <!-- CC -->
+                                <td>
+                                    <?php
+                                    if (!empty($mail['ccRecipients'])) {
+                                        $ccList = [];
+                                        foreach ($mail['ccRecipients'] as $rec) {
+                                            $name = $rec['emailAddress']['name'] ?? '';
+                                            $addr = $rec['emailAddress']['address'] ?? '';
+                                            if ($name && $addr) {
+                                                $ccList[] = htmlspecialchars("$name <$addr>");
+                                            } elseif ($addr) {
+                                                $ccList[] = htmlspecialchars($addr);
+                                            }
+                                        }
+                                        echo implode('<br>', $ccList);
                                     }
                                     ?>
                                 </td>
