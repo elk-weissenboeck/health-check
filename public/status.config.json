@@ -92,7 +92,7 @@
           "active": true,
           "key": "levatis-prod",
           "label": "TWZConnector",
-          "url": "/rs2/twz-connector.php",
+          "url": "rs2/twz-connector.php", 
           "method": "GET",
           "warning": null,
           "owner": { "upn": "juergen.ruso@elk.at" },

@@ -3,9 +3,9 @@ declare(strict_types=1);
 define('APP_ROOT', dirname(__DIR__)); // -> Projektwurzel neben vendor/, public/, config/
 require_once APP_ROOT . '/public/vendor/autoload.php';
 
-$BOOTSTRAP_CSS = '../vendor/twbs/bootstrap/dist/css/bootstrap.min.css';
-$BOOTSTRAP_JS  = '../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js';
-$BI_CSS        = '../vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
+$BOOTSTRAP_CSS = 'vendor/twbs/bootstrap/dist/css/bootstrap.min.css';
+$BOOTSTRAP_JS  = 'vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js';
+$BI_CSS        = 'vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
 ?><!doctype html>
 <html lang="de" data-bs-theme="auto">
 <head>
