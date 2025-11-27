@@ -35,6 +35,7 @@ if (!array_key_exists($selectedMailbox, $mailboxes)) {
 $subjectFilter = isset($_GET['subject']) ? trim($_GET['subject']) : '';
 
 $emails      = [];
+$bounceMails  = [];
 $errorMessage = '';
 $hasSearched  = !empty($_GET); // true, sobald das Formular einmal abgeschickt wurde
 
@@ -137,6 +138,74 @@ function getSentEmails($accessToken, $mailboxUserPrincipalName, $subjectFilter =
     return isset($data['value']) ? $data['value'] : [];
 }
 
+function getUndeliverableInboxMessages(string $accessToken, string $userPrincipalName, int $max = 50): array
+{
+    $baseUrl = 'https://graph.microsoft.com/v1.0/users/' . rawurlencode($userPrincipalName) . '/mailFolders/inbox/messages';
+
+    // Wir holen z.B. die letzten 200 Nachrichten und filtern dann clientseitig
+    $params = [
+        '$select'  => 'subject,receivedDateTime',
+        '$top'     => max($max * 3, 50), // etwas großzügiger holen, um nach dem Filtern noch genug Einträge zu haben
+        '$orderby' => 'receivedDateTime desc'
+        // KEIN $filter mehr -> vermeidet InefficientFilter
+    ];
+
+    $url = $baseUrl . '?' . http_build_query($params);
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $accessToken,
+            'Accept: application/json'
+        ],
+        CURLOPT_RETURNTRANSFER => true
+    ]);
+    $response = curl_exec($ch);
+
+    if ($response === false) {
+        throw new Exception('Fehler beim Abruf der unzustellbaren Nachrichten: ' . curl_error($ch));
+    }
+
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode < 200 || $httpCode >= 300) {
+        throw new Exception('Fehler beim Abruf der unzustellbaren Nachrichten (HTTP ' . $httpCode . '): ' . $response);
+    }
+
+    $data = json_decode($response, true);
+    $messages = $data['value'] ?? [];
+
+    // Clientseitige Filterung nach typischen Betreff-Fragmenten
+    $needles = [
+        'unzustellbar',
+        'undeliverable',
+        'delivery has failed',
+        'mail delivery subsystem',
+        'mail delivery failed',
+    ];
+
+    $result = [];
+    foreach ($messages as $msg) {
+        $subject = $msg['subject'] ?? '';
+        $lower   = mb_strtolower((string)$subject);
+
+        foreach ($needles as $needle) {
+            if ($needle !== '' && mb_strpos($lower, mb_strtolower($needle)) !== false) {
+                $result[] = $msg;
+                break;
+            }
+        }
+
+        if (count($result) >= $max) {
+            break;
+        }
+    }
+
+    return $result;
+}
+
+
 
 /****************************************************
  * Nur suchen, wenn das Formular abgeschickt wurde
@@ -144,10 +213,17 @@ function getSentEmails($accessToken, $mailboxUserPrincipalName, $subjectFilter =
 if ($hasSearched) {
     try {
         $accessToken = getAccessToken($tenantId, $clientId, $clientSecret);
+
+        // Gesendete Mails
         $emails = getSentEmails($accessToken, $selectedMailbox, $subjectFilter);
+
+        // NEU: unzustellbare Mails im Posteingang
+        $bounceMails = getUndeliverableInboxMessages($accessToken, $selectedMailbox, 50);
+
     } catch (Exception $e) {
         $errorMessage = $e->getMessage();
-        $emails = [];
+        $emails      = [];
+        $bounceMails = [];
     }
 }
 ?>
@@ -307,7 +383,7 @@ if ($hasSearched) {
                                 if (!empty($mail['attachments'])) {
                                     foreach ($mail['attachments'] as $att) {
                                         if (!empty($att['name'])) {
-                                            echo '<div class="attachment-line"><span class="badge bg-info text-dark badge-mail">'.htmlspecialchars($att['name']).'</span></div>';
+                                            echo '<div class="attachment-line"><span class="badge bg-info text-light badge-mail">'.htmlspecialchars($att['name']).'</span></div>';
                                         }
                                     }
                                 } else {
@@ -340,6 +416,53 @@ if ($hasSearched) {
             </div>
         </div>
     </div>
+
+    <?php if ($hasSearched): ?>
+        
+        <h2 class="mt-4">Unzustellbare E-Mails im Posteingang</h2>
+
+        <div class="table-responsive" style="min-width: 1200px;">
+            <table class="table table-hover table-striped table-bordered align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th scope="col">Betreff</th>
+                    <th scope="col">Eingegangen am</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($bounceMails)): ?>
+                    <tr>
+                        <td colspan="2" class="text-center py-3">
+                            Keine unzustellbaren Nachrichten gefunden.
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($bounceMails as $mail): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($mail['subject'] ?? ''); ?></td>
+                            <td>
+                                <?php
+                                if (!empty($mail['receivedDateTime'])) {
+                                    echo '<span class="nowrap-date">';
+                                    try {
+                                        $dt = new DateTime($mail['receivedDateTime']);
+                                        echo $dt->format('d.m.Y H:i');
+                                    } catch (Exception $e) {
+                                        echo htmlspecialchars($mail['receivedDateTime']);
+                                    }
+                                    echo '</span>';
+                                }
+                                ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+    <?php endif; ?>
+
 
 </div>
 
