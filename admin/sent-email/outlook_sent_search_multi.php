@@ -86,8 +86,10 @@ function getSentEmails($accessToken, $mailboxUserPrincipalName, $subjectFilter =
     // Basis-Parameter
     $params = [
         '$select' => 'subject,toRecipients,ccRecipients,hasAttachments,sentDateTime',
+        '$expand' => 'attachments($select=name)',
         '$top'    => 50
     ];
+
 
     if ($subjectFilter === '') {
         // Ohne Filter: ganz normal nach Datum sortieren
@@ -160,6 +162,37 @@ if ($hasSearched) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
+    <style>
+        .badge-mail {
+            font-size: 0.8rem;
+        }
+
+        .badge-mail-to {
+            /* Normale Empfänger */
+        }
+
+        .badge-mail-cc {
+            background-color: transparent;
+            border: 1px solid #6c757d; /* Bootstrap secondary */
+            color: #6c757d;
+        }
+
+        .recipient-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+        }
+        
+        .attachment-line {
+            margin-bottom: 0.15rem;
+        }
+
+        .nowrap-date {
+            white-space: nowrap;
+            display: inline-block;
+        }
+    </style>
+
 </head>
 <body class="bg-light">
 
@@ -211,13 +244,12 @@ if ($hasSearched) {
             <?php endif; ?>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive" style="min-width: 1200px;">
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light">
                     <tr>
                         <th scope="col">Betreff</th>
                         <th scope="col">Empfänger</th>
-                        <th scope="col">CC</th>
                         <th scope="col">Anhang</th>
                         <th scope="col">Gesendet am</th>
                     </tr>
@@ -226,65 +258,81 @@ if ($hasSearched) {
                     <tbody>
                     <?php if (empty($emails)): ?>
                         <tr>
-                            <td colspan="5" class="text-center py-3">
+                            <td colspan="4" class="text-center py-3">
                                 Keine Ergebnisse gefunden.
                             </td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($emails as $mail): ?>
                             <tr>
+                                <!-- Betreff -->
                                 <td><?php echo htmlspecialchars($mail['subject'] ?? ''); ?></td>
+
+                                <!-- Empfänger + CC in einer Spalte -->
                                 <td>
-                                    <?php
-                                    if (!empty($mail['toRecipients'])) {
+                                    <!-- An: Zeile -->
+                                    <div class="mb-1">
+                                        <span class="recipient-label fs-6">An:</span>
+                                        <?php
                                         $recipients = [];
-                                        foreach ($mail['toRecipients'] as $rec) {
-                                            $name = $rec['emailAddress']['name'] ?? '';
+                                        foreach ($mail['toRecipients'] ?? [] as $rec) {
                                             $addr = $rec['emailAddress']['address'] ?? '';
-                                            if ($name && $addr) {
-                                                $recipients[] = htmlspecialchars("$name <$addr>");
-                                            } elseif ($addr) {
-                                                $recipients[] = htmlspecialchars($addr);
+                                            if ($addr) {
+                                                $recipients[] = '<span class="badge badge-mail badge-mail-to bg-secondary me-1">'.htmlspecialchars($addr).'</span>';
                                             }
                                         }
-                                        echo implode('<br>', $recipients);
-                                    }
-                                    ?>
-                                </td>
-                                <!-- CC -->
-                                <td>
-                                    <?php
-                                    if (!empty($mail['ccRecipients'])) {
+                                        echo $recipients ? implode(' ', $recipients) : '<span class="text-muted">–</span>';
+                                        ?>
+                                    </div>
+
+                                    <!-- CC: Zeile -->
+                                    <div>
+                                        <span class="recipient-label fs-6">CC:</span>
+                                        <?php
                                         $ccList = [];
-                                        foreach ($mail['ccRecipients'] as $rec) {
-                                            $name = $rec['emailAddress']['name'] ?? '';
+                                        foreach ($mail['ccRecipients'] ?? [] as $rec) {
                                             $addr = $rec['emailAddress']['address'] ?? '';
-                                            if ($name && $addr) {
-                                                $ccList[] = htmlspecialchars("$name <$addr>");
-                                            } elseif ($addr) {
-                                                $ccList[] = htmlspecialchars($addr);
+                                            if ($addr) {
+                                                $ccList[] = '<span class="badge badge-mail badge-mail-cc me-1">'.htmlspecialchars($addr).'</span>';
                                             }
                                         }
-                                        echo implode('<br>', $ccList);
-                                    }
-                                    ?>
+                                        echo $ccList ? implode(' ', $ccList) : '<span class="text-muted">–</span>';
+                                        ?>
+                                    </div>
                                 </td>
+
+                                <!-- Anhang -->
                                 <td>
-                                    <?php echo !empty($mail['hasAttachments']) ? 'Ja' : 'Nein'; ?>
-                                </td>
-                                <td>
-                                    <?php
-                                    if (!empty($mail['sentDateTime'])) {
-                                        try {
-                                            $dt = new DateTime($mail['sentDateTime']);
-                                            echo htmlspecialchars($dt->format('d.m.Y H:i:s'));
-                                        } catch (Exception $e) {
-                                            echo htmlspecialchars($mail['sentDateTime']);
+                                <?php
+                                if (!empty($mail['attachments'])) {
+                                    foreach ($mail['attachments'] as $att) {
+                                        if (!empty($att['name'])) {
+                                            echo '<div class="attachment-line"><span class="badge bg-info text-dark badge-mail">'.htmlspecialchars($att['name']).'</span></div>';
                                         }
                                     }
-                                    ?>
+                                } else {
+                                    echo '<span class="text-muted">–</span>';
+                                }
+                                ?>
+                                </td>
+
+                                <!-- Gesendet am -->
+                                <td>
+                                <?php
+                                if (!empty($mail['sentDateTime'])) {
+                                    echo '<span class="nowrap-date">';
+                                    try {
+                                        $dt = new DateTime($mail['sentDateTime']);
+                                        echo $dt->format('d.m.Y H:i');
+                                    } catch (Exception $e) {
+                                        echo htmlspecialchars($mail['sentDateTime']);
+                                    }
+                                    echo '</span>';
+                                }
+                                ?>
                                 </td>
                             </tr>
+
                         <?php endforeach; ?>
                     <?php endif; ?>
                     </tbody>
