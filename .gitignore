@@ -1,11 +1,11 @@
 secrets.php
 vendor/
 cache/*.json
+public/config/backup/*.json
 public/proxy/cache/*.json
 public/entra/cache/*.json
 public/aktspeichern/logstore/*
 public/aktspeichern/presence.sqlite
-
 # ──────────────────────────────────────────
 # Python Bytecode
 # ──────────────────────────────────────────

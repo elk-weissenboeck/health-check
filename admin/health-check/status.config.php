@@ -1,0 +1,177 @@
+<?php $secrets = require dirname(__DIR__) . '/../secrets.php'; ?>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>status.config.json Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Ace Editor von CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.0/ace.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      padding: 0.75rem 1rem;
+      background: #1f2933;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      font-size: 1rem;
+      margin: 0;
+    }
+    #buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    button {
+      border: none;
+      border-radius: 4px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    button#reload {
+      background: #374151;
+      color: #e5e7eb;
+    }
+    button#validate {
+      background: #2563eb;
+      color: #fff;
+    }
+    button#save {
+      background: #16a34a;
+      color: #fff;
+    }
+    #editor {
+      flex: 1;
+      width: 100%;
+    }
+    #status {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    #status.ok {
+      color: #166534;
+      background: #dcfce7;
+    }
+    #status.error {
+      color: #991b1b;
+      background: #fee2e2;
+    }
+    #status.info {
+      color: #1e3a8a;
+      background: #dbeafe;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>status.config.json – Browser Editor</h1>
+    <div id="buttons">
+      <button id="reload">Neu laden</button>
+      <button id="validate">Syntax prüfen</button>
+      <button id="save">Speichern</button>
+    </div>
+  </header>
+
+  <div id="editor"></div>
+  <div id="status" class="info">Lade status.config.json …</div>
+
+  <script>
+    const statusEl = document.getElementById("status");
+
+    function setStatus(message, type = "info") {
+      statusEl.textContent = message;
+      statusEl.className = "";
+      statusEl.classList.add(type);
+    }
+
+    // Ace Editor initialisieren
+    const editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/json");
+    editor.session.setUseWorker(true); // zeigt Syntaxfehler im Editor an
+    editor.session.setTabSize(2);
+    editor.session.setUseSoftTabs(true);
+    editor.setOptions({
+      fontSize: "13px"
+    });
+
+    async function loadConfig() {
+      try {
+        setStatus("Lade status.config.json …", "info");
+        const res = await fetch("/dashboard/config/status-config.php");
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status + " – " + res.statusText);
+        }
+        const text = await res.text();
+        editor.setValue(text, -1); // -1 = Cursor nach oben
+        setStatus("Datei erfolgreich geladen.", "ok");
+      } catch (err) {
+        console.error(err);
+        setStatus("Fehler beim Laden: " + err.message, "error");
+      }
+    }
+
+    function validateJson() {
+      const content = editor.getValue();
+      try {
+        JSON.parse(content);
+        setStatus("JSON ist gültig.", "ok");
+        return true;
+      } catch (err) {
+        setStatus("JSON-Fehler: " + err.message, "error");
+        return false;
+      }
+    }
+
+    async function saveConfig() {
+      const isValid = validateJson();
+      if (!isValid) {
+        return;
+      }
+
+      const content = editor.getValue();
+
+      try {
+        setStatus("Speichere …", "info");
+        const res = await fetch("/dashboard/config/status-config.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Auth-Token": "<?= $secrets['GENERAL_AUTH_TOKEN'] ?>"
+          },
+          body: content
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          const msg = data.error || res.statusText;
+          throw new Error(msg);
+        }
+
+        setStatus("Erfolgreich gespeichert.", "ok");
+      } catch (err) {
+        console.error(err);
+        setStatus("Fehler beim Speichern: " + err.message, "error");
+      }
+    }
+
+    document.getElementById("reload").addEventListener("click", loadConfig);
+    document.getElementById("validate").addEventListener("click", validateJson);
+    document.getElementById("save").addEventListener("click", saveConfig);
+
+    // initialer Load
+    loadConfig();
+  </script>
+</body>
+</html>
