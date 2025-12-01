@@ -300,6 +300,7 @@ try {
             white-space: nowrap;
             display: inline-block;
         }
+        
     </style>
 
 </head>
@@ -354,26 +355,29 @@ try {
                 <th scope="col">Betreff</th>
                 <th scope="col">Empfänger (aus Meldung)</th>
                 <th scope="col">Eingegangen am</th>
+                <th scope="col">Details</th>
             </tr>
             </thead>
             <tbody>
             <?php if (empty($bounceMails)): ?>
                 <tr>
-                    <td colspan="3" class="text-center py-3">
+                    <td colspan="4" class="text-center py-3">
                         Keine unzustellbaren Nachrichten gefunden.
                     </td>
                 </tr>
             <?php else: ?>
+                <?php $row = 0; ?>
                 <?php foreach ($bounceMails as $mail): ?>
+                    <?php $row++; $modalId = 'mailBodyModal-' . $row; ?>
+
                     <tr>
                         <!-- Betreff -->
                         <td><?php echo htmlspecialchars($mail['subject'] ?? ''); ?></td>
 
-                        <!-- Empfängerliste aus bodyPreview -->
+                        <!-- Empfängerliste -->
                         <td>
                             <?php
                             $recipients = extractBounceRecipients($mail, $selectedMailbox);
-
                             if (!empty($recipients)) {
                                 foreach ($recipients as $addr) {
                                     echo '<span class="badge badge-mail-bounce me-1">'.htmlspecialchars($addr).'</span>';
@@ -384,8 +388,7 @@ try {
                             ?>
                         </td>
 
-
-                        <!-- Datum, nicht umbrechen -->
+                        <!-- Datum -->
                         <td>
                             <?php
                             if (!empty($mail['receivedDateTime'])) {
@@ -400,22 +403,76 @@ try {
                             }
                             ?>
                         </td>
+
+                        <!-- Details-Button -->
+                        <td>
+                            <?php if (!empty($mail['body']['content'])): ?>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-secondary view-body-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#bodyModal"
+                                        data-body-id="body-<?php echo $row; ?>">
+                                    Anzeigen
+                                </button>
+
+                                <!-- versteckter Container mit dem HTML-Body -->
+                                <div id="body-<?php echo $row; ?>" class="d-none">
+                                    <?php echo $mail['body']['content']; ?>
+                                </div>
+                            <?php else: ?>
+                                <span class="text-muted">–</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
+
                 <?php endforeach; ?>
             <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-
-
-
 </div>
 
+    
 <!-- Bootstrap 5 JS (optional, z.B. für Dropdowns/Modals) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+    <!-- Globales Modal für Mail-Body -->
+    <div class="modal fade" id="bodyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nachrichtendetails</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="bodyModalContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.view-body-btn');
+        if (!btn) return;
+
+        const bodyId = btn.getAttribute('data-body-id');
+        const src = document.getElementById(bodyId);
+        const target = document.getElementById('bodyModalContent');
+
+        if (src && target) {
+            target.innerHTML = src.innerHTML;
+        } else if (target) {
+            target.innerHTML = '<em>Kein Inhalt vorhanden.</em>';
+        }
+    });
+    </script>
 
 </body>
 </html>
