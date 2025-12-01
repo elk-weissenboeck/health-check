@@ -80,7 +80,7 @@ function getAccessToken($tenantId, $clientId, $clientSecret) {
 
 
 
-function getUndeliverableInboxMessages(string $accessToken, string $userPrincipalName, int $max = 50): array
+function getUndeliverableInboxMessages(string $accessToken, string $userPrincipalName, string $subjectFilter = '', int $max = 50): array
 {
     $baseUrl = 'https://graph.microsoft.com/v1.0/users/' . rawurlencode($userPrincipalName) . '/mailFolders/inbox/messages';
 
@@ -116,7 +116,6 @@ function getUndeliverableInboxMessages(string $accessToken, string $userPrincipa
     $data     = json_decode($response, true);
     $messages = $data['value'] ?? [];
 
-    // wie gehabt: nach Betreff filtern
     $needles = [
         'unzustellbar',
         'undeliverable',
@@ -125,17 +124,31 @@ function getUndeliverableInboxMessages(string $accessToken, string $userPrincipa
         'mail delivery failed',
     ];
 
+    $subjectFilterLower = mb_strtolower($subjectFilter);
+
     $result = [];
     foreach ($messages as $msg) {
         $subject = $msg['subject'] ?? '';
         $lower   = mb_strtolower((string)$subject);
 
+        // 1) Nur NDRs berücksichtigen
+        $isUndeliverable = false;
         foreach ($needles as $needle) {
             if ($needle !== '' && mb_strpos($lower, mb_strtolower($needle)) !== false) {
-                $result[] = $msg;
+                $isUndeliverable = true;
                 break;
             }
         }
+        if (!$isUndeliverable) {
+            continue;
+        }
+
+        // 2) Optional: Betreff-Filter anwenden
+        if ($subjectFilterLower !== '' && mb_strpos($lower, $subjectFilterLower) === false) {
+            continue;
+        }
+
+        $result[] = $msg;
 
         if (count($result) >= $max) {
             break;
@@ -243,7 +256,7 @@ function extractRecipientAddressFromBodyHtml(string $html): array
 try {
     $accessToken = getAccessToken($tenantId, $clientId, $clientSecret);
 
-    $bounceMails = getUndeliverableInboxMessages($accessToken, $selectedMailbox, 50);
+    $bounceMails = getUndeliverableInboxMessages($accessToken, $selectedMailbox, $subjectFilter, 50);
 
 } catch (Exception $e) {
     $errorMessage = $e->getMessage();
@@ -307,7 +320,7 @@ try {
 <body class="bg-light">
 
 <div class="container py-4">
-    <h1 class="mb-4">Gesendete Outlook-Mails durchsuchen</h1>
+    <h2 class="mt-4">Unzustellbare E-Mails im Posteingang</h2>
 
     <?php if (!empty($errorMessage)): ?>
         <div class="alert alert-danger" role="alert">
@@ -346,7 +359,6 @@ try {
         </div>
     </form>
         
-    <h2 class="mt-4">Unzustellbare E-Mails im Posteingang</h2>
 
     <div class="table-responsive" style="min-width: 600px;">
         <table class="table table-sm table-striped table-bordered align-middle">
