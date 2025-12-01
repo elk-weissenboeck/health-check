@@ -95,6 +95,70 @@ export class App {
     this.view.updateTimestamp();
   }
 
+async refreshService(groupKey, serviceKey) {
+  const g = this.groups.find(x => x.key === groupKey);
+  if (!g) return;
+
+  const s = g.services.find(x => x.key === serviceKey);
+  if (!s) return;
+
+  // inaktive Services wie gehabt behandeln
+  if (s.active === false) {
+    const pill = document.getElementById(`badge-${g.key}-${s.key}`);
+    if (pill) {
+      pill.className = 'status-pill status-inactive';
+      pill.textContent = 'I';
+    }
+
+    const latency = document.getElementById(`latency-${g.key}-${s.key}`);
+    if (latency) latency.textContent = '—';
+    return;
+  }
+
+  // --- URL bauen: ggf. /dashboard/ + nocache=1 anhängen ---
+  let baseUrl = s.url || '';
+
+  // Relative URLs (ohne http/https und ohne führenden Slash) mit /dashboard/ prefixen
+  const isAbsolute = /^https?:\/\//i.test(baseUrl) || baseUrl.startsWith('/');
+  if (!isAbsolute) {
+    // doppelte Slashes vermeiden
+    baseUrl = '/dashboard/' + baseUrl.replace(/^\/+/, '');
+  }
+
+  // nocache=1 anhängen
+  const separator = baseUrl.includes('?') ? '&' : '?';
+  const urlWithNoCache = `${baseUrl}${separator}nocache=1`;
+
+  const r = await this.checker.check(urlWithNoCache, s.method, s.expect);
+
+  this.view.setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value, s);
+  this.details.renderServiceFields(g.key, s, r.data);
+  this.details.renderServiceHeaders(g.key, s, r.headers);
+
+  this.healthResults[g.key] ??= {};
+  this.healthResults[g.key][s.key] = r;
+
+  // Gruppen-Status neu berechnen
+  const groupResultMap = this.healthResults[g.key] || {};
+  const anyNok = g.services.some((svc) => {
+    const res = groupResultMap[svc.key];
+    return res ? !res.ok : false;
+  });
+  const anyWarn = g.services.some((svc) => !!svc.warning);
+  const state = anyNok ? 'nok' : (anyWarn ? 'warn' : 'ok');
+  this.view.setGroupStatus(g.key, state);
+
+  // Overall-Status neu berechnen
+  const hasNok = Object.values(this.healthResults).some(groupMap =>
+    Object.values(groupMap).some(res => !res.ok)
+  );
+  this.view.setOverall(!hasNok);
+  this.view.updateTimestamp();
+}
+
+
+
+
   expandAll() { this.groups.forEach(g => Collapse.showById(`collapse-${g.key}`)); }
   collapseAll() { this.groups.forEach(g => Collapse.hideById(`collapse-${g.key}`)); }
 

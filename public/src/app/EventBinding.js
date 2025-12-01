@@ -57,6 +57,16 @@ export class EventBinding {
           this.app.showOwner(g, s);
           return;
         }
+        
+        // Refresh (nur dieser Service)
+        if (btn.classList.contains('refresh-btn')) {
+          const g = btn.getAttribute('data-refresh-group');
+          const s = btn.getAttribute('data-refresh-service');
+          if (g && s && typeof this.app.refreshService === 'function') {
+            this.app.refreshService(g, s);
+          }
+          return;
+        }
       });
     }
 

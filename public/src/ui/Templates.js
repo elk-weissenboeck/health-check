@@ -52,6 +52,15 @@ export class Templates {
                         </span>
                         
                         <span class="btn-icon-group">
+                          <button
+                            class="btn-icon refresh-btn"
+                            title="Diesen Service aktualisieren"
+                            data-refresh-group="${group.key}"
+                            data-refresh-service="${s.key}"
+                          >
+                            <i class="bi bi-arrow-repeat"></i>
+                          </button>
+
                           <!-- Owner -->
                           <button
                             type="button"
