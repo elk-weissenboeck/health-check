@@ -35,16 +35,22 @@ export class App {
       this.groups = cfg.groups; // bewusst nicht normalisieren
       this.maintenance = cfg.maintenance || { active: false };
 
+      // NEU: Wartungsbanner sofort nach Laden der Config anzeigen
+      this.showMaintenanceBanner();
+
       this.renderer.renderGroups(this.groups);
       this.applyOptions?.(); // wird von OptionsManager gesetzt
       await this.refreshAll();
-      this.showMaintenanceBanner();
+
+      // ALT: hier war vorher showMaintenanceBanner(); – kann jetzt entfallen
+      // this.showMaintenanceBanner();
     } catch (e) {
       console.error(e);
       const gc = document.getElementById('groupsContainer');
       if (gc) gc.innerHTML = '<div class="alert alert-danger">Konfiguration konnte nicht geladen werden.</div>';
     }
   }
+
 
   async refreshAll() {
     const groupStates = await Promise.all(this.groups.map(async (g) => {
