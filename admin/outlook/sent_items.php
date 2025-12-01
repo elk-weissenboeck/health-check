@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$secrets = require dirname(__DIR__) . '/sent-email/secrets.php';
+$secrets = require dirname(__DIR__) . '/outlook/secrets.php';
 
 
 /****************************************************
