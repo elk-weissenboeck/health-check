@@ -327,12 +327,13 @@ if ($hasSearched) {
                                 if (!empty($mail['sentDateTime'])) {
                                     echo '<span class="nowrap-date">';
                                     try {
-                                        $dt = new DateTime($mail['sentDateTime']);
+                                        $dt = new DateTime($mail['sentDateTime'],new DateTimeZone('UTC'));
+                                        $dt->setTimezone(new DateTimeZone('Europe/Vienna'));
                                         echo $dt->format('d.m.Y H:i');
                                     } catch (Exception $e) {
                                         echo htmlspecialchars($mail['sentDateTime']);
                                     }
-                                    echo '</span>';
+                                    echo '</span>'; 
                                 }
                                 ?>
                                 </td>

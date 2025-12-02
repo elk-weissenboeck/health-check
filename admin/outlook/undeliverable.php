@@ -406,7 +406,8 @@ try {
                             if (!empty($mail['receivedDateTime'])) {
                                 echo '<span class="nowrap-date">';
                                 try {
-                                    $dt = new DateTime($mail['receivedDateTime']);
+                                    $dt = new DateTime($mail['receivedDateTime'],new DateTimeZone('UTC'));
+                                    $dt->setTimezone(new DateTimeZone('Europe/Vienna'));
                                     echo $dt->format('d.m.Y H:i');
                                 } catch (Exception $e) {
                                     echo htmlspecialchars($mail['receivedDateTime']);
