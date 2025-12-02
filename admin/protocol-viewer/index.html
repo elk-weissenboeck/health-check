@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>JSON Protokoll Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 16px;
+            color-scheme: light dark;
+        }
+
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            background: #0f172a;
+            color: #e5e7eb;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.6rem;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #020617;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid #1f2937;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            max-height: 320px;
+            resize: vertical;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.85rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem; /* etwas mehr Abstand */
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 9999px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid #4b5563;
+            background: transparent;
+            color: #e5e7eb;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover {
+            border-color: #9ca3af;
+        }
+
+        .filters-block {
+            flex: 1 1 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: flex-start;
+            justify-content: flex-end;
+            margin-left: 1rem; /* klarer Abstand vom Button */
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 130px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        select {
+            border-radius: 9999px;
+            padding: 0.35rem 0.8rem;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 0.8rem;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .search-input-wrapper {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 200px;
+        }
+
+        .search-input-wrapper label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .search-input-wrapper input {
+            border-radius: 9999px;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 0.85rem;
+        }
+
+        .search-input-wrapper input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .search-help {
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 0.75rem 0;
+            font-size: 0.8rem;
+        }
+
+        .badge {
+            border-radius: 9999px;
+            padding: 0.2rem 0.7rem;
+            border: 1px solid #374151;
+        }
+
+        .badge-status {
+            border-color: #2563eb;
+            color: #bfdbfe;
+        }
+
+        .badge-stage {
+            border-color: #22c55e;
+            color: #bbf7d0;
+        }
+
+        .badge-count {
+            border-color: #6b7280;
+            color: #e5e7eb;
+        }
+
+        .error {
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.75rem;
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid #ef4444;
+            color: #fecaca;
+            font-size: 0.85rem;
+            display: none;
+            white-space: pre-wrap;
+        }
+
+        .table-wrapper {
+            margin-top: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #1f2937;
+            overflow: hidden;
+            background: #020617;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        thead {
+            background: #020617;
+        }
+
+        th, td {
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid #111827;
+            vertical-align: top;
+        }
+
+        th {
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            position: sticky;
+            top: 0;
+            background: #020617;
+            z-index: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            text-decoration: underline;
+        }
+
+        .col-modified {
+            white-space: nowrap; /* modified nie umbrechen */
+        }
+
+        tbody tr:nth-child(even) {
+            background: #020617;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #020617;
+        }
+
+        tbody tr:hover {
+            background: #111827;
+        }
+
+        .col-status {
+            font-weight: 600;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0.12rem 0.6rem;
+            font-size: 0.75rem;
+            border: 1px solid #374151;
+        }
+
+        .pill-status {
+            border-color: #3b82f6;
+            color: #bfdbfe;
+        }
+
+        .pill-stage {
+            border-color: #22c55e;
+            color: #bbf7d0;
+        }
+
+        .pill-archived {
+            border-color: #f97316;
+            color: #fed7aa;
+        }
+
+        .col-change {
+            white-space: pre-wrap;
+        }
+
+        .col-user {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.8rem;
+        }
+
+        .col-meta {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .no-data {
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.75rem;
+            }
+
+            .card {
+                padding: 0.9rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters-block {
+                margin-left: 0;
+                justify-content: flex-start;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.4rem 0.45rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <h1>JSON Protokoll Viewer</h1>
+    <div class="card">
+        <div class="input-section">
+            <label for="jsonInput">JSON-Protokoll einfügen (Array von Objekten)</label>
+            <textarea id="jsonInput" spellcheck="false" placeholder='[
+    {
+        "id": 11574731,
+        "modified": "2025-05-27T07:41:45.3539932Z",
+        "modifiedBy": {
+            "id": 39,
+            "title": "Zwölfer Dominic",
+            "upn": "dominic.zwoelfer@elk.at",
+            "email": "dominic.zwoelfer@elk.at",
+            "isGroup": false
+        },
+        "version": 1,
+        "displayVersion": "1.0",
+        "isArchvied": true,
+        "status": "Edit",
+        "stage": "S1",
+        "change": "Save transaction started (Device-ID 38c37eef-673d-410d-908d-0101217becbf)",
+        "hasDetails": false
+    }
+]'></textarea>
+
+            <div class="controls">
+                <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                    <button class="btn" id="parseBtn">
+                        <span>JSON auswerten</span>
+                    </button>
+                    <button class="btn-secondary" id="resetFiltersBtn">
+                        Filter zurücksetzen
+                    </button>
+                </div>
+
+                <!-- Zentrale Filter-Zeile (Reihenfolge: Status, Stage, Vorgefertigt, Eingabe) -->
+                <div class="filters-block">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter">
+                            <option value="">Alle</option>
+                        </select> 
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="stageFilter">Stage</label>
+                        <select id="stageFilter">
+                            <option value="">Alle</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="quickFilterSelect">Vorgefertigte Filter</label>
+                        <select id="quickFilterSelect">
+                            <option value="">– keiner –</option>
+                            <option value='change:"Run workflow Generate PDF with result"'>
+                                Generate PDF
+                            </option>
+                            <option value='change:"Run workflow Send Mail with result"'>
+                                Send Mail
+                            </option>
+                            <option value='change:"Stage changed to"'>
+                                Stage gewechselt
+                            </option>
+                            <option value='change:"Status changed"'>
+                                Status gewechselt
+                            </option>
+                            </select>
+                    </div>
+
+                    <div class="search-input-wrapper">
+                        <label for="searchInput">Suchfilter</label>
+                        <input id="searchInput" type="text"
+                               placeholder='z.B. stage:S1 change:"Run workflow Generate PDF with result"'>
+                        <div class="search-help">
+                            Syntax: <code>stage:S1</code>, <code>change:pdf</code>, <code>change:"Run workflow …"</code>.
+                            Mehrere Bedingungen sind UND-verknüpft. Suche startet ~300&nbsp;ms nach der Eingabe.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats" id="stats" style="display:none;">
+                <span class="badge badge-count" id="countBadge">0 Einträge</span>
+                <span class="badge badge-status" id="statusBadge"></span>
+                <span class="badge badge-stage" id="stageBadge"></span>
+            </div>
+
+            <div class="error" id="errorBox"></div>
+        </div>
+
+        <div class="table-wrapper" id="tableWrapper">
+            <div class="no-data" id="noDataMsg">
+                Noch keine Daten geladen. Füge JSON ein und klicke auf <strong>JSON auswerten</strong>.
+            </div>
+            <table id="logTable" style="display:none;">
+                <thead>
+                <tr>
+                    <th class="sortable col-modified" data-key="modified">Modified</th>
+                    <th class="sortable" data-key="status">Status</th>
+                    <th class="sortable" data-key="stage">Stage</th>
+                    <th class="sortable" data-key="change">Change</th>
+                    <th class="sortable" data-key="user">User (UPN)</th>
+                    <th class="sortable" data-key="meta">Meta</th>
+                </tr>
+                </thead>
+                <tbody id="logTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const jsonInput = document.getElementById('jsonInput');
+        const parseBtn = document.getElementById('parseBtn');
+        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        const errorBox = document.getElementById('errorBox');
+        const logTable = document.getElementById('logTable');
+        const logTableBody = document.getElementById('logTableBody');
+        const noDataMsg = document.getElementById('noDataMsg');
+        const statusFilter = document.getElementById('statusFilter');
+        const stageFilter = document.getElementById('stageFilter');
+        const stats = document.getElementById('stats');
+        const countBadge = document.getElementById('countBadge');
+        const statusBadge = document.getElementById('statusBadge');
+        const stageBadge = document.getElementById('stageBadge');
+        const searchInput = document.getElementById('searchInput');
+        const quickFilterSelect = document.getElementById('quickFilterSelect');
+        const headerCells = document.querySelectorAll('#logTable thead th.sortable');
+
+        let currentData = [];
+        let searchTimeout = null; // für 300ms Verzögerung
+        let sortState = { key: null, direction: 'asc' }; // aktueller Sortierzustand
+
+        // Labels der Header sichern, um Sortier-Indikator anzuhängen
+        headerCells.forEach(th => {
+            th.dataset.label = th.textContent.trim();
+        });
+
+        function showError(message) {
+            errorBox.textContent = message;
+            errorBox.style.display = 'block';
+        }
+
+        function clearError() {
+            errorBox.textContent = '';
+            errorBox.style.display = 'none';
+        }
+
+        function parseJSONInput() {
+            clearError();
+            let raw = jsonInput.value.trim();
+            if (!raw) {
+                showError('Bitte JSON-Inhalt einfügen.');
+                currentData = [];
+                renderTable();
+                return;
+            }
+
+            try {
+                let data = JSON.parse(raw);
+                if (!Array.isArray(data)) {
+                    // Falls einzelnes Objekt kommt, in Array umwandeln
+                    data = [data];
+                }
+                currentData = data;
+                buildFilters(data);
+                renderTable();
+            } catch (e) {
+                showError('Fehler beim Parsen von JSON:\n' + e.message);
+                currentData = [];
+                renderTable();
+            }
+        }
+
+        function buildFilters(data) {
+            const statusSet = new Set();
+            const stageSet = new Set();
+
+            data.forEach(item => {
+                if (item && typeof item === 'object') {
+                    if (item.status) statusSet.add(item.status);
+                    if (item.stage) stageSet.add(item.stage);
+                }
+            });
+
+            fillSelect(statusFilter, statusSet);
+            fillSelect(stageFilter, stageSet);
+        }
+
+        function fillSelect(selectEl, valuesSet) {
+            const currentValue = selectEl.value;
+            selectEl.innerHTML = '<option value="">Alle</option>';
+            Array.from(valuesSet)
+                .sort((a, b) => String(a).localeCompare(String(b)))
+                .forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v;
+                    opt.textContent = v;
+                    selectEl.appendChild(opt);
+                });
+
+            if (currentValue && valuesSet.has(currentValue)) {
+                selectEl.value = currentValue;
+            } else {
+                selectEl.value = '';
+            }
+        }
+
+        function formatDate(isoString) {
+            if (!isoString) return '';
+            const d = new Date(isoString);
+            if (isNaN(d.getTime())) return isoString; // fallback
+            return d.toLocaleString('de-AT', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // ---- Suchfilter-Logik ----
+
+        /**
+         * Zerlegt die Such-Query in Bedingungen:
+         *  - field:"quoted value"
+         *  - field:value
+         *  - "free text"
+         *  - word
+         */
+        function parseSearchQuery(query) {
+            const trimmed = query.trim();
+            if (!trimmed) return [];
+
+            const conditions = [];
+            const regex = /(\w+):"([^"]+)"|(\w+):(\S+)|"([^"]+)"|(\S+)/g;
+            let match;
+
+            while ((match = regex.exec(trimmed)) !== null) {
+                if (match[1] && match[2]) {
+                    // field:"quoted value"
+                    conditions.push({
+                        field: match[1].toLowerCase(),
+                        value: match[2].toLowerCase()
+                    });
+                } else if (match[3] && match[4]) {
+                    // field:value
+                    conditions.push({
+                        field: match[3].toLowerCase(),
+                        value: match[4].toLowerCase()
+                    });
+                } else if (match[5]) {
+                    // "quoted text" ohne field
+                    conditions.push({
+                        field: null,
+                        value: match[5].toLowerCase()
+                    });
+                } else if (match[6]) {
+                    // plain text token
+                    conditions.push({
+                        field: null,
+                        value: match[6].toLowerCase()
+                    });
+                }
+            }
+
+            return conditions;
+        }
+
+        function matchesSearch(item, conditions) {
+            if (!conditions.length) return true;
+
+            const status = (item.status || '').toString().toLowerCase();
+            const stage = (item.stage || '').toString().toLowerCase();
+            const change = (item.change || '').toString().toLowerCase();
+            const upn = item.modifiedBy && item.modifiedBy.upn
+                ? item.modifiedBy.upn.toString().toLowerCase()
+                : '';
+            const title = item.modifiedBy && item.modifiedBy.title
+                ? item.modifiedBy.title.toString().toLowerCase()
+                : '';
+
+            return conditions.every(cond => {
+                const val = cond.value;
+
+                // Feld-spezifisch
+                if (cond.field === 'stage') {
+                    return stage.includes(val);
+                }
+                if (cond.field === 'change') {
+                    return change.includes(val);
+                }
+                if (cond.field === 'status') {
+                    return status.includes(val);
+                }
+                if (cond.field === 'user' || cond.field === 'upn') {
+                    return (upn + ' ' + title).includes(val);
+                }
+
+                // Ohne Feld: in mehreren Feldern suchen
+                const haystack = [status, stage, change, upn, title].join(' ');
+                return haystack.includes(val);
+            });
+        }
+
+        // ---- Sortier-Logik ----
+
+        function getSortValue(item, key) {
+            const status = item.status || '';
+            const stage = item.stage || '';
+            const change = item.change || '';
+            const upn = item.modifiedBy && item.modifiedBy.upn ? item.modifiedBy.upn : '';
+            const title = item.modifiedBy && item.modifiedBy.title ? item.modifiedBy.title : '';
+            const metaId = item.id != null ? item.id : '';
+
+            switch (key) {
+                case 'modified':
+                    const t = new Date(item.modified).getTime();
+                    return isNaN(t) ? 0 : t;
+                case 'status':
+                    return status;
+                case 'stage':
+                    return stage;
+                case 'change':
+                    return change;
+                case 'user':
+                    return (upn || title);
+                case 'meta':
+                    return metaId;
+                default:
+                    return '';
+            }
+        }
+
+        function sortData(data) {
+            if (!sortState.key) return data;
+
+            const { key, direction } = sortState;
+            const dir = direction === 'asc' ? 1 : -1;
+
+            return data.slice().sort((a, b) => {
+                const va = getSortValue(a, key);
+                const vb = getSortValue(b, key);
+
+                if (typeof va === 'number' && typeof vb === 'number') {
+                    return (va - vb) * dir;
+                }
+
+                const sa = String(va).toLocaleLowerCase('de-AT');
+                const sb = String(vb).toLocaleLowerCase('de-AT');
+
+                if (sa === sb) return 0;
+                return sa < sb ? -1 * dir : 1 * dir;
+            });
+        }
+
+        function updateSortIndicators() {
+            headerCells.forEach(th => {
+                const key = th.dataset.key;
+                const label = th.dataset.label || th.textContent.trim();
+                let indicator = '';
+
+                if (sortState.key === key) {
+                    indicator = sortState.direction === 'asc' ? ' ▲' : ' ▼';
+                }
+
+                th.textContent = label + indicator;
+            });
+        }
+
+        function renderTable() {
+            logTableBody.innerHTML = '';
+
+            const searchConditions = parseSearchQuery(searchInput.value || '');
+
+            let filtered = currentData.filter(item => {
+                if (!item || typeof item !== 'object') return false;
+
+                // Dropdown-Filter
+                if (statusFilter.value && item.status !== statusFilter.value) {
+                    return false;
+                }
+                if (stageFilter.value && item.stage !== stageFilter.value) {
+                    return false;
+                }
+
+                // Suchfilter
+                if (!matchesSearch(item, searchConditions)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Sortieren
+            filtered = sortData(filtered);
+            updateSortIndicators();
+
+            if (!filtered.length) {
+                logTable.style.display = 'none';
+                noDataMsg.style.display = 'block';
+                stats.style.display = 'none';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const tr = document.createElement('tr');
+
+                // modified
+                const tdModified = document.createElement('td');
+                tdModified.classList.add('col-modified');
+                tdModified.textContent = formatDate(item.modified);
+                logTableDateTooltip(tdModified, item.modified);
+                tr.appendChild(tdModified);
+
+                // status
+                const tdStatus = document.createElement('td');
+                tdStatus.classList.add('col-status');
+                const status = item.status || '';
+                if (status) {
+                    const pillStatus = document.createElement('span');
+                    pillStatus.className = 'pill pill-status';
+                    pillStatus.textContent = status;
+                    tdStatus.appendChild(pillStatus);
+                }
+                tr.appendChild(tdStatus);
+
+                // stage
+                const tdStage = document.createElement('td');
+                const stage = item.stage || '';
+                if (stage) {
+                    const pillStage = document.createElement('span');
+                    pillStage.className = 'pill pill-stage';
+                    pillStage.textContent = stage;
+                    tdStage.appendChild(pillStage);
+                }
+                tr.appendChild(tdStage);
+
+                // change
+                const tdChange = document.createElement('td');
+                tdChange.classList.add('col-change');
+                tdChange.textContent = item.change || '';
+                tr.appendChild(tdChange);
+
+                // user (modifiedBy.upn)
+                const tdUser = document.createElement('td');
+                tdUser.classList.add('col-user');
+                const upn = item.modifiedBy && item.modifiedBy.upn ? item.modifiedBy.upn : '';
+                const title = item.modifiedBy && item.modifiedBy.title ? item.modifiedBy.title : '';
+                tdUser.textContent = upn || title || '';
+                tr.appendChild(tdUser);
+
+                // meta (id, version, archived)
+                const tdMeta = document.createElement('td');
+                tdMeta.classList.add('col-meta');
+
+                const metaLines = [];
+                if (item.id != null) metaLines.push('ID: ' + item.id);
+                if (item.version != null) metaLines.push('Version: ' + item.version);
+                if (item.displayVersion != null) metaLines.push('Display: ' + item.displayVersion);
+                if (item.isArchvied === true || item.isArchived === true) {
+                    const archivedSpan = document.createElement('div');
+                    archivedSpan.className = 'pill pill-archived';
+                    archivedSpan.textContent = 'archiviert';
+                    tdMeta.appendChild(archivedSpan);
+                }
+                if (metaLines.length) {
+                    const metaText = document.createElement('div');
+                    metaText.textContent = metaLines.join(' | ');
+                    tdMeta.appendChild(metaText);
+                }
+
+                tr.appendChild(tdMeta);
+
+                logTableBody.appendChild(tr);
+            });
+
+            logTable.style.display = 'table';
+            noDataMsg.style.display = 'none';
+            updateStats(filtered);
+        }
+
+        function logTableDateTooltip(td, isoString) {
+            if (!isoString) return;
+            td.title = isoString;
+        }
+
+        function updateStats(data) {
+            stats.style.display = 'flex';
+            countBadge.textContent = data.length + ' Einträge';
+
+            const statusSet = new Set();
+            const stageSet = new Set();
+            data.forEach(item => {
+                if (item.status) statusSet.add(item.status);
+                if (item.stage) stageSet.add(item.stage);
+            });
+
+            statusBadge.textContent = 'Status: ' + (statusFilter.value || 'alle (' + statusSet.size + ')');
+            stageBadge.textContent = 'Stage: ' + (stageFilter.value || 'alle (' + stageSet.size + ')');
+        }
+
+        // ---- Event-Handling ----
+
+        parseBtn.addEventListener('click', parseJSONInput);
+        statusFilter.addEventListener('change', renderTable);
+        stageFilter.addEventListener('change', renderTable);
+
+        // 300ms Debounce für die Suche
+        function scheduleSearch() {
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+            searchTimeout = setTimeout(() => {
+                renderTable();
+            }, 300);
+        }
+
+        searchInput.addEventListener('input', scheduleSearch);
+
+        // Vorgefertigte Filter als Dropdown
+        quickFilterSelect.addEventListener('change', () => {
+            const value = quickFilterSelect.value;
+            if (value) {
+                searchInput.value = value;
+            }
+            renderTable(); // direkt rendern bei Auswahl
+        });
+
+        // Filter zurücksetzen
+        function resetFilters() {
+            statusFilter.value = '';
+            stageFilter.value = '';
+            quickFilterSelect.value = '';
+            searchInput.value = '';
+            sortState = { key: null, direction: 'asc' };
+            renderTable();
+        }
+
+        resetFiltersBtn.addEventListener('click', resetFilters);
+
+        // Sortieren durch Klick auf Header
+        headerCells.forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.key;
+                if (!key) return;
+
+                if (sortState.key === key) {
+                    // Richtung toggeln
+                    sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortState.key = key;
+                    sortState.direction = 'asc';
+                }
+                renderTable();
+            });
+        });
+
+        // Optional: Strg+Enter zum Parsen
+        jsonInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                parseJSONInput();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
