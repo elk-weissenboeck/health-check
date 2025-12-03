@@ -16,14 +16,18 @@
     // Checkbox für required-Filter
     const requiredFilter = document.getElementById("requiredFilter");
 
+    // Katalog-Anzeige
+    const catalogsBox = document.getElementById("catalogsBox");
+    const catalogsList = document.getElementById("catalogsList");
+
     // Sort-Schlüssel pro Spalte
-    // (#, tag, id, label, required, data-win-control, data-win-options, data-hf-condition)
+    // (#, tag, required, id, label, data-win-control, data-win-options, data-hf-condition)
     const headerSortKeys = [
         "index",
         "tag",
+        "required",
         "id",
         "label",
-        "required",
         "data-win-control",
         "data-win-options",
         "data-hf-condition"
@@ -33,9 +37,9 @@
     const headerLabels = [
         "#",
         "tag",
+        "required",
         "id",
         "label",
-        "required",
         "data-win-control",
         "data-win-options",
         "data-hf-condition"
@@ -197,6 +201,10 @@
                     va = a.tag || "";
                     vb = b.tag || "";
                     break;
+                case "required":
+                    va = a.required ? 1 : 0;
+                    vb = b.required ? 1 : 0;
+                    break;
                 case "id":
                     va = a.id || "";
                     vb = b.id || "";
@@ -204,10 +212,6 @@
                 case "label":
                     va = a.label || "";
                     vb = b.label || "";
-                    break;
-                case "required":
-                    va = a.required ? 1 : 0;
-                    vb = b.required ? 1 : 0;
                     break;
                 case "data-win-control":
                     va = a.control || "";
@@ -282,6 +286,40 @@
         });
     }
 
+    // ----------------- Katalog-Anzeige -----------------
+
+    function renderCatalogs(catalogs) {
+        catalogsList.innerHTML = "";
+
+        if (!catalogs || catalogs.length === 0) {
+            catalogsBox.classList.add("d-none");
+            return;
+        }
+
+        catalogsBox.classList.remove("d-none");
+
+        catalogs.forEach(cat => {
+            const li = document.createElement("li");
+            const code = document.createElement("code");
+            code.textContent = cat.id || "(ohne ID)";
+
+            li.appendChild(code);
+
+            const spanUrl = document.createElement("span");
+            spanUrl.textContent = " → " + (cat.url || "(kein Pfad)");
+            li.appendChild(spanUrl);
+
+            if (cat.persistent === "true") {
+                const badge = document.createElement("span");
+                badge.className = "badge bg-success ms-1";
+                badge.textContent = "persistent";
+                li.appendChild(badge);
+            }
+
+            catalogsList.appendChild(li);
+        });
+    }
+
     // ----------------- Analyse -----------------
 
     analyzeBtn.addEventListener("click", () => {
@@ -299,11 +337,24 @@
 
         if (!html) {
             alert("Bitte zuerst HTML einfügen.");
+            renderCatalogs([]);
             return;
         }
 
         const container = document.createElement("div");
         container.innerHTML = html;
+
+        // Kataloge / DataSources erkennen
+        const catalogEls = container.querySelectorAll('var[data-hf-name="DataSource"]');
+        const catalogs = [];
+        catalogEls.forEach(el => {
+            catalogs.push({
+                id: el.getAttribute("data-hf-data-source-id") || "",
+                persistent: el.getAttribute("data-hf-persistent") || "",
+                url: (el.textContent || "").trim()
+            });
+        });
+        renderCatalogs(catalogs);
 
         const elements = container.querySelectorAll("[id], [data-win-control], [data-win-options], [data-hf-condition]");
 
@@ -463,6 +514,10 @@
             const tdTag = document.createElement("td");
             tdTag.textContent = row.tag;
 
+            const tdRequired = document.createElement("td");
+            tdRequired.className = "required-cell";
+            tdRequired.textContent = row.required ? "✔" : "";
+
             const tdId = document.createElement("td");
             const idCode = document.createElement("code");
             idCode.textContent = row.id;
@@ -470,10 +525,6 @@
 
             const tdLabel = document.createElement("td");
             tdLabel.textContent = row.label;
-
-            const tdRequired = document.createElement("td");
-            tdRequired.className = "required-cell";
-            tdRequired.textContent = row.required ? "✔" : "";
 
             const tdCtrl = document.createElement("td");
             tdCtrl.classList.add("col-control-cell");
@@ -493,12 +544,12 @@
             tdCond.className = "condition-cell col-condition-cell";
             tdCond.textContent = row.conditionText || row.conditionRaw;
 
-            // Reihenfolge: #, tag, id, label, required, data-win-control, data-win-options, data-hf-condition
+            // Reihenfolge: #, tag, required, id, label, data-win-control, data-win-options, data-hf-condition
             tr.appendChild(tdIndex);
             tr.appendChild(tdTag);
+            tr.appendChild(tdRequired);
             tr.appendChild(tdId);
             tr.appendChild(tdLabel);
-            tr.appendChild(tdRequired);
             tr.appendChild(tdCtrl);
             tr.appendChild(tdOpts);
             tr.appendChild(tdCond);

@@ -8,6 +8,18 @@ body {
     font-size: 0.9rem;
 }
 
+/* Filter-Box optisch absetzen */
+#filterBox.filter-box {
+    background-color: #f8f9fb; /* leicht heller als Standard-BG */
+    border-color: #dee2e6;
+}
+
+/* Katalog-Box optisch absetzen */
+#catalogsBox.catalogs-box {
+    background-color: #fffbe8;    /* leicht gelblicher Ton */
+    border-color: #ffc107;        /* Anlehnung an Warning-Farbe */
+}
+
 /* Tabelle auf 100% Breite, Inhalte umbrechen */
 table#resultTable {
     width: 100%;
@@ -37,6 +49,11 @@ table#resultTable td {
 .required-cell {
     text-align: center;
     font-weight: bold;
+}
+
+/* Katalog-Liste */
+#catalogsList code {
+    margin-right: .25rem;
 }
 
 /* Header klickbar, aber nicht selektierbar */
