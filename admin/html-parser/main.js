@@ -500,28 +500,27 @@
         const selectedControl = controlFilter.value;
         const onlyRequired = requiredFilter.checked;
 
+        // Such-Tokens: getrennt durch Leerzeichen, aber Anführungszeichen bleiben zusammen
+        // Beispiel: label:"Fertigstellung geplant" required:true
+        const tokens = searchQuery
+            ? (searchQuery.match(/(?:[^\s"]+|"[^"]*")+/g) || [])
+            : [];
+
         const filtered = allRows.filter((row) => {
+            // Filter: data-win-control (Dropdown)
             if (selectedControl && row.control !== selectedControl) {
                 return false;
             }
 
+            // Filter: nur required
             if (onlyRequired && !row.required) {
                 return false;
             }
 
-            if (!searchQuery) return true;
+            // Kein Suchstring -> passt
+            if (!tokens.length) return true;
 
-            let colKey = null;
-            let value = null;
-            const idx = searchQuery.indexOf(":");
-
-            if (idx > -1) {
-                colKey = searchQuery.slice(0, idx).trim().toLowerCase();
-                value = searchQuery.slice(idx + 1).trim().toLowerCase();
-            } else {
-                value = searchQuery.toLowerCase();
-            }
-
+            // Spaltenwerte vorbereiten (wie bisher)
             const optionsText =
                 row.optionsObj ? formatOptions(row.optionsObj) : row.optionsRaw;
 
@@ -535,20 +534,40 @@
                 "data-hf-condition": row.conditionText || row.conditionRaw
             };
 
-            if (colKey) {
-                const key = Object.keys(columns).find(
-                    (k) => k.toLowerCase() === colKey
-                );
-                if (!key) return false;
-                return (columns[key] || "")
-                    .toString()
-                    .toLowerCase()
-                    .includes(value);
-            } else {
-                return Object.values(columns).some((v) =>
-                    (v || "").toString().toLowerCase().includes(value)
-                );
-            }
+            // Jeder Token muss matchen (UND)
+            return tokens.every((token) => {
+                let colKey = null;
+                let value = null;
+                const idx = token.indexOf(":");
+
+                if (idx > -1) {
+                    colKey = token.slice(0, idx).trim().toLowerCase();
+                    value = token.slice(idx + 1).trim().toLowerCase();
+                } else {
+                    value = token.trim().toLowerCase();
+                }
+
+                // Anführungszeichen um den Value entfernen (label:"foo bar")
+                if (value.startsWith('"') && value.endsWith('"') && value.length >= 2) {
+                    value = value.slice(1, -1);
+                }
+
+                if (colKey) {
+                    const key = Object.keys(columns).find(
+                        (k) => k.toLowerCase() === colKey
+                    );
+                    if (!key) return false;
+                    return (columns[key] || "")
+                        .toString()
+                        .toLowerCase()
+                        .includes(value);
+                } else {
+                    // Token ohne "col:" -> Volltextsuche über alle Spalten
+                    return Object.values(columns).some((v) =>
+                        (v || "").toString().toLowerCase().includes(value)
+                    );
+                }
+            });
         });
 
         const sorted = sortRows(filtered);
@@ -556,6 +575,7 @@
         updateSortIcons();
         applyColumnVisibility();
     }
+
 
     // ----------------- Rendering -----------------
 
