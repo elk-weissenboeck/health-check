@@ -20,8 +20,11 @@
     const catalogsBox = document.getElementById("catalogsBox");
     const catalogsList = document.getElementById("catalogsList");
 
-    // Sort-Schlüssel pro Spalte
-    // (#, tag, required, id, label, data-win-control, data-win-options, data-hf-condition)
+    // PictureCompression-Anzeige
+    const compressionBox = document.getElementById("compressionBox");
+    const compressionList = document.getElementById("compressionList");
+
+    // Sort-Schlüssel pro Spalte (#, tag, required, id, label, data-win-control, data-win-options, data-hf-condition)
     const headerSortKeys = [
         "index",
         "tag",
@@ -320,6 +323,47 @@
         });
     }
 
+    // ----------------- PictureCompression-Anzeige -----------------
+
+    function renderPictureCompression(items) {
+        compressionList.innerHTML = "";
+
+        if (!items || items.length === 0) {
+            compressionBox.classList.add("d-none");
+            return;
+        }
+
+        compressionBox.classList.remove("d-none");
+
+        items.forEach(pc => {
+            const li = document.createElement("li");
+
+            const title = document.createElement("div");
+            title.innerHTML = `<code>${pc.name || "PictureCompression"}</code>`;
+            li.appendChild(title);
+
+            const details = document.createElement("div");
+            details.className = "mt-1";
+
+            const lines = [];
+
+            if (pc.type) lines.push(`Typ: ${pc.type}`);
+            if (pc.format) lines.push(`Format: ${pc.format}`);
+            if (pc.jpgQuality != null) lines.push(`Qualität: ${pc.jpgQuality}`);
+            if (pc.maxDimension != null) lines.push(`maxDimension: ${pc.maxDimension}`);
+
+            // Fallback: komplette Struktur, falls etwas fehlt
+            if (!lines.length && pc.rawObj) {
+                lines.push(formatOptions(pc.rawObj));
+            }
+
+            details.textContent = lines.join(" | ");
+            li.appendChild(details);
+
+            compressionList.appendChild(li);
+        });
+    }
+
     // ----------------- Analyse -----------------
 
     analyzeBtn.addEventListener("click", () => {
@@ -338,6 +382,7 @@
         if (!html) {
             alert("Bitte zuerst HTML einfügen.");
             renderCatalogs([]);
+            renderPictureCompression([]);
             return;
         }
 
@@ -355,6 +400,28 @@
             });
         });
         renderCatalogs(catalogs);
+
+        // PictureCompression erkennen
+        const compressionEls = container.querySelectorAll('var[data-hf-name="PictureCompression"]');
+        const compressions = [];
+        compressionEls.forEach(el => {
+            const raw = el.getAttribute("data-hf-compression") || "";
+            const parsed = tryParseJsonLike(raw);
+            const obj = parsed.obj || {};
+
+            const type = obj.type || obj.kind || "";
+            const opts = obj.options || {};
+
+            compressions.push({
+                name: el.getAttribute("data-hf-name") || "PictureCompression",
+                type: type || "",
+                format: opts.format || opts.mime || "",
+                jpgQuality: opts.jpgQuality != null ? opts.jpgQuality : opts.quality,
+                maxDimension: opts.maxDimension != null ? opts.maxDimension : opts.maxSize,
+                rawObj: obj
+            });
+        });
+        renderPictureCompression(compressions);
 
         const elements = container.querySelectorAll("[id], [data-win-control], [data-win-options], [data-hf-condition]");
 

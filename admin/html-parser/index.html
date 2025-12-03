@@ -26,10 +26,11 @@
         <textarea
             id="htmlInput"
             class="form-control font-monospace"
-            placeholder="&lt;div id=&quot;datum_kamin_kingfire&quot;
- data-win-control=&quot;HFWinJSCtrl.DatePicker&quot;
- data-win-options=&quot;{ fieldId: 'kopf_aktnr', label: 'Fertigstellung', required: true }&quot;
- data-hf-condition='{\"cond\":[{\"type\":\"field\",\"id\":\"firma\",\"val\":\"KAMPA\"}],\"else\":\"invisible\"}'&gt;..."
+            placeholder="&lt;var data-hf-name=&quot;PictureCompression&quot;
+ data-hf-compression='{
+   &quot;type&quot;:&quot;compress&quot;,
+   &quot;options&quot;:{&quot;format&quot;:&quot;jpg&quot;,&quot;jpgQuality&quot;:0.75,&quot;maxDimension&quot;:1920}
+ }'&gt;&lt;/var&gt;"
         ></textarea>
     </div>
 
@@ -108,10 +109,20 @@
         </div>
     </div>
 
-    <!-- Gefundene Kataloge / DataSources -->
-    <div id="catalogsBox" class="mb-3 p-3 border rounded bg-light d-none catalogs-box">
-        <h2 class="h6 mb-2">Gefundene Kataloge (DataSources)</h2>
-        <ul id="catalogsList" class="small mb-0 ps-3"></ul>
+    <!-- Kataloge & PictureCompression nebeneinander -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div id="catalogsBox" class="p-3 border rounded bg-light d-none catalogs-box h-100">
+                <h2 class="h6 mb-2">Gefundene Kataloge (DataSources)</h2>
+                <ul id="catalogsList" class="small mb-0 ps-3"></ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="compressionBox" class="p-3 border rounded bg-light d-none compression-box h-100">
+                <h2 class="h6 mb-2">PictureCompression</h2>
+                <ul id="compressionList" class="small mb-0 ps-3"></ul>
+            </div>
+        </div>
     </div>
 
     <table id="resultTable" class="table table-sm table-bordered table-striped align-middle w-100">

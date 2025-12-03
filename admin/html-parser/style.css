@@ -10,14 +10,20 @@ body {
 
 /* Filter-Box optisch absetzen */
 #filterBox.filter-box {
-    background-color: #f8f9fb; /* leicht heller als Standard-BG */
+    background-color: #f8f9fb;
     border-color: #dee2e6;
 }
 
 /* Katalog-Box optisch absetzen */
 #catalogsBox.catalogs-box {
-    background-color: #fffbe8;    /* leicht gelblicher Ton */
-    border-color: #ffc107;        /* Anlehnung an Warning-Farbe */
+    background-color: #fffbe8;
+    border-color: #ffc107;
+}
+
+/* PictureCompression-Box optisch absetzen */
+#compressionBox.compression-box {
+    background-color: #e8f7ff;
+    border-color: #0d6efd33; /* leichtes Blau */
 }
 
 /* Tabelle auf 100% Breite, Inhalte umbrechen */
