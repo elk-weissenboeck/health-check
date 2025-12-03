@@ -4,7 +4,7 @@ class myApiAuth
 {
     private array $tokens;
 
-    public function __construct(string $tokenConfigPath)
+    public function __construct(string $tokenConfigPath,?string $logFilePath = null)
     {
         if (!file_exists($tokenConfigPath)) {
             throw new RuntimeException("Token-Konfigurationsdatei nicht gefunden: {$tokenConfigPath}");
@@ -17,8 +17,42 @@ class myApiAuth
         }
 
         $this->tokens = $tokens;
+        $this->logFile = $logFilePath; // kann null sein -> kein Logging
     }
 
+    /**
+     * Liest Token aus Header (Bearer) oder GET-Parameter ?token=...
+     * und gibt NUR den reinen Token-String zurück (kann null sein).
+     */
+    private function getTokenString(): ?string
+    {
+        $authorizationHeader = null;
+
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'];
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if (isset($headers['Authorization'])) {
+                $authorizationHeader = $headers['Authorization'];
+            }
+        }
+
+        $token = null;
+
+        if ($authorizationHeader) {
+            if (preg_match('/^Bearer\s+(.+)$/i', $authorizationHeader, $matches)) {
+                $token = trim($matches[1]);
+            }
+        }
+
+        // Optional: Fallback via GET
+        if ($token === null && isset($_GET['token'])) {
+            $token = $_GET['token'];
+        }
+
+        return $token !== '' ? $token : null;
+    }
+    
     /**
      * Liest den Authorization-Header und extrahiert den Bearer-Token.
      */
@@ -47,22 +81,18 @@ class myApiAuth
         return null;
     }
 
+
     /**
      * Liefert Informationen zum Client:
-     * - kein Token → "anonymous"
-     * - gültiger Token → konfigurierter Client
-     * - ungültiger Token → null
+     * - kein Token -> anonymous
+     * - gültiger Token -> konfigurierter Client
+     * - ungültiger Token -> null
      */
     public function getClient(): ?array
     {
-        $token = $this->getBearerTokenFromHeaders();
+        $token = $this->getTokenString();
 
-        // Optional: Fallback via GET ?token=...
-        if ($token === null && isset($_GET['token'])) {
-            $token = $_GET['token'];
-        }
-
-        // KEIN Token → anonymous-Client
+        // KEIN Token → anonymous
         if ($token === null) {
             return [
                 'token' => null,
@@ -71,7 +101,7 @@ class myApiAuth
             ];
         }
 
-        // Token wurde übergeben, ist aber unbekannt → ungültig
+        // Token übergeben, aber unbekannt → ungültig
         if (!isset($this->tokens[$token])) {
             return null;
         }
@@ -84,6 +114,7 @@ class myApiAuth
             'roles' => $data['roles'] ?? [],
         ];
     }
+
 
     /**
      * Prüft, ob der Client eine bestimmte Rolle hat.
@@ -102,6 +133,18 @@ class myApiAuth
         $client = $this->getClient();
 
         if ($client === null) {
+            // ungültiger Token: pseudo-"Client" für Logging bauen
+            $rawToken = $this->getTokenString();
+
+            $pseudoClient = [
+                'token' => $rawToken ?? '-',
+                'name'  => 'invalid-token',
+                'roles' => [],
+            ];
+
+            // hier wird der fehlgeschlagene Versuch protokolliert
+            $this->logAction($pseudoClient, 'auth', 'invalid_token');
+
             http_response_code(401);
             header('Content-Type: text/plain; charset=utf-8');
             echo json_encode(['error' => "Nicht authentifiziert (ungültiger Bearer-Token)"]);
@@ -118,9 +161,12 @@ class myApiAuth
      */
     public function requireRole(string $role): array
     {
-        $client = $this->requireClient();
+        $client = $this->requireClient(); // loggt invalid_token schon selbst
 
         if (!$this->clientHasRole($client, $role)) {
+            // fehlende Berechtigung protokollieren
+            $this->logAction($client, 'requireRole:' . $role, 'denied');
+
             http_response_code(403);
             header('Content-Type: text/plain; charset=utf-8');
             echo json_encode(['error' => "Keine Berechtigung (Rolle '{$role}' erforderlich)"]);
@@ -129,6 +175,7 @@ class myApiAuth
 
         return $client;
     }
+
     
     /**
     * Prüft, ob der Client mindestens eine der übergebenen Rollen hat.
@@ -149,17 +196,64 @@ class myApiAuth
      */
     public function requireAnyRole(string ...$roles): array
     {
-        $client = $this->requireClient(); // anonymous oder echter Client, ungültiger Token → 401
+        $client = $this->requireClient(); // invalid_token wird schon geloggt
 
         if (!$this->clientHasAnyRole($client, $roles)) {
+            $this->logAction($client, 'requireAnyRole:' . implode('|', $roles), 'denied');
+
             http_response_code(403);
             header('Content-Type: text/plain; charset=utf-8');
 
             $roleList = implode("' oder '", $roles);
-            echo json_encode(['error' => "Keine Berechtigung (erforderlich ist eine der Rollen: '{$roleList}')"]);
+            echo json_encode(['error' => "Keine Berechtigung (eine der Rollen '{$roleList}' erforderlich)"]);
             exit;
         }
 
         return $client;
     }
+
+    
+    /**
+     * Aktion protokollieren: wer, wann, was.
+     * $status kannst du z.B. 'ok', 'denied', 'error' etc. geben.
+     */
+    public function logAction(array $client, string $action, string $status = 'ok'): void
+    {
+        if ($this->logFile === null) {
+            return; // Logging deaktiviert
+        }
+
+        $timestamp = date('c'); // ISO 8601
+        $ip        = $_SERVER['REMOTE_ADDR'] ?? '-';
+        $token     = $client['token'] ?? '-';
+        $name      = $client['name']  ?? '-';
+        $roles     = implode(',', $client['roles'] ?? []);
+
+        // Tabs und Zeilenumbrüche aus Textfeldern entfernen/sanitizen
+        $sanitize = function (string $value): string {
+            $value = str_replace(["\t", "\r", "\n"], ' ', $value);
+            return trim($value);
+        };
+
+        $ip    = $sanitize($ip);
+        $token = $sanitize($token);
+        $name  = $sanitize($name);
+        $roles = $sanitize($roles);
+        $action = $sanitize($action);
+        $status = $sanitize($status);
+
+        $line = sprintf(
+            "%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+            $timestamp,
+            $ip,
+            $token,
+            $name,
+            $roles,
+            $action,
+            $status
+        );
+
+        file_put_contents($this->logFile, $line, FILE_APPEND | LOCK_EX);
+    }
+
 }

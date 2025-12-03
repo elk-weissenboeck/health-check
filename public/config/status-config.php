@@ -7,10 +7,13 @@
 require __DIR__ . '/../../classes/myApiAuth.php';
 
 $mainConfig  = __DIR__ . '/status.config.json';
-$adminConfig = __DIR__ . '/admin.status.config.json';
+$itConfig    = __DIR__ . '/it.status.config.json';
 $backupDir   = __DIR__ . '/backup';
 
-$auth = new myApiAuth(__DIR__ . '/../../tokens.php');
+$auth = new myApiAuth(
+    __DIR__ . '/../../tokens.php',
+    __DIR__ . '/../../log/UserTokenAccess.log'
+);
 
 
 // Ab hier nur noch authentifizierte Requests
@@ -19,7 +22,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     // Anonymous ODER echter Client – ungültige Tokens werden geblockt
     $client = $auth->requireClient();
-
+    $auth->logAction($client, 'read anonymous-config');
+    
     // Datei einlesen
     if (!file_exists($mainConfig)) {
         http_response_code(404);
@@ -36,9 +40,11 @@ if ($method === 'GET') {
     
     header('Content-Type: application/json');
 
-    if($auth->clientHasRole($client, 'admin')){
+    if($auth->clientHasAnyRole($client, ['admin', 'it'])){
+        $auth->logAction($client, 'read it-config');
+
         $data1 = json_decode($content, true);
-        $data2 = json_decode(file_get_contents($adminConfig), true);
+        $data2 = json_decode(file_get_contents($itConfig), true);
         
         // Safety: wenn groups nicht existiert, leeres Array
         $groups1 = $data1['groups'] ?? [];
@@ -55,7 +61,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    $client = $auth->requireAnyRole('admin','editor');
+    $client = $auth->requireAnyRole('admin');
     
     // Rohes Request-Body lesen
     $rawBody = file_get_contents('php://input');
@@ -123,6 +129,8 @@ if ($method === 'POST') {
         echo json_encode(['error' => 'Fehler beim Schreiben der Datei']);
         exit;
     }
+
+    $auth->logAction($client, 'write health-check-config');
 
     echo json_encode(['ok' => true]);
     exit;
