@@ -104,7 +104,7 @@ class myApiAuth
         if ($client === null) {
             http_response_code(401);
             header('Content-Type: text/plain; charset=utf-8');
-            echo "Nicht authentifiziert (ungültiger Bearer-Token)";
+            echo json_encode(['error' => "Nicht authentifiziert (ungültiger Bearer-Token)"]);
             exit;
         }
 
@@ -123,7 +123,7 @@ class myApiAuth
         if (!$this->clientHasRole($client, $role)) {
             http_response_code(403);
             header('Content-Type: text/plain; charset=utf-8');
-            echo "Keine Berechtigung (Rolle '{$role}' erforderlich)";
+            echo json_encode(['error' => "Keine Berechtigung (Rolle '{$role}' erforderlich)"]);
             exit;
         }
 

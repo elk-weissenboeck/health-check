@@ -12,13 +12,14 @@ $backupDir   = __DIR__ . '/backup';
 
 $auth = new myApiAuth(__DIR__ . '/../../tokens.php');
 
-// Anonymous ODER echter Client – ungültige Tokens werden geblockt
-$client = $auth->requireClient();
 
 // Ab hier nur noch authentifizierte Requests
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
+    // Anonymous ODER echter Client – ungültige Tokens werden geblockt
+    $client = $auth->requireClient();
+
     // Datei einlesen
     if (!file_exists($mainConfig)) {
         http_response_code(404);
@@ -54,6 +55,8 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    $client = $auth->requireRole('editor');
+    
     // Rohes Request-Body lesen
     $rawBody = file_get_contents('php://input');
     if ($rawBody === false) {

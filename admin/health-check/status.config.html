@@ -1,4 +1,3 @@
-<?php $secrets = require dirname(__DIR__) . '/../secrets.php'; ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -148,7 +147,7 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Auth-Token": "<?= $secrets['GENERAL_AUTH_TOKEN'] ?>"
+            "Authorization": "Bearer 840570d4daa3b68480165ec3f367cf119472f6cfb9a5799ab625fa0bdc1e1504"
           },
           body: content
         });
