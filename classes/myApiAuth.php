@@ -194,7 +194,7 @@ class myApiAuth
      * Stellt sicher, dass der Client mindestens eine der angegebenen Rollen hat.
      * Beispiel: requireAnyRole('admin', 'editor')
      */
-    public function requireAnyRole(string ...$roles): array
+    public function requireAnyRole(array $roles): array
     {
         $client = $this->requireClient(); // invalid_token wird schon geloggt
 
