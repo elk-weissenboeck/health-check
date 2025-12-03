@@ -13,12 +13,17 @@
     const toggleOptionsColumn = document.getElementById("toggleOptionsColumn");
     const toggleConditionColumn = document.getElementById("toggleConditionColumn");
 
-    // Sort-Schlüssel pro Spalte (#, tag, id, label, data-win-control, data-win-options, data-hf-condition)
+    // Checkbox für required-Filter
+    const requiredFilter = document.getElementById("requiredFilter");
+
+    // Sort-Schlüssel pro Spalte
+    // (#, tag, id, label, required, data-win-control, data-win-options, data-hf-condition)
     const headerSortKeys = [
         "index",
         "tag",
         "id",
         "label",
+        "required",
         "data-win-control",
         "data-win-options",
         "data-hf-condition"
@@ -30,6 +35,7 @@
         "tag",
         "id",
         "label",
+        "required",
         "data-win-control",
         "data-win-options",
         "data-hf-condition"
@@ -106,7 +112,8 @@
         return lines.join("\n");
     }
 
-    // ---- data-hf-condition Interpretation ----
+    // ---- Condition: DANN aus else ableiten ----
+
     function deriveThenFromElse(elseVal) {
         if (elseVal == null) return "Standardzustand";
 
@@ -118,11 +125,12 @@
         if (v === "optional") {
             return "Pflichtfeld (nicht optional)";
         }
+        if (v === "readonly") {
+            return "writeable";
+        }
 
-        // Fallback – hier kannst du eigene Projektregeln ergänzen
         return 'Standard (Gegenteil von "' + elseVal + '" unbekannt)';
     }
-
 
     function formatConditionObj(obj) {
         if (!obj || typeof obj !== "object") return "";
@@ -139,7 +147,7 @@
             conds.forEach((c, index) => {
                 if (!c || typeof c !== "object") return;
 
-                let prefix = "  "; // Einrückung
+                let prefix = "  ";
                 if (index > 0) {
                     prefix += op === "or" ? "ODER " : "UND ";
                 }
@@ -166,7 +174,6 @@
 
         return lines.join("\n");
     }
-
 
     // ----------------- Sortierung -----------------
 
@@ -197,6 +204,10 @@
                 case "label":
                     va = a.label || "";
                     vb = b.label || "";
+                    break;
+                case "required":
+                    va = a.required ? 1 : 0;
+                    vb = b.required ? 1 : 0;
                     break;
                 case "data-win-control":
                     va = a.control || "";
@@ -299,7 +310,7 @@
         if (elements.length === 0) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
-            td.colSpan = 7;
+            td.colSpan = 8;
             td.textContent = "Keine passenden Elemente gefunden.";
             tr.appendChild(td);
             tableBody.appendChild(tr);
@@ -332,12 +343,18 @@
                     ? String(optionsObj.label)
                     : "";
 
+            const required =
+                optionsObj && Object.prototype.hasOwnProperty.call(optionsObj, "required")
+                    ? !!optionsObj.required
+                    : false;
+
             allRows.push({
                 originalIndex,
                 tag,
                 id,
                 control,
                 label,
+                required,
                 optionsRaw,
                 optionsObj,
                 conditionRaw,
@@ -363,9 +380,14 @@
     function applyFiltersAndRender() {
         const searchQuery = searchInput.value.trim();
         const selectedControl = controlFilter.value;
+        const onlyRequired = requiredFilter.checked;
 
         const filtered = allRows.filter((row) => {
             if (selectedControl && row.control !== selectedControl) {
+                return false;
+            }
+
+            if (onlyRequired && !row.required) {
                 return false;
             }
 
@@ -389,6 +411,7 @@
                 tag: row.tag,
                 id: row.id,
                 label: row.label,
+                required: row.required ? "true" : "false",
                 "data-win-control": row.control,
                 "data-win-options": optionsText,
                 "data-hf-condition": row.conditionText || row.conditionRaw
@@ -424,7 +447,7 @@
         if (rows.length === 0) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
-            td.colSpan = 7;
+            td.colSpan = 8;
             td.textContent = "Keine Zeilen für die aktuelle Filter/Suche.";
             tr.appendChild(td);
             tableBody.appendChild(tr);
@@ -438,9 +461,7 @@
             tdIndex.textContent = index + 1;
 
             const tdTag = document.createElement("td");
-            const tagCode = document.createElement("code");
-            tagCode.textContent = row.tag;
-            tdTag.appendChild(tagCode);
+            tdTag.textContent = row.tag;
 
             const tdId = document.createElement("td");
             const idCode = document.createElement("code");
@@ -449,6 +470,10 @@
 
             const tdLabel = document.createElement("td");
             tdLabel.textContent = row.label;
+
+            const tdRequired = document.createElement("td");
+            tdRequired.className = "required-cell";
+            tdRequired.textContent = row.required ? "✔" : "";
 
             const tdCtrl = document.createElement("td");
             tdCtrl.classList.add("col-control-cell");
@@ -468,11 +493,12 @@
             tdCond.className = "condition-cell col-condition-cell";
             tdCond.textContent = row.conditionText || row.conditionRaw;
 
-            // Reihenfolge: #, tag, id, label, data-win-control, data-win-options, data-hf-condition
+            // Reihenfolge: #, tag, id, label, required, data-win-control, data-win-options, data-hf-condition
             tr.appendChild(tdIndex);
             tr.appendChild(tdTag);
             tr.appendChild(tdId);
             tr.appendChild(tdLabel);
+            tr.appendChild(tdRequired);
             tr.appendChild(tdCtrl);
             tr.appendChild(tdOpts);
             tr.appendChild(tdCond);
@@ -507,6 +533,7 @@
     resetBtn.addEventListener("click", () => {
         searchInput.value = "";
         controlFilter.value = "";
+        requiredFilter.checked = false;
         sortState.column = null;
         sortState.direction = "asc";
         updateSortIcons();
@@ -514,6 +541,7 @@
     });
 
     controlFilter.addEventListener("change", applyFiltersAndRender);
+    requiredFilter.addEventListener("change", applyFiltersAndRender);
 
     searchInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
@@ -526,10 +554,11 @@
     toggleOptionsColumn.addEventListener("change", applyColumnVisibility);
     toggleConditionColumn.addEventListener("change", applyColumnVisibility);
 
-    // initialer Zustand: alle 3 Detailspalten ausgeblendet
+    // initialer Zustand: Detailspalten ausgeblendet, keine Sortierung
     toggleControlColumn.checked = false;
     toggleOptionsColumn.checked = false;
     toggleConditionColumn.checked = false;
+    requiredFilter.checked = false;
 
     updateSortIcons();
     applyColumnVisibility();

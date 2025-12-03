@@ -33,6 +33,12 @@ table#resultTable td {
     font-size: 0.8rem;
 }
 
+/* required-Spalte */
+.required-cell {
+    text-align: center;
+    font-weight: bold;
+}
+
 /* Header klickbar, aber nicht selektierbar */
 #resultTable thead th {
     user-select: none;
