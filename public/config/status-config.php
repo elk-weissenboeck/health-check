@@ -1,10 +1,15 @@
 <?php
 // status-config.php
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 
 require __DIR__ . '/../../classes/myApiAuth.php';
 
-$configPath = __DIR__ . '/status.config.json';
-$backupDir  = __DIR__ . '/backup';
+$mainConfig  = __DIR__ . '/status.config.json';
+$adminConfig = __DIR__ . '/admin.status.config.json';
+$backupDir   = __DIR__ . '/backup';
+
 $auth = new myApiAuth(__DIR__ . '/../../tokens.php');
 
 // Anonymous ODER echter Client – ungültige Tokens werden geblockt
@@ -15,23 +20,37 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     // Datei einlesen
-    if (!file_exists($configPath)) {
+    if (!file_exists($mainConfig)) {
         http_response_code(404);
         echo json_encode(['error' => 'status.config.json nicht gefunden']);
         exit;
     }
 
-    $content = file_get_contents($configPath);
+    $content = file_get_contents($mainConfig);
     if ($content === false) {
         http_response_code(500);
         echo json_encode(['error' => 'Fehler beim Lesen der Datei']);
         exit;
     }
-
-    // Rohes JSON zurückgeben
+    
     header('Content-Type: application/json');
-    echo $content;
-    exit;
+
+    if($auth->clientHasRole($client, 'admin')){
+        $data1 = json_decode($content, true);
+        $data2 = json_decode(file_get_contents($adminConfig), true);
+        
+        // Safety: wenn groups nicht existiert, leeres Array
+        $groups1 = $data1['groups'] ?? [];
+        $groups2 = $data2['groups'] ?? [];
+        
+        $data1['groups'] = array_merge($groups1, $groups2);
+
+        echo json_encode($data1, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit;
+    } else {
+        echo $content;
+        exit;
+    }
 }
 
 if ($method === 'POST') {
@@ -55,7 +74,7 @@ if ($method === 'POST') {
     }
 
     // === Backup der ALTEN Version anlegen, falls vorhanden ===
-    if (file_exists($configPath)) {
+    if (file_exists($mainConfig)) {
         // Backup-Verzeichnis sicherstellen
         if (!is_dir($backupDir)) {
             if (!mkdir($backupDir, 0775, true) && !is_dir($backupDir)) {
@@ -70,7 +89,7 @@ if ($method === 'POST') {
         $backupFile = $backupDir . '/status.config.' . $timestamp . '.json';
 
         // Alte Datei in Backup kopieren
-        if (!copy($configPath, $backupFile)) {
+        if (!copy($mainConfig, $backupFile)) {
             http_response_code(500);
             echo json_encode(['error' => 'Backup der bestehenden Config ist fehlgeschlagen']);
             exit;
@@ -95,7 +114,7 @@ if ($method === 'POST') {
     }
 
     // === Neue Version schreiben ===
-    $result = file_put_contents($configPath, $rawBody, LOCK_EX);
+    $result = file_put_contents($mainConfig, $rawBody, LOCK_EX);
     if ($result === false) {
         http_response_code(500);
         echo json_encode(['error' => 'Fehler beim Schreiben der Datei']);
