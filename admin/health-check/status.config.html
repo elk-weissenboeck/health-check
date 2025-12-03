@@ -132,6 +132,13 @@
         return false;
       }
     }
+    
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
 
     async function saveConfig() {
       const isValid = validateJson();
@@ -143,11 +150,12 @@
 
       try {
         setStatus("Speichere …", "info");
+        const token = getCookie('UserToken');
         const res = await fetch("/dashboard/config/status-config.php", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer 840570d4daa3b68480165ec3f367cf119472f6cfb9a5799ab625fa0bdc1e1504"
+            "Authorization": "Bearer " + token
           },
           body: content
         });
