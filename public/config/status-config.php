@@ -22,6 +22,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     // Anonymous ODER echter Client – ungültige Tokens werden geblockt
     $client = $auth->requireClient();
+    
     $auth->logAction($client, 'read anonymous-config');
     
     // Datei einlesen
@@ -62,6 +63,7 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $client = $auth->requireAnyRole('admin');
+    //$client = $auth->requireAnyRole('admin', 'it');
     
     // Rohes Request-Body lesen
     $rawBody = file_get_contents('php://input');

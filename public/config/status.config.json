@@ -1,893 +1,1617 @@
 {
-  "version": 2,
-  "maintenance": {
-    "active": false,
-    "title": "Geplante Wartung",
-    "message": "Heute 22:00–23:00 Uhr",
-    "start": "2025-11-01T22:00:00+01:00",
-    "end": "2025-12-02T23:00:00+01:00"
-  },
-  "groups": [
-    {
-      "key": "hfsrv",
-      "title": "HybridForms Server",
-      "description": null,
-      "services": [
-        {
-          "active": false,
-          "key": "hfsrv-vendor",
-          "label": "Lieferant",
-          "keywords": ["hybridforms", "icomedias", "eckhardt", "bene"],
-          "owner": { "upn": "info@icomedias.com" }
-        },
-        {
-          "active": false,
-          "key": "hfsrv-elk-prod",
-          "label": "Elk (win9)",
-          "url": "https://forms.elk.at",
-          "method": "HEAD",
-          "warning": "enable CORS..",
-          "keywords": ["hybridforms", "forms.elk.at", "win9", "forms.elkschrems.co.at"],
-          "owner": { "upn": "georg.weissenboeck@elk.at" }
-        },
-        {
-          "key": "hfsrv-elkkampa-test",
-          "label": "Elk/Kampa (win82)",
-          "url": "https://forms-test.elkkampa.com/",
-          "method": "HEAD",
-          "warning": null,
-          "keywords": ["hybridforms", "forms.elkkampa.at", "win82"],
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "isDevEnv": true,
-          "headers": [
-             { "label": "Server", "name": "x-serverver" },
-             { "label": ".NET", "name": "x-nodever" }
-          ]
-        },
-        {
-          "key": "hfsrv-elkkampa-prod",
-          "label": "Elk/Kampa (win80)",
-          "url": "https://forms.elkkampa.com/",
-          "method": "HEAD",
-          "warning": null,
-          "keywords": ["hybridforms", "forms-test.elkkampa.at", "win80"],
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "headers": [
-             { "label": "Server", "name": "x-serverver" },
-             { "label": ".NET", "name": "x-nodever" }
-          ]
-        }
-      ]
+    "version": 2,
+    "maintenance": {
+        "active": false,
+        "title": "Geplante Wartung",
+        "message": "Heute 22:00–23:00 Uhr",
+        "start": "2025-11-01T22:00:00+01:00",
+        "end": "2025-12-02T23:00:00+01:00"
     },
-    {
-      "key": "levatis",
-      "title": "Levatis",
-      "description": null,
-      "services": [
+    "groups": [
         {
-          "active": false,
-          "key": "levatis-vendor",
-          "label": "Lieferant",
-          "owner": { "upn": "info@levatis.com" },
-          "keywords": ["levatis", "lieferant", "klumpat"]
-        },
-        {
-          "active": false,
-          "key": "levatis-prod",
-          "label": "Levatis",
-          "url": "https://start2.levatis.at/levatis4/login",
-          "method": "HEAD",
-          "warning": "CORS disabled",
-          "owner": { "upn": "support@levatis.com" },
-          "keywords": ["levatis", "lohnabrechnung", "klumpat"]
-        }
-      ]
-    },
-    {
-      "key": "foad",
-      "title": "FOAD / VisionMe",
-      "description": null,
-      "services": [
-        {
-          "active": false,
-          "key": "hf-vendor",
-          "label": "Lieferant",
-          "owner": { "upn": "info@visionme.de" }
-        },
-        {
-          "active": true,
-          "key": "foad-prod-ldap",
-          "label": "LDAP",
-          "url": "https://foad.elkkampa.com/api/status/ldap",
-          "method": "GET",
-          "warning": null,
-          "expect": { "jsonPath": "connected", "equals": true, "format": "bool" },
-          "owner": { "upn": "gabriele.schmid@elk.at" }
-        },
-        {
-          "active": true,
-          "key": "foad-prod-api",
-          "label": "API",
-          "url": "https://foad.elkkampa.com/api/status",
-          "method": "GET",
-          "warning": null,
-          "expect": { "jsonPath": "status", "equals": "up" },
-          "owner": { "upn": "gabriele.schmid@elk.at" }
-        },
-        {
-          "active": true,
-          "key": "foad-stage-ldap",
-          "label": "LDAP",
-          "url": "https://foad-stage.elkkampa.com/api/status/ldap",
-          "method": "GET",
-          "isDevEnv": true,
-          "warning": null,
-          "expect": { "jsonPath": "connected", "equals": true, "format": "bool" },
-          "owner": { "upn": "gabriele.schmid@elk.at" }
-        },
-        {
-          "active": true,
-          "key": "foad-stage-api",
-          "label": "API",
-          "url": "https://foad-stage.elkkampa.com/api/status",
-          "method": "GET",
-          "isDevEnv": true,
-          "warning": null,
-          "expect": { "jsonPath": "status", "equals": "up" },
-          "owner": { "upn": "gabriele.schmid@elk.at" }
-        }
-      ]
-    },
-    {
-      "key": "hfppl",
-      "title": "HybridForms Pipelines",
-      "description": "Datenüberleitung ElkAb <> HybridForms",
-      "services": [
-        {
-          "key": "hf-enterprised-full",
-          "label": "Unternehmensdaten alle Stages",
-          "url": "proxy/proxy.php?key=hf-enterprise-full",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        },
-        {
-          "key": "hf-enterprised-quick",
-          "label": "Unternehmensdaten für S1 / S5+S6",
-          "url": "proxy/proxy.php?key=hf-enterprise-quick",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        },
-        {
-          "key": "hf-hauseubergabe-ninox",
-          "label": "Hauseubergabe Ninox",
-          "url": "proxy/proxy.php?key=hf-hauseubergabe-ninox",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        },
-        {
-          "key": "hf-hauseubergabe-documents",
-          "label": "Hauseubergabe Dokumente",
-          "url": "proxy/proxy.php?key=hf-hauseubergabe-documents",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        },
-        {
-          "key": "hf-hauseubergabe-pictures",
-          "label": "Hauseubergabe Fotos",
-          "url": "proxy/proxy.php?key=hf-hauseubergabe-pictures",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "mantis": {
-            "url": "/mantis/getTickets.php",
-            "queryParams": [
-              { "key": "projectId", "value": "15;17" },
-              { "key": "filterByTag", "value": "pinnedToHC" }
+            "key": "hfsrv",
+            "title": "HybridForms Server",
+            "description": null,
+            "services": [
+                {
+                    "active": false,
+                    "key": "hfsrv-vendor",
+                    "label": "Lieferant",
+                    "keywords": [
+                        "hybridforms",
+                        "icomedias",
+                        "eckhardt",
+                        "bene"
+                    ],
+                    "owner": {
+                        "upn": "info@icomedias.com"
+                    }
+                },
+                {
+                    "active": false,
+                    "key": "hfsrv-elk-prod",
+                    "label": "Elk (win9)",
+                    "url": "https:\/\/forms.elk.at",
+                    "method": "HEAD",
+                    "warning": "enable CORS..",
+                    "keywords": [
+                        "hybridforms",
+                        "forms.elk.at",
+                        "win9",
+                        "forms.elkschrems.co.at"
+                    ],
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    }
+                },
+                {
+                    "key": "hfsrv-elkkampa-test",
+                    "label": "Elk\/Kampa (win82)",
+                    "url": "https:\/\/forms-test.elkkampa.com\/",
+                    "method": "HEAD",
+                    "warning": null,
+                    "keywords": [
+                        "hybridforms",
+                        "forms.elkkampa.at",
+                        "win82"
+                    ],
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "isDevEnv": true,
+                    "headers": [
+                        {
+                            "label": "Server",
+                            "name": "x-serverver"
+                        },
+                        {
+                            "label": ".NET",
+                            "name": "x-nodever"
+                        }
+                    ]
+                },
+                {
+                    "key": "hfsrv-elkkampa-prod",
+                    "label": "Elk\/Kampa (win80)",
+                    "url": "https:\/\/forms.elkkampa.com\/",
+                    "method": "HEAD",
+                    "warning": null,
+                    "keywords": [
+                        "hybridforms",
+                        "forms-test.elkkampa.at",
+                        "win80"
+                    ],
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "headers": [
+                        {
+                            "label": "Server",
+                            "name": "x-serverver"
+                        },
+                        {
+                            "label": ".NET",
+                            "name": "x-nodever"
+                        }
+                    ]
+                }
             ]
-          },
-          "glpiURL": "/glpi/getTickets.php",
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
         },
         {
-          "key": "hf-maengelkostenanzeige",
-          "label": " Maengel-Kosten-Anzeige",
-          "url": "proxy/proxy.php?key=hf-maengelkostenanzeige",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
+            "key": "levatis",
+            "title": "Levatis",
+            "description": null,
+            "services": [
+                {
+                    "active": false,
+                    "key": "levatis-vendor",
+                    "label": "Lieferant",
+                    "owner": {
+                        "upn": "info@levatis.com"
+                    },
+                    "keywords": [
+                        "levatis",
+                        "lieferant",
+                        "klumpat"
+                    ]
+                },
+                {
+                    "active": false,
+                    "key": "levatis-prod",
+                    "label": "Levatis",
+                    "url": "https:\/\/start2.levatis.at\/levatis4\/login",
+                    "method": "HEAD",
+                    "warning": "CORS disabled",
+                    "owner": {
+                        "upn": "support@levatis.com"
+                    },
+                    "keywords": [
+                        "levatis",
+                        "lohnabrechnung",
+                        "klumpat"
+                    ]
+                }
+            ]
         },
         {
-          "key": "hf-planbesprechung",
-          "label": "Planbesprechung",
-          "url": "proxy/proxy.php?key=hf-planbesprechung",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
+            "key": "foad",
+            "title": "FOAD \/ VisionMe",
+            "description": null,
+            "services": [
+                {
+                    "active": false,
+                    "key": "hf-vendor",
+                    "label": "Lieferant",
+                    "owner": {
+                        "upn": "info@visionme.de"
+                    }
+                },
+                {
+                    "active": true,
+                    "key": "foad-prod-ldap",
+                    "label": "LDAP",
+                    "url": "https:\/\/foad.elkkampa.com\/api\/status\/ldap",
+                    "method": "GET",
+                    "warning": null,
+                    "expect": {
+                        "jsonPath": "connected",
+                        "equals": true,
+                        "format": "bool"
+                    },
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    }
+                },
+                {
+                    "active": true,
+                    "key": "foad-prod-api",
+                    "label": "API",
+                    "url": "https:\/\/foad.elkkampa.com\/api\/status",
+                    "method": "GET",
+                    "warning": null,
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    },
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    }
+                },
+                {
+                    "active": true,
+                    "key": "foad-stage-ldap",
+                    "label": "LDAP",
+                    "url": "https:\/\/foad-stage.elkkampa.com\/api\/status\/ldap",
+                    "method": "GET",
+                    "isDevEnv": true,
+                    "warning": null,
+                    "expect": {
+                        "jsonPath": "connected",
+                        "equals": true,
+                        "format": "bool"
+                    },
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    }
+                },
+                {
+                    "active": true,
+                    "key": "foad-stage-api",
+                    "label": "API",
+                    "url": "https:\/\/foad-stage.elkkampa.com\/api\/status",
+                    "method": "GET",
+                    "isDevEnv": true,
+                    "warning": null,
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    },
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    }
+                }
+            ]
         },
         {
-          "key": "hf-protokolle",
-          "label": "Alle Protokolle",
-          "url": "proxy/proxy.php?key=hf-protokolle",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
+            "key": "hfppl",
+            "title": "HybridForms Pipelines",
+            "description": "Datenüberleitung ElkAb <> HybridForms",
+            "services": [
+                {
+                    "key": "hf-enterprised-full",
+                    "label": "Unternehmensdaten alle Stages",
+                    "url": "proxy\/proxy.php?key=hf-enterprise-full",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-enterprised-quick",
+                    "label": "Unternehmensdaten für S1 \/ S5+S6",
+                    "url": "proxy\/proxy.php?key=hf-enterprise-quick",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-hauseubergabe-ninox",
+                    "label": "Hauseubergabe Ninox",
+                    "url": "proxy\/proxy.php?key=hf-hauseubergabe-ninox",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-hauseubergabe-documents",
+                    "label": "Hauseubergabe Dokumente",
+                    "url": "proxy\/proxy.php?key=hf-hauseubergabe-documents",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-hauseubergabe-pictures",
+                    "label": "Hauseubergabe Fotos",
+                    "url": "proxy\/proxy.php?key=hf-hauseubergabe-pictures",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "mantis": {
+                        "url": "\/mantis\/getTickets.php",
+                        "queryParams": [
+                            {
+                                "key": "projectId",
+                                "value": "15;17"
+                            },
+                            {
+                                "key": "filterByTag",
+                                "value": "pinnedToHC"
+                            }
+                        ]
+                    },
+                    "glpiURL": "\/glpi\/getTickets.php",
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-maengelkostenanzeige",
+                    "label": " Maengel-Kosten-Anzeige",
+                    "url": "proxy\/proxy.php?key=hf-maengelkostenanzeige",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-planbesprechung",
+                    "label": "Planbesprechung",
+                    "url": "proxy\/proxy.php?key=hf-planbesprechung",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-protokolle",
+                    "label": "Alle Protokolle",
+                    "url": "proxy\/proxy.php?key=hf-protokolle",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-qualitaetsmanagement",
+                    "label": "Qualitaetsmanagement",
+                    "url": "proxy\/proxy.php?key=hf-qualitaetsmanagement",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-regieschein",
+                    "label": "Regieschein",
+                    "url": "proxy\/proxy.php?key=hf-regieschein",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "hf-wochenbericht",
+                    "label": "Wochenbericht",
+                    "url": "proxy\/proxy.php?key=hf-wochenbericht",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "key": "hf-qualitaetsmanagement",
-          "label": "Qualitaetsmanagement",
-          "url": "proxy/proxy.php?key=hf-qualitaetsmanagement",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
+            "key": "bemusterung-intern",
+            "title": "Bemusterung intern",
+            "description": "Legacy Bemusterung",
+            "services": [
+                {
+                    "active": true,
+                    "key": "bemu-legacy-login",
+                    "label": "Login",
+                    "url": "https:\/\/bemusterung.elkschrems.co.at\/login.php",
+                    "method": "HEAD",
+                    "warning": null,
+                    "owner": {
+                        "upn": "arnold.rauscher@elk.at"
+                    }
+                },
+                {
+                    "active": true,
+                    "key": "bemu-legacy-elkab",
+                    "label": "Anbindung Elk-AB",
+                    "url": "https:\/\/bemusterung.elkschrems.co.at\/status.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "connected",
+                        "equals": true,
+                        "format": "bool"
+                    }
+                },
+                {
+                    "active": true,
+                    "key": "bemu-legacy-status",
+                    "label": "Status",
+                    "url": "https:\/\/bemusterung.elkschrems.co.at\/status.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "fields": [
+                        {
+                            "label": "Websrv",
+                            "path": "webserver"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "phpVersion"
+                        },
+                        {
+                            "label": "docRoot",
+                            "path": "docRoot"
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "key": "hf-regieschein",
-          "label": "Regieschein",
-          "url": "proxy/proxy.php?key=hf-regieschein",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
+            "key": "online-bemusterung",
+            "title": "Bemusterung online",
+            "description": "(Web-Tool)",
+            "services": [
+                {
+                    "key": "bmu-frontend",
+                    "label": "Frontend",
+                    "url": "https:\/\/bemusterung.elk.at\/login\/",
+                    "method": "HEAD",
+                    "warning": null,
+                    "owner": {
+                        "upn": "office@webdesignwien.co.at"
+                    }
+                },
+                {
+                    "key": "getArticles",
+                    "label": "API Artikeln",
+                    "url": "https:\/\/bemu-api.elk.at\/getArticles.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    },
+                    "fields": [
+                        {
+                            "label": "Items",
+                            "path": "results.length",
+                            "format": "number"
+                        }
+                    ]
+                },
+                {
+                    "key": "getArticlesById",
+                    "label": "API Artikeldetail",
+                    "url": "https:\/\/bemu-api.elk.at\/getArticleById.php?id=AL-VISAAPP-00000",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    }
+                },
+                {
+                    "key": "getGroups",
+                    "label": "API Gruppen",
+                    "url": "https:\/\/bemu-api.elk.at\/getGroups.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    },
+                    "fields": [
+                        {
+                            "label": "Items",
+                            "path": "results.length",
+                            "format": "number"
+                        }
+                    ]
+                },
+                {
+                    "key": "getStyleGroups",
+                    "label": "API Designgruppen",
+                    "url": "https:\/\/bemu-api.elk.at\/getStyleGroups.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    },
+                    "fields": [
+                        {
+                            "label": "Items",
+                            "path": "results.length",
+                            "format": "number"
+                        }
+                    ]
+                },
+                {
+                    "key": "getPriceGroups",
+                    "label": "API Preisgruppen",
+                    "url": "https:\/\/bemu-api.elk.at\/getPriceGroups.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    },
+                    "fields": [
+                        {
+                            "label": "Items",
+                            "path": "results.length",
+                            "format": "number"
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "key": "hf-wochenbericht",
-          "label": "Wochenbericht",
-          "url": "proxy/proxy.php?key=hf-wochenbericht",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
+            "key": "odoo-prod",
+            "title": "Odoo",
+            "description": null,
+            "services": [
+                {
+                    "key": "odoo-prod-status",
+                    "label": "Core",
+                    "url": "proxy\/proxy.php?key=odoo-prod",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "franz.habison@elk.at"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "result.server_version"
+                        }
+                    ]
+                },
+                {
+                    "key": "odoo-prod-login",
+                    "label": "Frontend Login",
+                    "url": "https:\/\/odoo-elk.elkschrems.co.at\/web\/login",
+                    "method": "HEAD",
+                    "warning": null
+                },
+                {
+                    "key": "odoo-prod-api-status",
+                    "label": "API Bewerber Status",
+                    "url": "https:\/\/odoo-api.elk.at\/status.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "franz.habison@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "odoo"
+                        }
+                    ]
+                },
+                {
+                    "key": "odoo-prod-api-getJobs",
+                    "label": "API Jobs",
+                    "url": "https:\/\/odoo-api.elk.at\/getJobs.php?v2",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "franz.habison@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    },
+                    "fields": [
+                        {
+                            "label": "Items",
+                            "path": "results.length"
+                        }
+                    ]
+                },
+                {
+                    "key": "odoo-prod-api-getReferences",
+                    "label": "API Referenzen",
+                    "url": "https:\/\/odoo-api.elk.at\/getReferences.php?v2",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "franz.habison@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    },
+                    "fields": [
+                        {
+                            "label": "Items",
+                            "path": "results.length"
+                        }
+                    ]
+                },
+                {
+                    "key": "odoo-prod-pipeline-check",
+                    "label": "Pipeline Check",
+                    "url": "proxy\/proxy.php?key=odoo-prod-pipeline-check",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "franz.habison@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "odoo-prod-pipeline-transport",
+                    "label": "Pipeline Transport",
+                    "url": "proxy\/proxy.php?key=odoo-prod-pipeline-transport",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "franz.habison@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "html5app",
+            "title": "Html5App",
+            "description": "Hausfinder im XP-Center",
+            "services": [
+                {
+                    "key": "html5app-ppl-prod",
+                    "label": "Pipeline",
+                    "url": "proxy\/proxy.php?key=html5app-ppl-prod",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "html5app-api-status",
+                    "label": "API Status",
+                    "url": "https:\/\/html5app-prod.elk.at\/",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    }
+                },
+                {
+                    "key": "html5app-allHouses",
+                    "label": "API Sortiment",
+                    "url": "https:\/\/html5app-prod.elk.at\/v1\/all-houses?v2",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "results",
+                        "minLen": 1
+                    },
+                    "fields": [
+                        {
+                            "label": "Items",
+                            "path": "results.length",
+                            "format": "number"
+                        }
+                    ]
+                },
+                {
+                    "key": "html5app-houseById",
+                    "label": "API Detailseite",
+                    "url": "https:\/\/html5app-prod.elk.at\/v1\/houses\/317",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "title",
+                        "equals": "Now 129"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "webseiten",
+            "title": "Webseiten",
+            "description": "Öffentliche und interne Seiten",
+            "services": [
+                {
+                    "key": "elk.at-prod",
+                    "label": "elk.at",
+                    "url": "https:\/\/www.elk.at",
+                    "method": "HEAD",
+                    "warning": null,
+                    "owner": {
+                        "upn": "andreas.negrei@elk.at"
+                    }
+                },
+                {
+                    "key": "rex-elk-at-prod",
+                    "label": "elk.at Redaxo",
+                    "url": "proxy\/proxy.php?key=rex-elk-at-prod",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "environment",
+                        "equals": "prod"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "rexVersion"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "phpVersion"
+                        },
+                        {
+                            "label": "docRoot",
+                            "path": "docRoot"
+                        }
+                    ]
+                },
+                {
+                    "key": "elkhaus.de-prod",
+                    "label": "elkhaus.de",
+                    "url": "https:\/\/www.elkhaus.de",
+                    "method": "HEAD",
+                    "warning": null,
+                    "owner": {
+                        "upn": "andreas.negrei@elk.at"
+                    }
+                },
+                {
+                    "key": "rex-elkhaus-de-prod",
+                    "label": "elkhaus.de Redaxo",
+                    "url": "proxy\/proxy.php?key=rex-elkhaus-de-prod",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "andreas.negrei@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "environment",
+                        "equals": "prod"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "rexVersion"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "phpVersion"
+                        },
+                        {
+                            "label": "docRoot",
+                            "path": "docRoot"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "moodle",
+            "title": "Moodle",
+            "description": "Online-Akademie",
+            "services": [
+                {
+                    "key": "moodle",
+                    "label": "Status",
+                    "url": "proxy\/proxy.php?key=moodle",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "juergen.ruso@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "userid",
+                        "equals": 1478,
+                        "format": "number"
+                    },
+                    "fields": [
+                        {
+                            "label": "Release",
+                            "path": "release"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "lis-legacy",
+            "title": "LIS (Legacy)",
+            "description": "Lieferanten-Info-System",
+            "services": [
+                {
+                    "key": "lis-legacy-login",
+                    "label": "Login",
+                    "url": "https:\/\/lis.elk.at",
+                    "method": "HEAD",
+                    "warning": null,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    }
+                },
+                {
+                    "key": "lis-legacy-status",
+                    "label": "Status",
+                    "url": "proxy\/proxy.php?key=lis-legacy-status",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    },
+                    "fields": [
+                        {
+                            "label": "Websrv",
+                            "path": "webserver"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "phpVersion"
+                        },
+                        {
+                            "label": "docRoot",
+                            "path": "docRoot"
+                        }
+                    ]
+                },
+                {
+                    "key": "lis-legacy-pp",
+                    "label": "Pipeline",
+                    "url": "proxy\/proxy.php?key=lis-legacy-pp",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "aktspeichern",
+            "title": "Aktspeichern",
+            "description": null,
+            "services": [
+                {
+                    "key": "aktspeichern-prod-api",
+                    "label": "API",
+                    "url": "https:\/\/secweb.elkschrems.co.at\/status",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    },
+                    "fields": [
+                        {
+                            "label": "Websrv",
+                            "path": "webserver"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "phpVersion"
+                        },
+                        {
+                            "label": "docRoot",
+                            "path": "docRoot"
+                        }
+                    ]
+                },
+                {
+                    "key": "aktspeichern-test-api",
+                    "label": "API",
+                    "url": "https:\/\/sectest.elkschrems.co.at\/status",
+                    "method": "GET",
+                    "warning": null,
+                    "isDevEnv": true,
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    },
+                    "fields": [
+                        {
+                            "label": "Websrv",
+                            "path": "webserver"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "phpVersion"
+                        },
+                        {
+                            "label": "docRoot",
+                            "path": "docRoot"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "elkbau-calc",
+            "title": "Elkbau Kalkulations Tool",
+            "description": "Tool von Robert Sachetti",
+            "services": [
+                {
+                    "key": "elkbau-frontend",
+                    "label": "Frontend",
+                    "url": "https:\/\/projekte.elkbau.at\/login",
+                    "method": "HEAD",
+                    "warning": null,
+                    "owner": {
+                        "upn": "sro@sro.at"
+                    }
+                },
+                {
+                    "key": "elkbau-calc-prod",
+                    "label": "Pipeline",
+                    "url": "proxy\/proxy.php?key=elkbau-calc-prod",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "sro@sro.at"
+                    },
+                    "expect": {
+                        "jsonPath": "result",
+                        "equals": "SUCCESS"
+                    },
+                    "fields": [
+                        {
+                            "label": "Letzter Lauf",
+                            "path": "timestamp",
+                            "format": "datetime"
+                        },
+                        {
+                            "label": "Dauer",
+                            "path": "duration",
+                            "format": "minutes"
+                        }
+                    ]
+                },
+                {
+                    "key": "elkbau-api-prod",
+                    "label": "API Status",
+                    "url": "https:\/\/api-projekte.elkbau.at\/",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "sro@sro.at"
+                    },
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    },
+                    "fields": [
+                        {
+                            "label": "debug",
+                            "path": "debug",
+                            "format": "bool"
+                        },
+                        {
+                            "label": "laravel",
+                            "path": "laravel"
+                        }
+                    ]
+                },
+                {
+                    "key": "elkbau-api-test",
+                    "label": "API Status",
+                    "url": "https:\/\/api-test-projekte.elkbau.at\/",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "sro@sro.at"
+                    },
+                    "isDevEnv": true,
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "up"
+                    },
+                    "fields": [
+                        {
+                            "label": "debug",
+                            "path": "debug",
+                            "format": "bool"
+                        },
+                        {
+                            "label": "laravel",
+                            "path": "laravel"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "nextcloud",
+            "title": "Nextcloud",
+            "description": "Dokumentenablage",
+            "services": [
+                {
+                    "key": "nc-vis",
+                    "label": "VIS",
+                    "url": "proxy\/proxy.php?key=nc-vis",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "ocs.meta.status",
+                        "equals": "ok"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "ocs.data.nextcloud.system.version"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "ocs.data.server.php.version"
+                        },
+                        {
+                            "label": "Websrv",
+                            "path": "ocs.data.server.webserver"
+                        },
+                        {
+                            "label": "free Space",
+                            "path": "ocs.data.nextcloud.system.freespace",
+                            "format": "bytes"
+                        }
+                    ]
+                },
+                {
+                    "key": "nc-lis2",
+                    "label": "LIS 2",
+                    "url": "proxy\/proxy.php?key=nc-lis2",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "ocs.meta.status",
+                        "equals": "ok"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "ocs.data.nextcloud.system.version"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "ocs.data.server.php.version"
+                        },
+                        {
+                            "label": "Websrv",
+                            "path": "ocs.data.server.webserver"
+                        },
+                        {
+                            "label": "free Space",
+                            "path": "ocs.data.nextcloud.system.freespace",
+                            "format": "bytes"
+                        }
+                    ]
+                },
+                {
+                    "key": "nc-fileshare",
+                    "label": "Fileshare",
+                    "url": "proxy\/proxy.php?key=nc-fileshare",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "georg.weissenboeck@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "ocs.meta.status",
+                        "equals": "ok"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "ocs.data.nextcloud.system.version"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "ocs.data.server.php.version"
+                        },
+                        {
+                            "label": "Websrv",
+                            "path": "ocs.data.server.webserver"
+                        },
+                        {
+                            "label": "free Space",
+                            "path": "ocs.data.nextcloud.system.freespace",
+                            "format": "bytes"
+                        }
+                    ]
+                },
+                {
+                    "key": "nc-kpat-prod",
+                    "label": "Kundenportal AT",
+                    "url": "proxy\/proxy.php?key=nc-kpat-prod",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "ocs.meta.status",
+                        "equals": "ok"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "ocs.data.nextcloud.system.version"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "ocs.data.server.php.version"
+                        },
+                        {
+                            "label": "Websrv",
+                            "path": "ocs.data.server.webserver"
+                        },
+                        {
+                            "label": "free Space",
+                            "path": "ocs.data.nextcloud.system.freespace",
+                            "format": "bytes"
+                        }
+                    ]
+                },
+                {
+                    "key": "nc-kpat-stage",
+                    "label": "Kundenportal AT",
+                    "url": "proxy\/proxy.php?key=nc-kpat-stage",
+                    "method": "GET",
+                    "warning": null,
+                    "isDevEnv": true,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "ocs.meta.status",
+                        "equals": "ok"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "ocs.data.nextcloud.system.version"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "ocs.data.server.php.version"
+                        },
+                        {
+                            "label": "Websrv",
+                            "path": "ocs.data.server.webserver"
+                        },
+                        {
+                            "label": "free Space",
+                            "path": "ocs.data.nextcloud.system.freespace",
+                            "format": "bytes"
+                        }
+                    ]
+                },
+                {
+                    "key": "nc-kpde-prod",
+                    "label": "Kundenportal DE",
+                    "url": "proxy\/proxy.php?key=nc-kpde-prod",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "ocs.meta.status",
+                        "equals": "ok"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "ocs.data.nextcloud.system.version"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "ocs.data.server.php.version"
+                        },
+                        {
+                            "label": "Websrv",
+                            "path": "ocs.data.server.webserver"
+                        },
+                        {
+                            "label": "free Space",
+                            "path": "ocs.data.nextcloud.system.freespace",
+                            "format": "bytes"
+                        }
+                    ]
+                },
+                {
+                    "active": true,
+                    "key": "nc-kpde-stage",
+                    "label": "Kundenportal DE",
+                    "url": "proxy\/proxy.php?key=nc-kpde-stage",
+                    "method": "GET",
+                    "warning": null,
+                    "isDevEnv": true,
+                    "owner": {
+                        "upn": "gabriele.schmid@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "ocs.meta.status",
+                        "equals": "ok"
+                    },
+                    "fields": [
+                        {
+                            "label": "Version",
+                            "path": "ocs.data.nextcloud.system.version"
+                        },
+                        {
+                            "label": "PHP",
+                            "path": "ocs.data.server.php.version"
+                        },
+                        {
+                            "label": "Websrv",
+                            "path": "ocs.data.server.webserver"
+                        },
+                        {
+                            "label": "free Space",
+                            "path": "ocs.data.nextcloud.system.freespace",
+                            "format": "bytes"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "not-classified",
+            "title": "Sonstiges",
+            "description": null,
+            "services": [
+                {
+                    "active": false,
+                    "key": "ncfd-ninox",
+                    "label": "Ninox",
+                    "keywords": [
+                        "ninox",
+                        "klumpat"
+                    ],
+                    "owner": {
+                        "upn": "s.fach@q23.de"
+                    }
+                },
+                {
+                    "active": false,
+                    "key": "ncfd-glpi",
+                    "label": "GLPI",
+                    "keywords": [
+                        "glpi",
+                        "ticketsystem",
+                        "helpdesk",
+                        "hotline"
+                    ],
+                    "owner": {
+                        "upn": "paul.koepf@elk.at"
+                    }
+                },
+                {
+                    "active": false,
+                    "key": "ncfd-powerbi",
+                    "label": "PowerBI",
+                    "keywords": [
+                        "powerbi"
+                    ],
+                    "owner": {
+                        "upn": "patrick.weixelbraun@elk.at"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "rs2",
+            "title": "RS2",
+            "description": null,
+            "services": [
+                {
+                    "active": true,
+                    "key": "levatis-prod",
+                    "label": "TWZConnector",
+                    "url": "rs2\/twz-connector.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "juergen.ruso@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "OK"
+                    },
+                    "keywords": [
+                        "rs2",
+                        "aptean",
+                        "twz"
+                    ],
+                    "fields": [
+                        {
+                            "label": "Alter in min",
+                            "path": "age_milliseconds",
+                            "format": "minutes"
+                        },
+                        {
+                            "label": "Last Modified",
+                            "path": "last_modified",
+                            "format": "datetime"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "rs2",
+            "title": "RS2",
+            "description": null,
+            "services": [
+                {
+                    "active": true,
+                    "key": "levatis-prod",
+                    "label": "TWZConnector",
+                    "url": "rs2\/twz-connector.php",
+                    "method": "GET",
+                    "warning": null,
+                    "owner": {
+                        "upn": "juergen.ruso@elk.at"
+                    },
+                    "expect": {
+                        "jsonPath": "status",
+                        "equals": "OK"
+                    },
+                    "keywords": [
+                        "rs2",
+                        "aptean",
+                        "twz"
+                    ],
+                    "fields": [
+                        {
+                            "label": "Alter in min",
+                            "path": "age_milliseconds",
+                            "format": "minutes"
+                        },
+                        {
+                            "label": "Last Modified",
+                            "path": "last_modified",
+                            "format": "datetime"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
-    },
-    {
-      "key": "bemusterung-intern",
-      "title": "Bemusterung intern",
-      "description": "Legacy Bemusterung",
-      "services": [
-        {
-          "active": true,
-          "key": "bemu-legacy-login",
-          "label": "Login",
-          "url": "https://bemusterung.elkschrems.co.at/login.php",
-          "method": "HEAD",
-          "warning": null,
-          "owner": { "upn": "arnold.rauscher@elk.at" }
-        },
-        {
-          "active": true,
-          "key": "bemu-legacy-elkab",
-          "label": "Anbindung Elk-AB",
-          "url": "https://bemusterung.elkschrems.co.at/status.php",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "connected", "equals": true, "format": "bool" }
-        },
-        {
-          "active": true,
-          "key": "bemu-legacy-status",
-          "label": "Status",
-          "url": "https://bemusterung.elkschrems.co.at/status.php",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "fields": [
-            { "label": "Websrv", "path": "webserver" },
-            { "label": "PHP", "path": "phpVersion" },
-            { "label": "docRoot", "path": "docRoot" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "online-bemusterung",
-      "title": "Bemusterung online",
-      "description": "(Web-Tool)",
-      "services": [
-        {
-          "key": "bmu-frontend",
-          "label": "Frontend",
-          "url": "https://bemusterung.elk.at/login/",
-          "method": "HEAD",
-          "warning": null,
-          "owner": { "upn": "office@webdesignwien.co.at" }
-        },
-        {
-          "key": "getArticles",
-          "label": "API Artikeln",
-          "url": "https://bemu-api.elk.at/getArticles.php",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 },
-          "fields": [
-            { "label": "Items", "path": "results.length", "format": "number" }
-          ]
-        },
-        {
-          "key": "getArticlesById",
-          "label": "API Artikeldetail",
-          "url": "https://bemu-api.elk.at/getArticleById.php?id=AL-VISAAPP-00000",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 }
-        },
-        {
-          "key": "getGroups",
-          "label": "API Gruppen",
-          "url": "https://bemu-api.elk.at/getGroups.php",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 },
-          "fields": [
-            { "label": "Items", "path": "results.length", "format": "number" }
-          ]
-        },
-        {
-          "key": "getStyleGroups",
-          "label": "API Designgruppen",
-          "url": "https://bemu-api.elk.at/getStyleGroups.php",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 },
-          "fields": [
-            { "label": "Items", "path": "results.length", "format": "number" }
-          ]
-        },
-        {
-          "key": "getPriceGroups",
-          "label": "API Preisgruppen",
-          "url": "https://bemu-api.elk.at/getPriceGroups.php",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 },
-          "fields": [
-            { "label": "Items", "path": "results.length", "format": "number" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "odoo-prod",
-      "title": "Odoo",
-      "description": null,
-      "services": [
-        {
-          "key": "odoo-prod-status",
-          "label": "Core",
-          "url": "proxy/proxy.php?key=odoo-prod",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "franz.habison@elk.at" },
-          "fields": [
-            { "label": "Version", "path": "result.server_version" }
-          ]
-        },
-        {
-          "key": "odoo-prod-login",
-          "label": "Frontend Login",
-          "url": "https://odoo-elk.elkschrems.co.at/web/login",
-          "method": "HEAD",
-          "warning": null
-        },
-        {
-          "key": "odoo-prod-api-status",
-          "label": "API Bewerber Status",
-          "url": "https://odoo-api.elk.at/status.php",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "franz.habison@elk.at" },
-          "expect": { "jsonPath": "status", "equals": "up" },
-          "fields": [
-            { "label": "Version", "path": "odoo" }
-          ]
-        },
-        {
-          "key": "odoo-prod-api-getJobs",
-          "label": "API Jobs",
-          "url": "https://odoo-api.elk.at/getJobs.php?v2",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "franz.habison@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 },
-          "fields": [
-            { "label": "Items", "path": "results.length" }
-          ]        
-        },
-        {
-          "key": "odoo-prod-api-getReferences",
-          "label": "API Referenzen",
-          "url": "https://odoo-api.elk.at/getReferences.php?v2",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "franz.habison@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 },
-          "fields": [
-            { "label": "Items", "path": "results.length" }
-          ]
-        },
-        {
-          "key": "odoo-prod-pipeline-check",
-          "label": "Pipeline Check",
-          "url": "proxy/proxy.php?key=odoo-prod-pipeline-check",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "franz.habison@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        },
-        {
-          "key": "odoo-prod-pipeline-transport",
-          "label": "Pipeline Transport",
-          "url": "proxy/proxy.php?key=odoo-prod-pipeline-transport",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "franz.habison@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "html5app",
-      "title": "Html5App",
-      "description": "Hausfinder im XP-Center",
-      "services": [
-        {
-          "key": "html5app-ppl-prod",
-          "label": "Pipeline",
-          "url": "proxy/proxy.php?key=html5app-ppl-prod",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        },
-        {
-          "key": "html5app-api-status",
-          "label": "API Status",
-          "url": "https://html5app-prod.elk.at/",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "status", "equals": "up" }
-        },
-        {
-          "key": "html5app-allHouses",
-          "label": "API Sortiment",
-          "url": "https://html5app-prod.elk.at/v1/all-houses?v2",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "results", "minLen": 1 },
-          "fields": [
-            { "label": "Items", "path": "results.length", "format": "number" }
-          ]
-        },
-        {
-          "key": "html5app-houseById",
-          "label": "API Detailseite",
-          "url": "https://html5app-prod.elk.at/v1/houses/317",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "title", "equals": "Now 129" }
-        }
-      ]
-    },
-    {
-      "key": "webseiten",
-      "title": "Webseiten",
-      "description": "Öffentliche und interne Seiten",
-      "services": [
-        {
-          "key": "elk.at-prod",
-          "label": "elk.at",
-          "url": "https://www.elk.at",
-          "method": "HEAD",
-          "warning": null,
-          "owner": { "upn": "andreas.negrei@elk.at" }
-        },
-        {
-          "key": "rex-elk-at-prod",
-          "label": "elk.at Redaxo",
-          "url": "proxy/proxy.php?key=rex-elk-at-prod",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "environment", "equals": "prod"  },
-          "fields": [
-            { "label": "Version", "path": "rexVersion" },
-            { "label": "PHP", "path": "phpVersion" },
-            { "label": "docRoot", "path": "docRoot" }
-          ]
-        },
-        {
-          "key": "elkhaus.de-prod",
-          "label": "elkhaus.de",
-          "url": "https://www.elkhaus.de",
-          "method": "HEAD",
-          "warning": null,
-          "owner": { "upn": "andreas.negrei@elk.at" }
-        },
-        {
-          "key": "rex-elkhaus-de-prod",
-          "label": "elkhaus.de Redaxo",
-          "url": "proxy/proxy.php?key=rex-elkhaus-de-prod",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "andreas.negrei@elk.at" },
-          "expect": { "jsonPath": "environment", "equals": "prod"  },
-          "fields": [
-            { "label": "Version", "path": "rexVersion" },
-            { "label": "PHP", "path": "phpVersion" },
-            { "label": "docRoot", "path": "docRoot" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "moodle",
-      "title": "Moodle",
-      "description": "Online-Akademie",
-      "services": [
-        {
-          "key": "moodle",
-          "label": "Status",
-          "url": "proxy/proxy.php?key=moodle",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "juergen.ruso@elk.at" },
-          "expect": { "jsonPath": "userid", "equals": 1478, "format":  "number" },
-          "fields": [
-            { "label": "Release", "path": "release" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "lis-legacy",
-      "title": "LIS (Legacy)",
-      "description": "Lieferanten-Info-System",
-      "services": [
-        {
-          "key": "lis-legacy-login",
-          "label": "Login",
-          "url": "https://lis.elk.at",
-          "method": "HEAD",
-          "warning": null,
-          "owner": { "upn": "gabriele.schmid@elk.at" }
-        },
-        {
-          "key": "lis-legacy-status",
-          "label": "Status",
-          "url": "proxy/proxy.php?key=lis-legacy-status",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "gabriele.schmid@elk.at" },
-          "fields": [
-            { "label": "Websrv", "path": "webserver" },
-            { "label": "PHP", "path": "phpVersion" },
-            { "label": "docRoot", "path": "docRoot" }
-          ]
-        },
-        {
-          "key": "lis-legacy-pp",
-          "label": "Pipeline",
-          "url": "proxy/proxy.php?key=lis-legacy-pp",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "gabriele.schmid@elk.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "aktspeichern",
-      "title": "Aktspeichern",
-      "description": null,
-      "services": [
-        {
-          "key": "aktspeichern-prod-api",
-          "label": "API",
-          "url": "https://secweb.elkschrems.co.at/status",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "gabriele.schmid@elk.at" },
-          "expect": { "jsonPath": "status", "equals": "up" },
-          "fields": [
-            { "label": "Websrv", "path": "webserver" },
-            { "label": "PHP", "path": "phpVersion" },
-            { "label": "docRoot", "path": "docRoot" }
-          ]
-        },
-        {
-          "key": "aktspeichern-test-api",
-          "label": "API",
-          "url": "https://sectest.elkschrems.co.at/status",
-          "method": "GET",
-          "warning": null,
-          "isDevEnv": true,
-          "expect": { "jsonPath": "status", "equals": "up" },
-          "fields": [
-            { "label": "Websrv", "path": "webserver" },
-            { "label": "PHP", "path": "phpVersion" },
-            { "label": "docRoot", "path": "docRoot" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "elkbau-calc",
-      "title": "Elkbau Kalkulations Tool",
-      "description": "Tool von Robert Sachetti",
-      "services": [
-        {
-          "key": "elkbau-frontend",
-          "label": "Frontend",
-          "url": "https://projekte.elkbau.at/login",
-          "method": "HEAD",
-          "warning": null,
-          "owner": { "upn": "sro@sro.at" }
-        },
-        {
-          "key": "elkbau-calc-prod",
-          "label": "Pipeline",
-          "url": "proxy/proxy.php?key=elkbau-calc-prod",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "sro@sro.at" },
-          "expect": { "jsonPath": "result", "equals": "SUCCESS" },
-          "fields": [
-            { "label": "Letzter Lauf", "path": "timestamp", "format": "datetime" },
-            { "label": "Dauer", "path": "duration", "format": "minutes" }
-          ]
-        },
-        {
-          "key": "elkbau-api-prod",
-          "label": "API Status",
-          "url": "https://api-projekte.elkbau.at/",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "sro@sro.at" },
-          "expect": { "jsonPath": "status", "equals": "up" },
-           "fields": [
-            { "label": "debug", "path": "debug", "format": "bool" },
-            { "label": "laravel", "path": "laravel" }
-          ]
-        },
-        {
-          "key": "elkbau-api-test",
-          "label": "API Status",
-          "url": "https://api-test-projekte.elkbau.at/",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "sro@sro.at" },
-          "isDevEnv": true,
-          "expect": { "jsonPath": "status", "equals": "up" },
-           "fields": [
-            { "label": "debug", "path": "debug", "format": "bool" },
-            { "label": "laravel", "path": "laravel" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "nextcloud",
-      "title": "Nextcloud",
-      "description": "Dokumentenablage",
-      "services": [
-        {
-          "key": "nc-vis",
-          "label": "VIS",
-          "url": "proxy/proxy.php?key=nc-vis",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
-          "fields": [
-            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
-          ]
-        },
-        {
-          "key": "nc-lis2",
-          "label": "LIS 2",
-          "url": "proxy/proxy.php?key=nc-lis2",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
-          "fields": [
-            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
-          ]
-        },
-        {
-          "key": "nc-fileshare",
-          "label": "Fileshare",
-          "url": "proxy/proxy.php?key=nc-fileshare",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "georg.weissenboeck@elk.at" },
-          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
-          "fields": [
-            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
-          ]
-        },
-        {
-          "key": "nc-kpat-prod",
-          "label": "Kundenportal AT",
-          "url": "proxy/proxy.php?key=nc-kpat-prod",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "gabriele.schmid@elk.at" },
-          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
-          "fields": [
-            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
-          ]
-        },
-        {
-          "key": "nc-kpat-stage",
-          "label": "Kundenportal AT",
-          "url": "proxy/proxy.php?key=nc-kpat-stage",
-          "method": "GET",
-          "warning": null,
-          "isDevEnv": true,
-          "owner": { "upn": "gabriele.schmid@elk.at" },
-          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
-          "fields": [
-            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
-          ]
-        },
-        {
-          "key": "nc-kpde-prod",
-          "label": "Kundenportal DE",
-          "url": "proxy/proxy.php?key=nc-kpde-prod",
-          "method": "GET",
-          "warning": null,
-          "owner": { "upn": "gabriele.schmid@elk.at" },
-          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
-          "fields": [
-            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
-          ]
-        },
-        {
-          "active": true,
-          "key": "nc-kpde-stage",
-          "label": "Kundenportal DE",
-          "url": "proxy/proxy.php?key=nc-kpde-stage",
-          "method": "GET",
-          "warning": null,
-          "isDevEnv": true,
-          "owner": { "upn": "gabriele.schmid@elk.at" },
-          "expect": { "jsonPath": "ocs.meta.status", "equals": "ok" },
-          "fields": [
-            { "label": "Version", "path": "ocs.data.nextcloud.system.version" },
-            { "label": "PHP", "path": "ocs.data.server.php.version" },
-            { "label": "Websrv", "path": "ocs.data.server.webserver" },
-            { "label": "free Space", "path": "ocs.data.nextcloud.system.freespace", "format": "bytes" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "not-classified",
-      "title": "Sonstiges",
-      "description": null,
-      "services": [
-        { 
-          "active": false,
-          "key": "ncfd-ninox",
-          "label": "Ninox",
-          "keywords": ["ninox", "klumpat"],
-          "owner": { "upn": "s.fach@q23.de" }
-        },
-        { 
-          "active": false,
-          "key": "ncfd-glpi",
-          "label": "GLPI",
-          "keywords": ["glpi", "ticketsystem", "helpdesk", "hotline"],
-          "owner": { "upn": "paul.koepf@elk.at" }
-        },
-        { 
-          "active": false,
-          "key": "ncfd-powerbi",
-          "label": "PowerBI",
-          "keywords": ["powerbi"],
-          "owner": { "upn": "patrick.weixelbraun@elk.at" }
-        }
-      ]
-    }
-  ]
+    ]
 }

@@ -108,7 +108,14 @@
     async function loadConfig() {
       try {
         setStatus("Lade status.config.json …", "info");
-        const res = await fetch("/dashboard/config/status-config.php");
+        const token = getUserToken();
+        const res = await fetch("/dashboard/config/status-config.php", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        });
         if (!res.ok) {
           throw new Error("HTTP " + res.status + " – " + res.statusText);
         }
@@ -139,6 +146,11 @@
       if (parts.length === 2) return parts.pop().split(';').shift();
       return null;
     }
+    
+    function getUserToken(){
+        return getCookie('UserToken')
+          ?? 'c40964366a5f7a5e0d9a3985334d13241c14d8be4e42d6ca6f49b2fca9512f64';
+    }
 
     async function saveConfig() {
       const isValid = validateJson();
@@ -150,7 +162,7 @@
 
       try {
         setStatus("Speichere …", "info");
-        const token = getCookie('UserToken');
+        const token = getUserToken();
         const res = await fetch("/dashboard/config/status-config.php", {
           method: "POST",
           headers: {

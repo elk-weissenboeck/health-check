@@ -252,7 +252,7 @@ function h(string $value): string {
             <tr>
                 <td><?= h($row['timestamp']) ?></td>
                 <td><?= h($row['ip']) ?></td>
-                <td><code><?= h($row['token']) ?></code></td>
+                <td><code><?= h(substr($row['token'],0,8)) ?></code></td>
                 <td><?= h($row['name']) ?></td>
                 <td>
                     <?php
