@@ -129,4 +129,37 @@ class myApiAuth
 
         return $client;
     }
+    
+    /**
+    * Prüft, ob der Client mindestens eine der übergebenen Rollen hat.
+    */
+    public function clientHasAnyRole(array $client, array $roles): bool
+    {
+        foreach ($roles as $role) {
+            if (in_array($role, $client['roles'], true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Stellt sicher, dass der Client mindestens eine der angegebenen Rollen hat.
+     * Beispiel: requireAnyRole('admin', 'editor')
+     */
+    public function requireAnyRole(string ...$roles): array
+    {
+        $client = $this->requireClient(); // anonymous oder echter Client, ungültiger Token → 401
+
+        if (!$this->clientHasAnyRole($client, $roles)) {
+            http_response_code(403);
+            header('Content-Type: text/plain; charset=utf-8');
+
+            $roleList = implode("' oder '", $roles);
+            echo json_encode(['error' => "Keine Berechtigung (erforderlich ist eine der Rollen: '{$roleList}')"]);
+            exit;
+        }
+
+        return $client;
+    }
 }

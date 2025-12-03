@@ -55,7 +55,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    $client = $auth->requireRole('editor');
+    $client = $auth->requireAnyRole('admin','editor');
     
     // Rohes Request-Body lesen
     $rawBody = file_get_contents('php://input');
