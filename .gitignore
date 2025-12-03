@@ -1,4 +1,5 @@
 secrets.php
+tokens.php
 vendor/
 cache/*.json
 public/config/backup/*.json
