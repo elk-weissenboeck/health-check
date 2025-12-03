@@ -1,49 +1,14 @@
 <?php
 // status-config.php
 
+require __DIR__ . '/../../classes/myApiAuth.php';
 
-// Pfad zu deiner JSON-Datei
 $configPath = __DIR__ . '/status.config.json';
-// Backup-Verzeichnis
 $backupDir  = __DIR__ . '/backup';
-// secrets laden
-$secrets = require dirname(__DIR__) . '/../secrets.php';
+$auth = new myApiAuth(__DIR__ . '/../../tokens.php');
 
-// === Einfacher Auth-Token ===
-// Diesen Token musst du auch im Frontend eintragen.
-// Am besten einen zufälligen langen String verwenden.
-$AUTH_TOKEN = $secrets['GENERAL_AUTH_TOKEN'];
-
-
-// Standard-Header
-header('Content-Type: application/json; charset=utf-8');
-
-// --- Auth-Funktion für POST ---
-function requirePostAuth(string $expectedToken): void
-{
-    $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-    if ($method !== 'POST') {
-        // Für GET usw. keine Auth
-        return;
-    }
-
-    // Token aus Header lesen (X-Auth-Token)
-    $headerToken = $_SERVER['HTTP_X_AUTH_TOKEN'] ?? null;
-
-    // Optional: Fallback über Query-Parameter ?token=...
-    if ($headerToken === null && isset($_GET['token'])) {
-        $headerToken = $_GET['token'];
-    }
-
-    if ($headerToken !== $expectedToken) {
-        http_response_code(401);
-        echo json_encode(['error' => 'Unauthorized']);
-        exit;
-    }
-}
-
-// Nur für POST prüfen
-requirePostAuth($AUTH_TOKEN);
+// Anonymous ODER echter Client – ungültige Tokens werden geblockt
+$client = $auth->requireClient();
 
 // Ab hier nur noch authentifizierte Requests
 $method = $_SERVER['REQUEST_METHOD'];
