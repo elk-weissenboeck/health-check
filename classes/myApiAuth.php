@@ -3,7 +3,9 @@
 class myApiAuth
 {
     private array $tokens;
-
+    private ?string $logFile;
+    private ?string $tokenOverride = null; 
+    
     public function __construct(string $tokenConfigPath,?string $logFilePath = null)
     {
         if (!file_exists($tokenConfigPath)) {
@@ -21,11 +23,19 @@ class myApiAuth
     }
 
     /**
-     * Liest Token aus Header (Bearer) oder GET-Parameter ?token=...
-     * und gibt NUR den reinen Token-String zurück (kann null sein).
+     * Liest Token in folgender Priorität:
+     * 1. Manuell gesetztes Override (z.B. aus Cookie via useCookieToken())
+     * 2. Authorization: Bearer <token>
+     * 3. GET-Parameter ?token=...
      */
     private function getTokenString(): ?string
     {
+        // 1) Override (z.B. Cookie)
+        if ($this->tokenOverride !== null && $this->tokenOverride !== '') {
+            return $this->tokenOverride;
+        }
+
+        // 2) Authorization-Header (Bearer)
         $authorizationHeader = null;
 
         if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
@@ -45,13 +55,14 @@ class myApiAuth
             }
         }
 
-        // Optional: Fallback via GET
+        // 3) Optional: Fallback via GET ?token=...
         if ($token === null && isset($_GET['token'])) {
             $token = $_GET['token'];
         }
 
         return $token !== '' ? $token : null;
     }
+
     
     /**
      * Liest den Authorization-Header und extrahiert den Bearer-Token.
@@ -205,7 +216,7 @@ class myApiAuth
             header('Content-Type: text/plain; charset=utf-8');
 
             $roleList = implode("' oder '", $roles);
-            echo json_encode(['error' => "Keine Berechtigung (eine der Rollen '{$roleList}' erforderlich)"]);
+            echo json_encode(['error' => "Keine Berechtigung; Eine dieser Rollen erforderlich: '{$roleList}')"]);
             exit;
         }
 
@@ -256,4 +267,16 @@ class myApiAuth
         file_put_contents($this->logFile, $line, FILE_APPEND | LOCK_EX);
     }
 
+    /**
+     * Nutzt (falls vorhanden) das Cookie "UserToken" als Token-Quelle.
+     * Für direkte Aufrufe im Frontend (Browser).
+     *
+     * Muss VOR requireClient()/requireRole()/requireAnyRole() aufgerufen werden.
+     */
+    public function useCookieToken(string $cookieName = 'UserToken'): void
+    {
+        if (isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName] !== '') {
+            $this->tokenOverride = (string)$_COOKIE[$cookieName];
+        }
+    }
 }

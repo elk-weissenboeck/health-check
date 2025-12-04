@@ -1,9 +1,24 @@
 <?php
 declare(strict_types=1);
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
+require __DIR__ . '/../../classes/myApiAuth.php';
+
+$auth = new myApiAuth(
+    __DIR__ . '/../../tokens.php',
+    __DIR__ . '/../../log/UserTokenAccess.log'
+);
+
+$auth->useCookieToken(); 
+
+$client = $auth->requireAnyRole(['admin']);
+
+
+// Pfad zum Logfile anpassen:
+$logFile = __DIR__ . '/../../log/UserTokenAccess.log';
 
 $secrets = require dirname(__DIR__) . '/outlook/secrets.php';
 

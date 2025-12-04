@@ -1,5 +1,17 @@
 <?php
-// log_viewer.php
+
+require __DIR__ . '/../../classes/myApiAuth.php';
+
+$auth = new myApiAuth(
+    __DIR__ . '/../../tokens.php',
+    __DIR__ . '/../../log/UserTokenAccess.log'
+);
+
+// Wichtig: Cookie als Token-Quelle aktivieren
+$auth->useCookieToken();   // liest ggf. $_COOKIE['UserToken'] ein
+
+$client = $auth->requireAnyRole(['admin']);
+
 
 // Pfad zum Logfile anpassen:
 $logFile = __DIR__ . '/../../log/UserTokenAccess.log';
