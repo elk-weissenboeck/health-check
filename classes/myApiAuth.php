@@ -63,6 +63,7 @@ class myApiAuth
         return $token !== '' ? $token : null;
     }
 
+  
     
     /**
      * Liest den Authorization-Header und extrahiert den Bearer-Token.
@@ -109,6 +110,8 @@ class myApiAuth
                 'token' => null,
                 'name'  => 'anonymous',
                 'roles' => ['anonymous'],
+                // anonymous ist per Definition "aktiv"
+                'active' => true,
             ];
         }
 
@@ -118,11 +121,13 @@ class myApiAuth
         }
 
         $data = $this->tokens[$token];
+        $isActive = $data['active'] ?? true; // wenn nicht gesetzt, als aktiv behandeln
 
         return [
             'token' => $token,
             'name'  => $data['name']  ?? 'Unbekannt',
             'roles' => $data['roles'] ?? [],
+            'active' => $isActive
         ];
     }
 
@@ -151,6 +156,7 @@ class myApiAuth
                 'token' => $rawToken ?? '-',
                 'name'  => 'invalid-token',
                 'roles' => [],
+                'active' => false
             ];
 
             // hier wird der fehlgeschlagene Versuch protokolliert
@@ -159,6 +165,16 @@ class myApiAuth
             http_response_code(401);
             header('Content-Type: text/plain; charset=utf-8');
             echo json_encode(['error' => "Nicht authentifiziert (ungültiger Bearer-Token)"]);
+            exit;
+        }
+        
+        // Token existiert, ist aber inaktiv → Zugriff verweigern + loggen
+        if (array_key_exists('active', $client) && $client['active'] === false) {
+            $this->logAction($client, 'auth', 'inactive_token');
+
+            http_response_code(403);
+            header('Content-Type: text/plain; charset=utf-8');
+            echo json_encode(['error' => 'Token ist inaktiv (Zugriff verweigert)']);
             exit;
         }
 
