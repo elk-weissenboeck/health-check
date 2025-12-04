@@ -1,5 +1,16 @@
 <?php
 declare(strict_types=1);
+
+require __DIR__ . '/../../classes/myApiAuth.php';
+
+$auth = new myApiAuth(
+    __DIR__ . '/../../tokens.php',
+    __DIR__ . '/../../log/UserTokenAccess.log'
+);
+
+$auth->useCookieToken(); 
+
+$client = $auth->requireAnyRole(['admin']);
 ?>
 <!doctype html>
 <html lang="de">
