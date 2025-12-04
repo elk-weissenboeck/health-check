@@ -20,6 +20,7 @@ export class EventBinding {
     this.on('collapseAllBtn', 'click', () => this.app.collapseAll());
     this.on('listOwnersBtn', 'click', () => this.app.showOwnerList());
     this.on('listServicesBtn', 'click', () => this.app.showServiceList());
+    this.on('toggleViewBtn', 'click', (e) => { document.getElementById('groupsContainer').classList.toggle('compact'); });
   
     this.on('optShowUrls', 'change', (e) => { this.optionsManager.options.showUrls = !!e.target.checked; this.optionsManager.apply(); });
     this.on('optShowAttr', 'change', (e) => { this.optionsManager.options.showAttr = !!e.target.checked; this.optionsManager.apply(); });

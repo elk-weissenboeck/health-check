@@ -23,12 +23,12 @@ export class Templates {
                aria-expanded="false"
                aria-controls="${collapseId}">
             <div class="d-flex align-items-center justify-content-between w-100">
-              <div class="d-flex align-items-center gap-2">
+              <div class="title d-flex align-items-center gap-2">
                 <span class="status-dot bg-success" id="${group.key}-dot" aria-hidden="true"></span>
                 <span class="fw-semibold">${escapeHtml(group.title)}</span>
-                <small class="text-secondary">— <span class="group-summary" id="${group.key}-summary">Prüfe…</span></small>
+                <small class="text-secondary"><span class="group-summary" id="${group.key}-summary">Prüfe…</span></small>
               </div>
-              <div class="d-flex align-items-center gap-2">
+              <div class="subTitle d-flex align-items-center gap-2">
                 <small class="text-secondary d-none d-md-inline">${escapeHtml(group.description || '')}</small>
                 <span class="chevron-wrap" aria-hidden="true"><i class="bi bi-chevron-right chevron"></i></span>
               </div>

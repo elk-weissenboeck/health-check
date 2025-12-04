@@ -17,6 +17,23 @@ $BI_CSS        = 'vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
   <link rel="stylesheet" href="<?= htmlspecialchars($BOOTSTRAP_CSS) ?>">
   <link rel="stylesheet" href="<?= htmlspecialchars($BI_CSS) ?>">
 
+  <style>
+    /* Kompakte Kachelansicht */
+    #groupsContainer.compact {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+    }
+    
+    #groupsContainer.compact .card-group-status {
+        height: 100%;      /* Karten füllen die Kachel */
+    }
+    #groupsContainer.compact .group-summary,
+    #groupsContainer.compact .subTitle,
+    #groupsContainer.compact .title span > group-summary {
+        display:none !important;
+    }
+  </style>
   <!-- Eigenes CSS -->
   <link rel="stylesheet" href="./src/status.css?t=<?=time()?>">
   <link rel="stylesheet" href="./src/ui/Icons.css?t=<?=time()?>">
@@ -53,16 +70,27 @@ $BI_CSS        = 'vendor/twbs/bootstrap-icons/font/bootstrap-icons.css';
       </small>
     </div>
 
-    <!-- EIN Icon-Button für Collapse -->
-    <button class="btn btn-xl btn-outline-secondary ms-auto"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#optionsCollapse"
-            aria-expanded="true"
-            aria-controls="optionsCollapse">
-      <i class="bi bi-sliders"></i>
-      <span class="visually-hidden">Optionen und Funktionen ein-/ausklappen</span>
-    </button>
+    <div class="btn-group ms-auto" role="group" aria-label="Ansicht und Optionen">
+      <!-- Button: Toggle Kachel/Listen-Ansicht -->
+      <button class="btn btn-xl btn-outline-secondary"
+              type="button"
+              id="toggleViewBtn">
+        <i class="bi bi-grid-3x3-gap"></i>
+        <span class="visually-hidden">Ansicht umschalten</span>
+      </button>
+
+      <!-- Button: Optionen ein-/ausklappen -->
+      <button class="btn btn-xl btn-outline-secondary"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#optionsCollapse"
+              aria-expanded="true"
+              aria-controls="optionsCollapse">
+        <i class="bi bi-sliders"></i>
+        <span class="visually-hidden">Optionen und Funktionen ein-/ausklappen</span>
+      </button>
+
+    </div>
   </div>
 
   <!-- Gemeinsamer Collapse für Optionen + Funktionen -->
