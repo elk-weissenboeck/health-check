@@ -9,7 +9,7 @@ export class ConfigLoader {
   static async load() {
     const token = ConfigLoader.getCookie('UserToken') ?? '4f7d636cdcad582fb38afae99269c44c82baca01b73232b8514ca8b66b414ce6';
 
-    const res = await fetch('/dashboard/config/status-config.php', {
+    const res = await fetch('/dashboard/config/config.php?file=public.config.json', {
       cache: 'no-store',
       credentials: 'include',
       headers: token ? {

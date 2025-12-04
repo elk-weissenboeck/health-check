@@ -28,8 +28,8 @@ require __DIR__ . '/../../classes/myCache.class.php';
 // -----------------------------------------------------------------------------
 // 0) SECRETS & TARGETS LADEN
 // -----------------------------------------------------------------------------
-$secrets = require dirname(__DIR__) . '/../secrets.php';
-$targets = require dirname(__DIR__) . '/../targets.php';
+$secrets = require dirname(__DIR__) . '/proxy/secrets.php';
+$targets = require dirname(__DIR__) . '/proxy/targets.php';
 
 
 // -----------------------------------------------------------------------------
