@@ -36,6 +36,7 @@
                 <a href="/dashboard/" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">Dashboard (öffentlich)</h6>
+                    <span class="badge bg-success">role:-</span>
                   </div>
                   <p class="mb-0 small">
                     zur Übersicht und Statusanzeige div. Systeme und Schnittstellen
@@ -45,16 +46,21 @@
                 <a href="/admin/health-check/edit_config.html" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">Konfiguration bearbeiten</h6>
+                    <span class="badge bg-danger">role:admin</span>
                   </div>
                   <p class="mb-0 small">
-                    status.config.json editieren und speichern
+                    Konfigurationen für Health-Check-Dashboard editieren und speichern
                   </p>
                 </a>
                 
                 <a href="/admin/health-check/user_token_log_analyzer.php" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">UserTokenAccess auswerten</h6>
+                    <span class="badge bg-danger">role:admin</span>
                   </div>
+                  <p class="mb-0 small">
+                    Auswertung aller Zugriffe auf Portale und Schnittstellen
+                  </p>
                 </a>
               </div>
               
@@ -70,6 +76,7 @@
                 <a href="/admin/html-parser/index.html" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">HTML-Parser</h6>
+                    <span class="badge bg-success">role:-</span>
                   </div>
                   <p class="mb-1 small">
                     Parst HTML-Formulare und bereitet die enthaltenen Formulardaten für die weitere Verarbeitung auf.
@@ -80,6 +87,7 @@
                 <a href="/admin/logviewer/" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">Log Viewer</h6>
+                    <span class="badge bg-success">role:-</span>
                   </div>
                   <p class="mb-1 small">
                     Analysiert Server-Logs über eine filterbare GUI. Keine direkte Dateibearbeitung, ausschließlich visuelle Auswertung.
@@ -90,6 +98,7 @@
                 <a href="/admin/protocol-viewer/index.html" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">Protocol Viewer</h6>
+                    <span class="badge bg-success">role:-</span>
                   </div>
                   <p class="mb-1 small">
                     Parst Protokolldateien (json) und bereitet die Inhalte tabellarisch auf - filterbar
@@ -107,6 +116,7 @@
                 <a href="/admin/outlook/sent_items.php" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">Gesendete Emails auswerten</h6>
+                    <span class="badge bg-danger">role:admin</span>
                   </div>
                   <p class="mb-0 small">
                     Gesendete Elemente anzeigen und nach Betreff durchsuchen
@@ -116,6 +126,7 @@
                 <a href="/admin/outlook/undeliverable.php" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">Unzustellbare Emails auswerten</h6>
+                    <span class="badge bg-danger">role:admin</span>
                   </div>
                   <p class="mb-0 small">
                     Unzustellbare Elemente anzeigen und nach Betreff durchsuchen
@@ -132,6 +143,7 @@
                 <a href="/admin/aktspeichern/index.php" class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">Dashboard</h6>
+                    <span class="badge bg-danger">role:admin</span>
                   </div>
                   <p class="mb-0 small">
                     zur Übersicht aller aktiver Clients im Netzwerk
