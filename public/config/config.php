@@ -24,6 +24,9 @@ $allowedFiles = [
     ],
     'it.config.json' => [
         'roles' => ['admin', 'it']
+    ],
+    'admin.config.json' => [
+        'roles' => ['admin']
     ]
 ];
 

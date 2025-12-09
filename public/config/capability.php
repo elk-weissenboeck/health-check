@@ -4,7 +4,7 @@ $tokens =  require dirname(__DIR__) . '/../tokens.php';
 
 // Rollen -> erlaubte Configs
 $roleConfigMap = [
-    'admin'     => ['public.config.json', 'it.config.json'],
+    'admin'     => ['public.config.json', 'it.config.json', 'admin.config.json'],
     'it'        => ['public.config.json', 'it.config.json'],
     'read_only' => ['public.config.json'],
     'guest'     => []

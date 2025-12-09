@@ -1,26 +1,46 @@
 export class Formatters {
   static number(v)  { return typeof v === 'number' ? v.toLocaleString() : v; }
-  static bytes(v)   { return typeof v === 'number' ? Formatters.formatBytes(v) : v; }
+  static bytes(v)   { return Formatters.formatBytes(v); }
   static ms(v)      { return typeof v === 'number' ? `${v} ms` : v; }
   static date(v)    { return v ? new Date(v).toLocaleDateString() : v; }
   static datetime(v){ return v ? new Date(v).toLocaleString() : v; }
   static bool(v)    { return (v ? 'Ja' : 'Nein'); }
   static upper(v)   { return (typeof v === 'string' ? v.toUpperCase() : v); }
   static lower(v)   { return (typeof v === 'string' ? v.toLowerCase() : v); }
+  static seconds(v) { return (v == null || isNaN(v)) ? v : `${v} s`; }
+  static bytesHeader(v) { return Formatters.formatBytes(Number(v)); }
   static minutes(v) {
     if (v == null || isNaN(v)) return v;
     const mins = v / 1000 / 60;
     return `${mins.toFixed(1)} min`;
   }
-  static seconds(v) { return (v == null || isNaN(v)) ? v : `${v} s`; }
-  static bytesHeader(v) { return Formatters.formatBytes(Number(v)); }
+  
+  static formatPercent(x) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return x;      // Falls kein gültiger Zahlenwert
+      return `${n.toFixed(0)}%`;
+    }
 
-  static formatBytes(n){
-    if (!Number.isFinite(n)) return n;
-    const units = ['B','KB','MB','GB','TB'];
-    let i=0; while (n>=1024 && i<units.length-1){ n/=1024; i++; }
-    return `${n.toFixed(n<10&&i>0?1:0)} ${units[i]}`;
-  }
+    static formatBytes(n) {
+      // Falls n ein String ist, versuchen in eine Zahl zu casten
+      const num = typeof n === 'string' ? Number(n) : n;
+
+      // Wenn das Ergebnis keine endliche Zahl ist, einfach original zurückgeben
+      if (!Number.isFinite(num)) return n;
+
+      const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+      let value = num;
+      let i = 0;
+
+      while (value >= 1024 && i < units.length - 1) {
+        value /= 1024;
+        i++;
+      }
+
+      const decimals = value < 10 && i > 0 ? 1 : 0;
+      return `${value.toFixed(decimals)} ${units[i]}`;
+    }
+
 
   static formatTtlSeconds(sec) {
     const n = Number(sec);
@@ -46,6 +66,7 @@ export class Formatters {
     lower:    v => Formatters.lower(v),
     minutes:  v => Formatters.minutes(v),
     seconds:  v => Formatters.seconds(v),
+    percent:  v => Formatters.formatPercent(v),
     bytesHeader: v => Formatters.bytesHeader(v),
   };
 }
