@@ -32,7 +32,7 @@
           "warning": null,
           "owner": { "upn": "georg.weissenboeck@elk.at" },
           "expect": { "jsonPath": "status", "equals": "success" },
-          "keywords": ["pot", "jail", "moodle2"],
+          "keywords": ["pot", "jail", "moodle"],
           "fields": [
             { "label": "mountpoint", "path": "data.result[0].metric.device" },
             { "label": "size", "path": "data.result[0].value[1]", "format": "bytes" },

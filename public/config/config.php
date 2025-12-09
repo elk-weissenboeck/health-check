@@ -138,7 +138,7 @@ if ($method === 'POST') {
 
         // Dateinamen mit Timestamp: z.B. public.config.json.20250101_120000.json
         $timestamp  = date('Ymd_His');
-        $backupFile = $backupDir . '/' . $fileName . '.' . $timestamp . '.json';
+        $backupFile = $backupDir . '/' . $file . '.' . $timestamp . '.json';
 
         if (!copy($fullPath, $backupFile)) {
             http_response_code(500);
@@ -147,7 +147,7 @@ if ($method === 'POST') {
         }
 
         // Nur die letzten 7 Backups dieser Datei behalten
-        $pattern = $backupDir . '/' . $fileName . '.*.json';
+        $pattern = $backupDir . '/' . $file . '.*.json';
         $files   = glob($pattern);
 
         if ($files !== false && count($files) > 7) {
@@ -172,7 +172,7 @@ if ($method === 'POST') {
         exit;
     }
 
-    $auth->logAction($client, 'write config ' . $file);
+    $auth->logAction($client, 'write config ' . $fullPath);
 
     echo json_encode(['ok' => true]);
     exit;

@@ -8,7 +8,7 @@
         {
           "active": true,
           "key": "levatis-prod",
-          "label": "TWZConnector...",
+          "label": "TWZConnector..",
           "url": "rs2/twz-connector.php", 
           "method": "GET",
           "warning": null,
