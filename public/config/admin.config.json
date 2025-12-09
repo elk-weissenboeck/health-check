@@ -22,6 +22,24 @@
             { "label": "used", "path": "data.result[2].value[1]", "format": "bytes" },
             { "label": "use%", "path": "data.result[3].value[1]", "format": "percent" }
           ]
+        },
+        {
+          "active": true,
+          "key": "pr-alec2-moodle",
+          "label": "pot moodle",
+          "url": "proxy/proxy.php?key=pr-alec2-moodle", 
+          "method": "GET",
+          "warning": null,
+          "owner": { "upn": "georg.weissenboeck@elk.at" },
+          "expect": { "jsonPath": "status", "equals": "success" },
+          "keywords": ["pot", "jail", "moodle2"],
+          "fields": [
+            { "label": "mountpoint", "path": "data.result[0].metric.device" },
+            { "label": "size", "path": "data.result[0].value[1]", "format": "bytes" },
+            { "label": "avail", "path": "data.result[1].value[1]", "format": "bytes" },
+            { "label": "used", "path": "data.result[2].value[1]", "format": "bytes" },
+            { "label": "use%", "path": "data.result[3].value[1]", "format": "percent" }
+          ]
         }
       ]
     }

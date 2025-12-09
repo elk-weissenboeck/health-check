@@ -222,8 +222,14 @@ return [
     'auth'     => ['type' => 'basic', 'user' => $secrets['PR_USER'], 'pass' => $secrets['PR_PASSWORD']],
     'query'    => '?query={__name__=~"vtiger:disk:(size_bytes|avail_bytes|used_bytes|use_pctage)"}',
     'headers'  => ['Accept' => 'application/json']
+  ],
+  'pr-alec2-moodle' => [
+    'url'      => "https://prometheus.elk.at/api/v1/query",
+    'method'   => 'GET',
+    'auth'     => ['type' => 'basic', 'user' => $secrets['PR_USER'], 'pass' => $secrets['PR_PASSWORD']],
+    'query'    => '?query={__name__=~"moodle:disk:(size_bytes|avail_bytes|used_bytes|use_pctage)"}',
+    'headers'  => ['Accept' => 'application/json']
   ]
-  
   // Basic-Auth über user+pass (proxy verwendet CURLOPT_USERPWD)
   // 'jenkins' => [
   //  'url'      => "{$jenkinsTngBase}/some/api",

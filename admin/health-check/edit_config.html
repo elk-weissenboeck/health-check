@@ -114,7 +114,7 @@
     const selectEl = document.getElementById("configSelect");
 
     // aktuell ausgewählte Datei
-    let currentFile = selectEl.value;
+    let currentFile = null;
 
     function setStatus(message, type = "info") {
       statusEl.textContent = message;
@@ -136,17 +136,80 @@
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
+      if (parts.length === 2) return parts.pop().split(";").shift();
       return null;
     }
 
     function getUserToken() {
-      return getCookie('UserToken')
-        ?? 'c40964366a5f7a5e0d9a3985334d13241c14d8be4e42d6ca6f49b2fca9512f64';
+      return (
+        getCookie("UserToken") ??
+        "c40964366a5f7a5e0d9a3985334d13241c14d8be4e42d6ca6f49b2fca9512f64"
+      );
     }
 
-    async function loadConfig(fileName = currentFile) {
-      currentFile = fileName;
+    /**
+     * Lädt die Liste der berechtigten Konfigurationen
+     * aus /dashboard/config/capability.php und befüllt das Select.
+     */
+    async function loadCapabilities() {
+      try {
+        setStatus("Lade verfügbare Konfigurationen …", "info");
+        const token = getUserToken();
+        const res = await fetch("/dashboard/config/capability.php", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status + " – " + res.statusText);
+        }
+
+        const data = await res.json();
+        const configs = Array.isArray(data.configs) ? data.configs : [];
+
+        // Select leeren
+        selectEl.innerHTML = "";
+
+        if (configs.length === 0) {
+          setStatus("Keine berechtigten Konfigurationen gefunden.", "error");
+          currentFile = null;
+          editor.setValue("", -1);
+          return;
+        }
+
+        // Select-Optionen aufbauen
+        configs.forEach((cfg) => {
+          const opt = document.createElement("option");
+          opt.value = cfg;
+          opt.textContent = cfg;
+          selectEl.appendChild(opt);
+        });
+
+        // erste Konfiguration auswählen & laden
+        currentFile = configs[0];
+        selectEl.value = currentFile;
+        await loadConfig(currentFile);
+
+      } catch (err) {
+        console.error(err);
+        setStatus(
+          "Fehler beim Laden der Konfigurationsliste: " + err.message,
+          "error"
+        );
+      }
+    }
+
+    async function loadConfig(fileName) {
+      // Fallback: wenn kein Parameter übergeben, die aktuelle Datei verwenden
+      if (!fileName && !currentFile) {
+        setStatus("Keine Konfigurationsdatei ausgewählt.", "error");
+        return;
+      }
+
+      currentFile = fileName || currentFile;
       selectEl.value = currentFile; // Dropdown synchron halten
 
       try {
@@ -158,7 +221,7 @@
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": "Bearer " + token
+              Authorization: "Bearer " + token
             }
           }
         );
@@ -170,7 +233,10 @@
         setStatus("Datei " + currentFile + " erfolgreich geladen.", "ok");
       } catch (err) {
         console.error(err);
-        setStatus("Fehler beim Laden von " + currentFile + ": " + err.message, "error");
+        setStatus(
+          "Fehler beim Laden von " + currentFile + ": " + err.message,
+          "error"
+        );
       }
     }
 
@@ -192,6 +258,11 @@
         return;
       }
 
+      if (!currentFile) {
+        setStatus("Es ist keine Konfigurationsdatei zum Speichern ausgewählt.", "error");
+        return;
+      }
+
       const content = editor.getValue();
 
       try {
@@ -203,7 +274,7 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": "Bearer " + token
+              Authorization: "Bearer " + token
             },
             body: content
           }
@@ -219,7 +290,10 @@
         setStatus("Datei " + currentFile + " erfolgreich gespeichert.", "ok");
       } catch (err) {
         console.error(err);
-        setStatus("Fehler beim Speichern von " + currentFile + ": " + err.message, "error");
+        setStatus(
+          "Fehler beim Speichern von " + currentFile + ": " + err.message,
+          "error"
+        );
       }
     }
 
@@ -233,8 +307,9 @@
       loadConfig(e.target.value);
     });
 
-    // initialer Load
-    loadConfig();
+    // initial: berechtigte Konfigurationen laden und erste Datei öffnen
+    loadCapabilities();
+
   </script>
 </body>
 </html>
