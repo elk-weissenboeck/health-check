@@ -1,9 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-require BASE_DIR . '/classes/myCurl.class.php';
-require BASE_DIR . '/classes/myHelpers.class.php';
-
 $secrets = require dirname(__DIR__) . '/../secrets.php';
  
 $base       = 'https://mantis.elkschrems.co.at';

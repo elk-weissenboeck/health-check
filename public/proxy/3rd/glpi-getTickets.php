@@ -1,10 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-require BASE_DIR . '/classes/myCurl.class.php';
-require BASE_DIR . '/classes/myHelpers.class.php';
-require BASE_DIR . '/classes/myGlpi.class.php';
-
 $BASE   = 'https://helpdesk.elkkampa.com/apirest.php';
 $APP    = $secrets['GLPI_API_APP'];
 $USER   = $secrets['GLPI_API_USER'];

@@ -1,8 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-require BASE_DIR . '/classes/myEntra.class.php';
-
 $secrets = require dirname(__DIR__) . '/../secrets.php';
 $owners  = require dirname(__DIR__) . '/entra/serviceOwners.php';
 

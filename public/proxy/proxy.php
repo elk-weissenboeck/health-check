@@ -16,10 +16,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 // -----------------------------------------------------------------------------
 // Klassen LADEN
 // -----------------------------------------------------------------------------
-require BASE_DIR . '/classes/myHelpers.class.php';
-require BASE_DIR . '/classes/myCurl.class.php';
-require BASE_DIR . '/classes/myCache.class.php';
-require BASE_DIR . '/classes/myApiAuth.php';
+// erledigt composer via auto-load
 
 
 // -----------------------------------------------------------------------------

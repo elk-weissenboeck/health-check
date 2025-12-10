@@ -1,8 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-require BASE_DIR . '/classes/myApiAuth.php';
-
 $auth = new myApiAuth(
     BASE_DIR . '/tokens.php',
     BASE_DIR . '/logs/UserTokenAccess.log'
@@ -11,7 +9,6 @@ $auth = new myApiAuth(
 $auth->useCookieToken(); 
 
 $client = $auth->requireAnyRole(['admin']);
-
 
 // Pfad zum Logfile anpassen:
 $logFile = BASE_DIR . '/logs/UserTokenAccess.log';
