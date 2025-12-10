@@ -31,7 +31,7 @@ export class App {
   }
   
   getBearerToken() {
-    const guestUserToken = "c40964366a5f7a5e0d9a3985334d13241c14d8be4e42d6ca6f49b2fca9512f64";
+    const guestUserToken = "4f7d636cdcad582fb38afae99269c44c82baca01b73232b8514ca8b66b414ce6";
     const cookieString = document.cookie || '';
     const cookie = cookieString
       .split(';')
