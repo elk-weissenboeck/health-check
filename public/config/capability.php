@@ -6,8 +6,7 @@ $tokens =  require dirname(__DIR__) . '/../tokens.php';
 $roleConfigMap = [
     'admin'     => ['public.config.json', 'it.config.json', 'admin.config.json'],
     'it'        => ['public.config.json', 'it.config.json'],
-    'read_only' => ['public.config.json'],
-    'guest'     => []
+    'guest'     => ['public.config.json']
 ];
 
 // --- Token aus Cookie ziehen

@@ -23,13 +23,23 @@ error_reporting(E_ALL);
 require __DIR__ . '/../../classes/myHelpers.class.php';
 require __DIR__ . '/../../classes/myCurl.class.php';
 require __DIR__ . '/../../classes/myCache.class.php';
+require __DIR__ . '/../../classes/myApiAuth.php';
 
 
 // -----------------------------------------------------------------------------
-// 0) SECRETS & TARGETS LADEN
+// SECRETS & TARGETS LADEN
 // -----------------------------------------------------------------------------
 $secrets = require dirname(__DIR__) . '/proxy/secrets.php';
 $targets = require dirname(__DIR__) . '/proxy/targets.php';
+
+// -----------------------------------------------------------------------------
+// Rolle ÜBERPRÜFEN
+// -----------------------------------------------------------------------------
+$auth = new myApiAuth(
+    __DIR__ . '/../../tokens.php',
+    __DIR__ . '/../../log/UserTokenAccess.log'
+);
+$auth->useCookieToken();
 
 
 // -----------------------------------------------------------------------------
@@ -40,11 +50,14 @@ $targets = require dirname(__DIR__) . '/proxy/targets.php';
 $key = (string)($_GET['key'] ?? '');
 $t   = myHelpers::requireTarget($targets, $key);
 
-// 2) Methode & finale URL
+// 2) Rolle überprüfen
+$client = $auth->requireAnyRole($t['roles'] ?? ['admin']);
+
+// 3) Methode & finale URL
 $method   = myHelpers::method($t);
 $finalUrl = myHelpers::buildFinalUrl($t);
 
-// 3) Cache-READ
+// 4) Cache-READ
 $noCache   = myHelpers::isNoCache();
 $cacheOK   = myCache::isAllowed($t, $method, $noCache);
 $cacheFile = $cacheOK ? myCache::path($method, $finalUrl, $key) : '';
@@ -65,10 +78,10 @@ if ($cacheOK && $cacheFile !== '') {
     }
 }
 
-// 4) cURL Request
+// 5) cURL Request
 [$httpCode, $contentType, $body] = myCurl::request($finalUrl, $method, $t, $secrets);
 
-// 5) Cache-WRITE (nur Erfolgscodes 2xx/3xx)
+// 6) Cache-WRITE (nur Erfolgscodes 2xx/3xx)
 if ($cacheOK && $cacheFile !== '' && $httpCode >= 200 && $httpCode < 400) {
     myCache::write($cacheFile, [
         'ttl'          => myCache::ttl($t),
@@ -82,7 +95,7 @@ if ($cacheOK && $cacheFile !== '' && $httpCode >= 200 && $httpCode < 400) {
     header('X-Proxy-Cache: MISS');
 }
 
-// 6) Response an Client
+// 7) Response an Client
 http_response_code($httpCode);
 if ($contentType) {
     header('Content-Type: ' . $contentType);

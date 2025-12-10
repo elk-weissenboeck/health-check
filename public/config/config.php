@@ -20,7 +20,7 @@ $backupDir = __DIR__ . '/backup';
  */
 $allowedFiles = [
     'public.config.json' => [
-        'roles' => ['admin', 'it', 'read_only']
+        'roles' => ['admin', 'it', 'guest']
     ],
     'it.config.json' => [
         'roles' => ['admin', 'it']
