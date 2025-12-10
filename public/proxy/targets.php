@@ -102,7 +102,7 @@ return [
     'headers'  => ['Accept: application/json']
   ],
   'elkbau-calc-prod' => [
-    'roles'    => ['admin', 'it'],
+    'roles'    => ['admin', 'it', 'guest'],
     'url'      => "https://jenkins.elkschrems.co.at/job/ELK%20BAU%20Calculation%20Tool%20PROD/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
@@ -110,7 +110,7 @@ return [
     'headers'  => ['Accept: application/json']
   ],
   'html5app-ppl-prod' => [
-    'roles'    => ['admin', 'it'],
+    'roles'    => ['admin', 'it', 'guest'],
     'url'      => "https://jenkins.elkschrems.co.at/job/HTML5App%20RESTful%20-%20PROD/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
@@ -174,7 +174,7 @@ return [
     'headers'  => null
   ],
   'moodle' => [
-    'roles'    => ['admin', 'it'],
+    'roles'    => ['admin', 'it', 'guest'],
     'url'      => 'https://moodle.elk.at/webservice/rest/server.php',
     'method'   => 'GET',
     'auth'     => null,
@@ -213,7 +213,7 @@ return [
     'headers'  => ['Rex-Token: ' . $secrets['REX_TOKEN']]
   ],
   'odoo-prod-pipeline-check' => [
-    'roles'    => ['admin', 'it'],
+    'roles'    => ['admin', 'it', 'guest'],
     'url'      => 'https://jenkins-tng.elkschrems.co.at/job/odoo_freebsd_prov_run_prod_v13/lastCompletedBuild/api/json',
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
@@ -221,7 +221,7 @@ return [
     'headers'  => ['Accept: application/json']
   ],
   'odoo-prod-pipeline-transport' => [
-    'roles'    => ['admin', 'it'],
+    'roles'    => ['admin', 'it', 'guest'],
     'url'      => 'http://jenkins.sec.elkschrems.co.at/job/Provisionsabrechnung/lastCompletedBuild/api/json',
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
@@ -229,7 +229,7 @@ return [
     'headers'  => ['Accept: application/json']
   ],
   'lis-legacy-pp' => [
-    'roles'    => ['admin', 'it'],
+    'roles'    => ['admin', 'it', 'guest'],
     'url'      => "https://jenkins.elkschrems.co.at/job/KisplanKonsole%20Daily/lastCompletedBuild/api/json",
     'method'   => 'GET',
     'auth'     => ['type' => 'jenkins'],
@@ -237,7 +237,7 @@ return [
     'headers'  => ['Accept: application/json']
   ],
   'lis-legacy-status' => [
-    'roles'    => ['admin', 'it'],
+    'roles'    => ['admin', 'it', 'guest'],
     'url'      => "https://lis.elk.at/status.php",
     'method'   => 'GET',
     'auth'     => null,

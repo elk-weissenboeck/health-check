@@ -626,34 +626,6 @@
                     }
                 },
                 {
-                    "key": "rex-elk-at-prod",
-                    "label": "elk.at Redaxo",
-                    "url": "proxy\/proxy.php?key=rex-elk-at-prod",
-                    "method": "GET",
-                    "warning": null,
-                    "owner": {
-                        "upn": "georg.weissenboeck@elk.at"
-                    },
-                    "expect": {
-                        "jsonPath": "environment",
-                        "equals": "prod"
-                    },
-                    "fields": [
-                        {
-                            "label": "Version",
-                            "path": "rexVersion"
-                        },
-                        {
-                            "label": "PHP",
-                            "path": "phpVersion"
-                        },
-                        {
-                            "label": "docRoot",
-                            "path": "docRoot"
-                        }
-                    ]
-                },
-                {
                     "key": "elkhaus.de-prod",
                     "label": "elkhaus.de",
                     "url": "https:\/\/www.elkhaus.de",
@@ -662,34 +634,6 @@
                     "owner": {
                         "upn": "andreas.negrei@elk.at"
                     }
-                },
-                {
-                    "key": "rex-elkhaus-de-prod",
-                    "label": "elkhaus.de Redaxo",
-                    "url": "proxy\/proxy.php?key=rex-elkhaus-de-prod",
-                    "method": "GET",
-                    "warning": null,
-                    "owner": {
-                        "upn": "andreas.negrei@elk.at"
-                    },
-                    "expect": {
-                        "jsonPath": "environment",
-                        "equals": "prod"
-                    },
-                    "fields": [
-                        {
-                            "label": "Version",
-                            "path": "rexVersion"
-                        },
-                        {
-                            "label": "PHP",
-                            "path": "phpVersion"
-                        },
-                        {
-                            "label": "docRoot",
-                            "path": "docRoot"
-                        }
-                    ]
                 }
             ]
         },
