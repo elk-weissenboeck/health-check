@@ -1,10 +1,31 @@
 import { PathUtils } from '../utils/PathUtils.js';
 
 export class ServiceChecker {
-  async check(url, method = 'HEAD', expect = null) {
+  async check(url, method = 'HEAD', expect = null, bearerToken) {
     const start = performance.now();
+
     try {
-      const res = await fetch(url, { method, cache: 'no-store' });
+      // Request-Header für Authorization vorbereiten
+      const requestHeaders = {};
+
+      // Sobald Sie beim fetch bestimmte Header setzen (u. a. Authorization), 
+      // stuft der Browser den Request nicht mehr als „simple request“ ein. 
+      // Wenn die URL nicht exakt die gleiche Origin hat (Schema, Host, Port), 
+      // macht der Browser vorher automatisch einen OPTIONS-Preflight-Request, 
+      // um zu prüfen, ob der Server das überhaupt erlaubt.
+      //
+      // Authorization gehört zu den Headers, die einen Preflight auslösen
+      if (bearerToken && url.includes('proxy.php') && method === 'GET') {
+        requestHeaders['Authorization'] = `Bearer ${bearerToken}`;
+      }
+
+      const res = await fetch(url, {
+        method,
+        cache: 'no-store',
+        headers: requestHeaders
+      });
+      
+      //const res = await fetch(url, { method, cache: 'no-store' });
       const ms = Math.round(performance.now() - start);
 
       const headers = {};

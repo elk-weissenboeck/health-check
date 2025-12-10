@@ -9,6 +9,7 @@ import { TicketModal } from '../ui/TicketModal.js';
 import { OwnerListModal } from '../ui/OwnerListModal.js';
 import { ServiceListModal } from '../ui/ServiceListModal.js';
 
+
 export class App {
   constructor() {
     this.groups = [];
@@ -28,6 +29,25 @@ export class App {
     window.__healthResults = this.healthResults;
     window.inspectService = (groupKey, serviceKey) => this.healthResults?.[groupKey]?.[serviceKey] ?? null;
   }
+  
+  getBearerToken() {
+    const guestUserToken = "c40964366a5f7a5e0d9a3985334d13241c14d8be4e42d6ca6f49b2fca9512f64";
+    const cookieString = document.cookie || '';
+    const cookie = cookieString
+      .split(';')
+      .map(c => c.trim())
+      .find(c => c.startsWith('UserToken='));
+
+    if (!cookie) {
+      // Cookie existiert nicht → Default
+      return guestUserToken;
+    }
+
+    const value = decodeURIComponent(cookie.substring('UserToken='.length));
+    // Leerer Wert? Ebenfalls Default
+    return value || guestUserToken;
+  }
+
 
   async bootstrap() {
     try {
@@ -64,11 +84,18 @@ export class App {
           }
           
           // Latenz ausblenden / neutralisieren
-        const latency = document.getElementById(`latency-${g.key}-${s.key}`);
-        if (latency) latency.textContent = '—';    // hier auch in der Icon-Gruppe
-        return true;
+          const latency = document.getElementById(`latency-${g.key}-${s.key}`);
+          if (latency) latency.textContent = '—';    // hier auch in der Icon-Gruppe
+          return true;
         }
-        const r = await this.checker.check(s.url, s.method, s.expect);
+        
+        const r = await this.checker.check(
+          s.url,
+          s.method,
+          s.expect,
+          this.getBearerToken()
+        );
+        
         this.view.setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value, s);
         this.details.renderServiceFields(g.key, s, r.data);
         this.details.renderServiceHeaders(g.key, s, r.headers);
@@ -129,7 +156,7 @@ async refreshService(groupKey, serviceKey) {
   const separator = baseUrl.includes('?') ? '&' : '?';
   const urlWithNoCache = `${baseUrl}${separator}nocache=1`;
 
-  const r = await this.checker.check(urlWithNoCache, s.method, s.expect);
+  const r = await this.checker.check(urlWithNoCache, s.method, s.expect, this.getBearerToken());
 
   this.view.setBadge(g.key, s.key, r.ok, r.ms, r.count, r.value, s);
   this.details.renderServiceFields(g.key, s, r.data);
