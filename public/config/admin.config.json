@@ -8,7 +8,7 @@
         {
           "active": true,
           "key": "pr-alec2-vtiger",
-          "label": "pot vtiger",
+          "label": "Pot vtiger",
           "url": "proxy/proxy.php?key=pr-alec2-vtiger", 
           "method": "GET",
           "warning": null,
@@ -26,7 +26,7 @@
         {
           "active": true,
           "key": "pr-alec2-moodle",
-          "label": "pot moodle",
+          "label": "Pot moodle",
           "url": "proxy/proxy.php?key=pr-alec2-moodle", 
           "method": "GET",
           "warning": null,

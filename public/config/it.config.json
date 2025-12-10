@@ -9,7 +9,7 @@
           "active": true,
           "key": "levatis-prod",
           "label": "TWZConnector..",
-          "url": "rs2/twz-connector.php",
+          "url": "proxy/3rd/rs2-twz-connector.php",
           "method": "GET",
           "warning": null,
           "owner": {
@@ -462,7 +462,7 @@
             "upn": "georg.weissenboeck@elk.at"
           },
           "mantis": {
-            "url": "/mantis/getTickets.php",
+            "url": "proxy/3rd/mantis-getTickets.php",
             "queryParams": [
               {
                 "key": "projectId",

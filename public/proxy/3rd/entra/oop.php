@@ -6,8 +6,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require '../vendor/autoload.php';
-require '../../classes/myEntra.class.php';
+require dirname(__DIR__) . '../../../vendor/autoload.php';
+require dirname(__DIR__) . '../../../../classes/myEntra.class.php';
 
 $secrets = require dirname(__DIR__) . '/../secrets.php';
 $owners  = require dirname(__DIR__) . '/entra/serviceOwners.php';

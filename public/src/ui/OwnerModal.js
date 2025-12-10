@@ -112,7 +112,7 @@ export class OwnerModal {
     if (!upn) return;
 
     try {
-      const res = await fetch(`entra/photo.php?id=${encodeURIComponent(upn)}`, { cache: 'no-store' });
+      const res = await fetch(`proxy/3rd/entra/photo.php?id=${encodeURIComponent(upn)}`, { cache: 'no-store' });
 
       // Bei 404 oder anderem Fehler: einfach Initialen lassen
       if (!res.ok) return;
@@ -231,7 +231,7 @@ export class OwnerModal {
       }
 
       try {
-        const res = await fetch(`entra/oop.php?upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
+        const res = await fetch(`proxy/3rd/entra/oop.php?upn=${encodeURIComponent(upn)}`, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const api = await res.json();
