@@ -1,14 +1,8 @@
 <?php
-declare(strict_types=1);
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-require '../vendor/autoload.php';
-require '../../classes/myCurl.class.php';
-require '../../classes/myHelpers.class.php';
+require BASE_DIR . '/classes/myCurl.class.php';
+require BASE_DIR . '/classes/myHelpers.class.php';
 
 $secrets = require dirname(__DIR__) . '/../secrets.php';
  

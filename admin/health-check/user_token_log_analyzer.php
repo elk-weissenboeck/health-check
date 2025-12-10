@@ -1,10 +1,11 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-require __DIR__ . '/../../classes/myApiAuth.php';
+require BASE_DIR . '/classes/myApiAuth.php';
 
 $auth = new myApiAuth(
-    __DIR__ . '/../../tokens.php',
-    __DIR__ . '/../../log/UserTokenAccess.log'
+    BASE_DIR . '/tokens.php',
+    BASE_DIR . '/logs/UserTokenAccess.log'
 );
 
 // Wichtig: Cookie als Token-Quelle aktivieren
@@ -14,7 +15,7 @@ $client = $auth->requireAnyRole(['admin']);
 
 
 // Pfad zum Logfile anpassen:
-$logFile = __DIR__ . '/../../log/UserTokenAccess.log';
+$logFile = BASE_DIR . '/logs/UserTokenAccess.log';
 
 // einfache Konfiguration
 $maxRowsDefault = 500;

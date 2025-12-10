@@ -1,13 +1,9 @@
 <?php
-declare(strict_types=1);
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-require __DIR__ . '/../../classes/myCurl.class.php';
-require __DIR__ . '/../../classes/myHelpers.class.php';
-require __DIR__ . '/../../classes/myGlpi.class.php';
+require BASE_DIR . '/classes/myCurl.class.php';
+require BASE_DIR . '/classes/myHelpers.class.php';
+require BASE_DIR . '/classes/myGlpi.class.php';
 
 $BASE   = 'https://helpdesk.elkkampa.com/apirest.php';
 $APP    = $secrets['GLPI_API_APP'];

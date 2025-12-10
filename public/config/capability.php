@@ -1,6 +1,7 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-$tokens =  require dirname(__DIR__) . '/../tokens.php';
+$tokens =  require BASE_DIR . '/tokens.php';
 
 // Rollen -> erlaubte Configs
 $roleConfigMap = [

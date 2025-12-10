@@ -1,6 +1,7 @@
 secrets.php
 tokens.php
 vendor/
+logs/
 
 public/proxy/cache/*.json
 public/proxy/3rd/entra/cache/*.json

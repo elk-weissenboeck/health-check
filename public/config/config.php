@@ -1,12 +1,8 @@
 <?php
 // config.php - generische Verwaltung verschiedener JSON-Config-Dateien
 
-// Debugging bei Bedarf aktivieren
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
-require __DIR__ . '/../../classes/myApiAuth.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
+require BASE_DIR . '/classes/myApiAuth.php';
 
 $backupDir = __DIR__ . '/backup';
 
@@ -31,8 +27,8 @@ $allowedFiles = [
 ];
 
 $auth = new myApiAuth(
-    __DIR__ . '/../../tokens.php',
-    __DIR__ . '/../../log/UserTokenAccess.log'
+    BASE_DIR . '/tokens.php',
+    BASE_DIR . '/logs/UserTokenAccess.log'
 );
 
 

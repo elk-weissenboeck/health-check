@@ -11,19 +11,15 @@
  * - Optionaler File-Cache für x Minuten (GET/HEAD), Bypass via ?nocache=1
  */
 
-declare(strict_types=1);
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
 // -----------------------------------------------------------------------------
 // Klassen LADEN
 // -----------------------------------------------------------------------------
-require __DIR__ . '/../../classes/myHelpers.class.php';
-require __DIR__ . '/../../classes/myCurl.class.php';
-require __DIR__ . '/../../classes/myCache.class.php';
-require __DIR__ . '/../../classes/myApiAuth.php';
+require BASE_DIR . '/classes/myHelpers.class.php';
+require BASE_DIR . '/classes/myCurl.class.php';
+require BASE_DIR . '/classes/myCache.class.php';
+require BASE_DIR . '/classes/myApiAuth.php';
 
 
 // -----------------------------------------------------------------------------
@@ -36,8 +32,8 @@ $targets = require dirname(__DIR__) . '/proxy/targets.php';
 // Rolle ÜBERPRÜFEN
 // -----------------------------------------------------------------------------
 $auth = new myApiAuth(
-    __DIR__ . '/../../tokens.php',
-    __DIR__ . '/../../log/UserTokenAccess.log'
+    BASE_DIR . '/tokens.php',
+    BASE_DIR . '/logs/UserTokenAccess.log'
 );
 //$auth->useCookieToken();
 

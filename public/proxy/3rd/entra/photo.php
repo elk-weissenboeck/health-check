@@ -1,14 +1,7 @@
 <?php
-declare(strict_types=1);
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 
-define('PHOTO_CACHE_HOURS', 48);
-
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
-require dirname(__DIR__) . '../../../vendor/autoload.php';
-require dirname(__DIR__) . '../../../../classes/myEntra.class.php';
+require BASE_DIR . '/classes/myEntra.class.php';
 
 $secrets = require dirname(__DIR__) . '/../secrets.php';
 $owners  = require dirname(__DIR__) . '/entra/serviceOwners.php';
