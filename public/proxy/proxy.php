@@ -39,7 +39,7 @@ $auth = new myApiAuth(
     __DIR__ . '/../../tokens.php',
     __DIR__ . '/../../log/UserTokenAccess.log'
 );
-$auth->useCookieToken();
+//$auth->useCookieToken();
 
 
 // -----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ $auth->useCookieToken();
 $key = (string)($_GET['key'] ?? '');
 $t   = myHelpers::requireTarget($targets, $key);
 
-// 2) Rolle überprüfen
+// 2) Rolle überprüfen - falls nicht definiert -> admin required
 $client = $auth->requireAnyRole($t['roles'] ?? ['admin']);
 
 // 3) Methode & finale URL

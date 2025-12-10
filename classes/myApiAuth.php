@@ -103,16 +103,10 @@ class myApiAuth
     public function getClient(): ?array
     {
         $token = $this->getTokenString();
-
+        
         // KEIN Token → anonymous
         if ($token === null) {
-            return [
-                'token' => null,
-                'name'  => 'anonymous',
-                'roles' => ['anonymous'],
-                // anonymous ist per Definition "aktiv"
-                'active' => true,
-            ];
+            return $this->tokens['anonymous'];
         }
 
         // Token übergeben, aber unbekannt → ungültig

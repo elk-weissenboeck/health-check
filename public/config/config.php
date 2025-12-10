@@ -35,6 +35,7 @@ $auth = new myApiAuth(
     __DIR__ . '/../../log/UserTokenAccess.log'
 );
 
+
 // Alle Antworten sind JSON
 header('Content-Type: application/json; charset=utf-8');
 
